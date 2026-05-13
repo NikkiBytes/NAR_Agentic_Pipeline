@@ -57,6 +57,12 @@ Decisions made during skill design and iteration, in chronological order.
 - built-plugins-index.md: entry template gets a `version.py strategy` field
 - Rationale: user requirement — consistent with mygeneset.info production plugins; enables Hub to detect new releases and auto-re-dump
 
+### [2026-05-11] Added proactive biothings-cli prerequisites and hardened §7 workflow
+- Added **git repository setup** as a required step in §7.0: `git init` + initial commit + dummy `origin` remote. `biothings-cli` internally calls `git rev-list` and `git remote`; without a proper repo these fail fatally during `upload` (`ValueError: Remote named 'origin' didn't exist`) or silently (`fatal: ambiguous argument 'master': unknown revision`).
+- Added **clean hub state** as a required pre-step in §7.0: proactively delete `data_src_database`, `data_src_database-journal`, and `biothings_hubdb` before re-runs. An interrupted upload leaves a SQLite journal lock (`sqlite3.OperationalError: database is locked`) and the hub metadata caches a "stale/canceled" status that blocks all subsequent uploads.
+- Updated §7.5 `dataplugin inspect`: added `-s <plugin_name>` as the default invocation (required when multiple uploaders exist; safe to always include). Added `--limit` flag guidance for large datasets (>100K docs) to avoid multi-minute full-collection scans during iterative development.
+- Rationale: all three issues were hit during the MetaNetX/MNXref plugin build (1.2M documents, 800MB+ TSV files). The fixes are preventive — they should be run as setup steps before errors occur, not as recovery after failure.
+
 ### [2026-05-06] Replaced commented-out Section 7 with a real biothings-cli validation workflow
 - Section 7 now defines a 5-step required CLI validation: `dataplugin validate` → `dump` → `upload` → `list` → `inspect`
 - Each step documents: purpose, exact command, pass criterion, common failures, on-failure handling

@@ -1,89 +1,63 @@
 ---
 name: datasource-site-inspection
 description: >-
-  Inspect a datasource's live website, API, and download endpoints to verify
-  ingestion suitability for BioThings. Use after a relevancy evaluation
-  (datasource-relevancy-analysis) has been completed, or standalone when a user
-  provides a datasource URL and asks to verify its data access, API schema, and
-  download feasibility. Produces a structured VERIFIED / PARTIALLY_VERIFIED /
-  BLOCKED report with concrete technical findings.
+  Inspect a datasource's download files to verify ingestion suitability for a
+  BioThings plugin. Finds the download file URLs, samples the data schema, and
+  confirms the fields are relevant and novel for BioThings. Use after a
+  datasource-relevancy-analysis has been completed. Produces a structured
+  VERIFIED / PARTIALLY_VERIFIED / BLOCKED report.
 ---
 
 # Datasource Site Inspection
 
-## When to Use
-- After a `datasource-relevancy-analysis` evaluation to ground-truth claims from a paper
-- When a user provides a datasource URL and asks "can we actually ingest this?"
-- When building a BioThings data plugin and you need to document the API contract
+## Goal
+Answer three questions:
+1. **Can we get the data?** — Are the download files publicly accessible (direct URL, no login required)?
+2. **What's in the files?** — What are the field names, types, and a few sample values?
+3. **Is it worth ingesting?** — Are those fields relevant and novel for a BioThings plugin?
+
+This report feeds directly into the plugin generator. The most important outputs are the confirmed download URL(s) and the field schema.
+
+## Tools to Use
+1. **`fetch_web_pages`** — try the download page URL and any direct file URLs first.
+2. **`exa_web_search`** — fallback if the download page is JS-rendered or returns no content.
+3. **Local paper PDF** — read it for the Data Availability / Methods section if the site is opaque. This is often the most reliable source of file format and schema.
+
+Do NOT parse JS bundles, reverse-engineer network layers, or dig into web app architecture.
 
 ## Prerequisites
-- Check `agent_outputs/` for a prior relevancy evaluation for this datasource
-- If one exists, load it to know what claims to verify (entity counts, license, formats, identifiers)
-- If none exists, proceed with raw inspection and note the absence
+- **Load the prior relevancy JSON** from `agent_outputs/<datasource>_datasource/<datasource>_relevancy.json`. If only a `.md` exists (legacy), parse it for: stated download URL, file format, key fields, license.
+- **Check `agent_outputs/pipeline_state.json`** — confirm this datasource has `verdict: RECOMMEND_INGEST` or `NEEDS_REVIEW`. If `DO_NOT_INGEST`, warn the user and stop unless they override.
+- **Check for a local paper PDF** in `agent_outputs/<datasource>_datasource/` or ask the user. Read it if present.
+- **If the user provides local file paths** (already downloaded), skip access checks and go straight to schema inspection.
 
 ## Instructions
 
-### 1. Identify Endpoints to Probe
-Extract from the prior evaluation, paper, or user input:
-- Homepage URL
-- API root URL (REST, GraphQL, SPARQL, etc.)
-- Download/bulk-export URL
-- License/terms-of-use page URL
-- Documentation URL (if separate from the above)
+### 1. Find the Download Files
+From the relevancy report, paper, or download page URL:
+- List each available download file with its URL, format, and description
+- Confirm each URL is directly accessible (no login, no redirect to a registration wall)
+- **If any file requires login/registration → status = BLOCKED. Stop here and report.** Do not attempt to work around auth gates.
 
-### 2. Probe the Homepage
-Fetch the homepage and extract:
-- Current entity counts (compare with paper claims if available)
-- License statement (as displayed on the site)
-- Last-updated or latest-data-deposit date
-- Any login/registration prompts or access gates
+### 2. Sample the Data Schema
+For each accessible download file:
+- If the file is small enough, fetch it directly with `fetch_web_pages`
+- If it's a large flat file (TSV/CSV/JSON), fetch just the header row or first few lines using a range/byte request if possible, or use `exa_web_search` to find any published schema documentation
+- If the user has a local copy, read the first 20–50 lines with `read_files`
+- Record: column names / JSON keys, data types, 2–3 sample values per key field
 
-### 3. Probe the API (if available)
-For REST APIs, perform these checks in order:
+### 3. Assess Relevance and Novelty for BioThings
+For each field found in step 2:
+- **Identify BioThings-mappable identifiers** (InChIKey, Entrez Gene ID, HGVS, MONDO ID, RS number, HGVS, etc.) — these determine which BioThings API the plugin targets
+- **Flag novel fields** — fields that carry information not already present in existing BioThings sources (compare to claims in the relevancy report)
+- **Flag redundant fields** — fields that duplicate what's already in BioThings (e.g., re-annotating gnomAD AF when BioThings already has it)
+- Confirm the primary key strategy: which field becomes `_id`, and does it map to MyVariant / MyGene / MyChem / MyDisease?
 
-#### 3a. Root Discovery
-- Fetch the API root to enumerate available endpoints
-- Record the base URL and all top-level resources
+### 4. Verify License
+- Confirm the license from the download page or paper matches the relevancy report
+- Note any NC/ND restrictions that affect redistribution
 
-#### 3b. List Endpoint Inspection
-For each top-level resource (e.g., `/api/compounds/`):
-- Fetch with `?limit=1` or default pagination
-- Record: total count, pagination mechanism (offset/limit, cursor, page), default page size
-- Record: response format (JSON, XML, etc.)
-- Record: top-level fields returned in the list view (summary schema)
-
-#### 3c. Detail Endpoint Inspection
-For at least one entity:
-- Fetch the detail view (e.g., `/api/compounds/EOS1/` or `/api/compounds/1/`)
-- Record: full schema of the detail response
-- Identify: which fields contain identifiers mappable to BioThings (InChIKey, UniProt, SMILES, etc.)
-- Identify: which fields contain bioactivity data, annotations, or cross-references
-- Note: any nested objects, their depth, and whether they'd need flattening for BioThings
-
-#### 3d. Pagination & Bulk Feasibility
-- Calculate: total records ÷ page size = number of API calls needed for full crawl
-- Check: is there a rate limit header (X-RateLimit, Retry-After, etc.)?
-- Check: does the API support large page sizes (e.g., `?limit=1000`)?
-- Estimate: time to crawl entire dataset at observed response times
-
-#### 3e. Authentication Check
-- Confirm all above requests succeeded without auth headers
-- If any endpoint returned 401/403, record which ones and what auth is required
-
-### 4. Probe the Download Page (if available)
-- Fetch the download page
-- Record: available file formats (CSV, JSON, SDF, TSV, SQL dump, etc.)
-- Record: whether downloads are per-entity-type, per-library, or full-database
-- Check: can files be downloaded via direct URL (curl-able) without session/cookie?
-- If possible, download a small sample file and inspect its structure (headers, delimiter, encoding)
-
-### 5. Verify License
-- Fetch the license page or look for license metadata in API responses
-- Record: exact license name and version
-- Record: URL to the license text
-- Compare: does the live site license match the paper's stated license?
-
-### 6. Compare Paper Claims vs Reality
+### 5. Compare Paper Claims vs Reality
 If a prior evaluation exists, check each claim:
 - Entity counts: paper says X, site shows Y
 - Formats: paper says CSV/JSON/SDF, site actually offers...
@@ -93,7 +67,7 @@ If a prior evaluation exists, check each claim:
 
 Flag any discrepancies as MISMATCH.
 
-### 7. Assess Ingestion Path
+### 6. Assess Ingestion Path
 Based on findings, recommend the best ingestion strategy:
 - **Bulk download**: If a dump file (JSON, CSV, SQL) is available and complete — simplest path
 - **API crawl**: If the API is well-paginated and returns rich detail per entity but no bulk download exists
@@ -113,82 +87,91 @@ Based on findings, recommend the best ingestion strategy:
 
 This section feeds directly into the `biothings-plugin-generator` skill's Section 1c (API vs Bulk Download Strategy) and the custom `dumper.py` template.
 
-### 8. Save Output
-Write the completed inspection to:
-`agent_outputs/<DATASOURCE_NAME>_site_inspection_<DATETIME>.md`
-where `<DATETIME>` is `YYYYMMDD` format. Use lowercase, underscore-separated datasource name.
+### 7. Save Output
+Save to `agent_outputs/<DATASOURCE_NAME>_datasource/<DATASOURCE_NAME>_inspection.json`.
+The `_datasource/` folder should already exist from the relevancy evaluation step — create it if not.
 
-## Required Output Format
+**Also update `agent_outputs/pipeline_state.json`**: read the file, update this datasource's entry with `stage: "inspected"`, `inspection_status`, `data_url`, `target_api`, `inspection_date`. Write it back.
 
+**Markdown is optional**: Only generate a `.md` report if the user explicitly asks for one. The JSON is the canonical output.
+
+## Required Output Format (JSON)
+
+Write a single JSON file. The schema below is **stable** — the plugin-generator skill relies on these field names.
+
+```json
+{
+    "name": "<datasource_name>",
+    "status": "VERIFIED | PARTIALLY_VERIFIED | BLOCKED",
+    "inspection_date": "2026-05-13",
+    "download_files": [
+        {
+            "url": "https://...",
+            "filename": "data.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 7.4
+        }
+    ],
+    "schema": {
+        "fields": [
+            {
+                "name": "field_name",
+                "type": "string",
+                "sample": "example_value",
+                "classification": "NOVEL | REDUNDANT | IDENTIFIER"
+            }
+        ],
+        "primary_key": {
+            "field": "ID",
+            "type": "InChIKey | Entrez Gene | HGVS | MONDO | custom",
+            "sample": "acc0001"
+        },
+        "identifiers": [
+            {"type": "UniProt", "field": "Protein_uniport", "sample": "P12956"},
+            {"type": "gene_symbol", "field": "Gene", "sample": "XRCC6"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "CC BY 4.0",
+        "match": true,
+        "restrictions": []
+    },
+    "plugin_inputs": {
+        "data_url": ["https://..."],
+        "primary_key_field": "ID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download | api_crawl | hybrid",
+        "novel_fields": ["field1", "field2"],
+        "redundant_fields": ["field3"]
+    },
+    "api_crawl_details": {
+        "base_url": "https://...",
+        "endpoints": ["endpoint1"],
+        "pagination": "offset/limit",
+        "total_records": 50000,
+        "rate_limits": "unknown",
+        "auth": "none",
+        "response_shape": "{results: [...]}",
+        "sample_curl": "curl ..."
+    },
+    "paper_vs_reality": [
+        {"claim": "50K records", "observed": "48663", "match": true}
+    ],
+    "risks": ["risk 1"]
+}
 ```
-## <Datasource Name> — Site Inspection Report
-**Status**: VERIFIED | PARTIALLY_VERIFIED | BLOCKED
-**Inspection Date**: YYYY-MM-DD
-**Prior Evaluation**: <filename or "none">
 
-### Endpoints Probed
-- Homepage: <URL> — <status code>
-- API Root: <URL> — <status code>
-- Download: <URL> — <status code>
-- License: <URL> — <status code>
-
-### API Schema
-- **Root endpoints**: <list>
-- **Pagination**: <mechanism, page size, total pages for full crawl>
-- **Auth required**: yes/no
-- **Rate limits**: <observed or "none detected">
-
-#### List View Fields (<entity type>)
-- <field>: <type> — <description>
-- ...
-
-#### Detail View Fields (<entity type>)
-- <field>: <type> — <description>
-- ...
-
-#### BioThings-Mappable Identifiers Found
-- <identifier type>: <field path> (e.g., InChIKey: `_label` contains SMILES)
-- ...
-
-### Download Options
-- <format>: <URL pattern> — <scope (full DB, per-library, etc.)>
-- ...
-
-### License Verification
-- **Stated (paper)**: <license>
-- **Observed (site)**: <license>
-- **Match**: yes/no
-
-### Paper vs Reality
-- Entity counts: paper=<X>, live=<Y> — MATCH/MISMATCH
-- Formats: MATCH/MISMATCH — <details>
-- API: MATCH/MISMATCH — <details>
-- License: MATCH/MISMATCH — <details>
-- Identifiers: MATCH/MISMATCH — <details>
-
-### Recommended Ingestion Path
-- **Strategy**: API crawl | Bulk download | Hybrid
-- **Primary key**: <identifier>
-- **Estimated crawl effort**: <N requests, ~M minutes>
-- **Recommended format**: <format>
-
-#### API Crawl Details (include only if Strategy = API crawl or Hybrid)
-- **Base URL**: <exact API root>
-- **Endpoints to crawl**: <list with record counts>
-- **Pagination**: <mechanism, max page size>
-- **Rate limits**: <observed or stated>
-- **Auth**: none | API key | token
-- **Response shape**: <top-level key containing records>
-- **Sample curl**: `curl -s "<url>?limit=1" | python3 -m json.tool | head -30`
-
-### Blockers / Risks
-- <bullet list, or "None identified">
-```
+**Fields that MUST be present**: `name`, `status`, `inspection_date`, `download_files`, `plugin_inputs`.
+`api_crawl_details`: include only when `ingestion_path` is `api_crawl` or `hybrid`.
+`paper_vs_reality`: include only when a prior relevancy evaluation exists.
+All other fields: include when known, omit when unknown.
 
 ## Decision Rules
-- **VERIFIED**: All endpoints accessible, schema confirmed, license matches, no auth barriers
-- **PARTIALLY_VERIFIED**: Most checks pass but some endpoints unavailable, schema incomplete, or minor discrepancies found
-- **BLOCKED**: Auth required for data access, license mismatch or restrictive, critical endpoints down, or data not actually available
+- **VERIFIED**: Download files publicly accessible, schema confirmed, novel fields identified, license permits ingestion
+- **PARTIALLY_VERIFIED**: Files accessible but schema incomplete, or some fields unverifiable, or minor license uncertainty
+- **BLOCKED**: Login/registration required for downloads, license prohibits redistribution, or no download files found
 
 ## Interaction with Other Skills
 - This skill is designed to run AFTER `datasource-relevancy-analysis`

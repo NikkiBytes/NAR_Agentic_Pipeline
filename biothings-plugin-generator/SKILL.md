@@ -22,9 +22,10 @@ description: >-
 A BioThings data plugin requires these files:
 ```
 <plugin_name>/
-├── manifest.json    # Required — defines data URLs, parser reference, metadata
-├── parser.py        # Required — parses data, yields documents
-└── version.py       # Required — returns the datasource's current release string
+├── manifest.json         # Required — defines data URLs, parser reference, metadata
+├── parser.py             # Required — parses data, yields documents
+├── version.py            # Required — returns the datasource's current release string
+└── design_rationale.md   # Required — explains file selection and parser design decisions
 ```
 
 Optional files (only add when explicitly requested):
@@ -301,12 +302,45 @@ agent_outputs/<datasource_name>_datasource/<datasource_name>_plugin/
 ├── manifest.json
 ├── parser.py
 ├── version.py
-└── README.md
+├── README.md
+└── design_rationale.md
 ```
 
 The `_datasource/` folder should already exist from the relevancy evaluation and site inspection steps — create it if not. README.md should include: datasource name/URL, what the plugin does, `biothings-cli` test commands, example document, known limitations.
 
 After saving, **update [references/built-plugins-index.md](references/built-plugins-index.md)** by appending a new entry using the template at the bottom of that file.
+
+### 6a. Generate design_rationale.md (Required)
+Always generate a `design_rationale.md` alongside the other plugin files. This report documents the reasoning behind file selection and parser design so that future maintainers (or automated reviewers) can understand why the plugin was built this way.
+
+**Required sections:**
+
+**1. Why These Dump Files Were Chosen**
+- List how many files the datasource offers in total vs how many the plugin uses
+- For each **selected file**: state its name, size, record count, format, and why it was chosen (e.g., "only file containing drug-disease relationships", "enrichment lookup table")
+- For each **rejected file**: state its name and one-line reason for exclusion (e.g., "raw upstream input already merged into the indication list", "subset of the flexible list with no unique data")
+- End with a decision summary paragraph explaining the overall file selection logic
+
+**2. Why the Parser Works the Way It Does**
+Cover each of these sub-topics with bullet points:
+- **`_id` strategy**: what the composite/primary key is, why this key was chosen, and how it maps to the target API
+- **Document structure**: which BioThings pattern was used (subject/object/relation, associatedWith, flat entity) and why
+- **Fields extracted**: for each source file, list what fields the parser pulls and what each one provides
+- **Fields deliberately skipped**: list columns/fields the parser ignores and why (e.g., redundant, inconsistently formatted, not relevant to BioThings)
+- **Deduplication logic**: how duplicates are detected and handled, how many were found in testing
+- **Data cleaning**: what `dict_sweep`/`unlist`/type conversions are applied
+
+**3. Test Results Summary**
+A table with key metrics from the biothings-cli test run:
+- Source row count, documents yielded, duplicates removed, parsing errors
+- Enrichment rate (if applicable)
+- Pass/fail status for each biothings-cli step (validate, dump, upload, inspect)
+
+**Formatting rules:**
+- Use markdown with clear headings and bullet points
+- Be specific — cite actual file names, column names, record counts, and CURIE prefixes
+- Keep it factual — this is a technical reference, not marketing copy
+- Aim for 80-120 lines; enough detail to reconstruct the reasoning, not so much that it's redundant with the code
 
 ### 6b. Optional: parser_report.json (Opt-In)
 Generate a machine-readable `parser_report.json` alongside the four required files **only when the user opts in** via a trigger phrase. Detect the opt-in from the user's invocation; matching phrases include (case-insensitive substring match):
@@ -406,6 +440,28 @@ cd agent_outputs/<datasource_name>_datasource/<datasource_name>_plugin/
 ```
 The CLI uses a local SQLite-backed `data_src_database` and an `archive/` folder under `.biothings_hub/` inside the plugin directory — no external services needed.
 
+**Git repository setup (required).** `biothings-cli` internally calls `git rev-list` and `git remote` to detect plugin identity and version. These calls fail silently or fatally if the plugin directory is not a proper git repo. **Always run the following before any CLI command:**
+```bash
+# Skip if the plugin directory already has commits on the current branch
+git init                           # no-op if .git/ already exists
+git add manifest.json parser.py version.py README.md
+git commit -m "Initial plugin files"  --allow-empty
+git remote add origin /dev/null 2>/dev/null || true   # dummy origin; no push needed
+```
+- `git init` + initial commit: satisfies `git rev-list -1 <branch>` which biothings-cli runs during upload.
+- Dummy `origin` remote: satisfies `git remote` lookups. Points to `/dev/null` — nothing is ever pushed.
+- These are local-only operations. No GitHub repo or remote push is required.
+
+**Clean hub state (required on re-runs).** If `.biothings_hub/` exists from a previous run (especially a failed one), stale SQLite locks or cached "canceled" status will cause new uploads to fail. **Always clean before re-running the pipeline:**
+```bash
+# Safe to run even on first run (files won't exist yet)
+rm -f .biothings_hub/data_src_database .biothings_hub/data_src_database-journal .biothings_hub/biothings_hubdb
+```
+- `data_src_database-journal`: SQLite WAL/journal lock left by an interrupted upload.
+- `data_src_database`: the collection store; must be recreated after removing the journal.
+- `biothings_hubdb`: hub metadata that caches "stale" / "canceled" status from prior failures.
+- Archive data files (`.biothings_hub/archive/`) are safe to keep — only metadata/DB files need clearing.
+
 Run the five commands below **in order**. Each step's pass/fail outcome must be recorded in `parser_report.json` under `smoke_test.cli_validation.steps[]` (when the user opted into the report per §6b). On any failure, stop the workflow and surface the error to the user before continuing.
 
 #### 7.1 `dataplugin validate` — manifest schema check
@@ -446,10 +502,16 @@ biothings-cli dataplugin list
 
 #### 7.5 `dataplugin inspect` — sample document shape verification
 ```bash
-biothings-cli dataplugin inspect
+# Basic form — use -s when prompted (required when multiple uploaders/collections exist)
+biothings-cli dataplugin inspect -s <plugin_name>
+
+# For large datasets (>100K docs): limit the sample to avoid long waits
+biothings-cli dataplugin inspect -s <plugin_name> --limit 1000
 ```
 - **Purpose**: pulls a sample of yielded documents from the collection and reports field-level statistics (key presence, type distribution, value ranges) to verify the parser's output schema matches expectations.
 - **Pass criterion**: every yielded document has an `_id` of type `string`; the top-level datasource key (e.g. `harmonizome`, `signor`, `ecbd`) is present in 100% of sampled documents; no fields are unexpectedly all-null.
+- **`-s` flag**: always provide `-s <plugin_name>`. The CLI requires it when multiple uploaders exist and errors with `--sub-source-name must be provided` without it. Safe to always include.
+- **`--limit` flag for large datasets**: for collections with >100K documents, a full inspection is slow and unnecessary for schema validation. Use `--limit 1000` to `--limit 10000` for initial verification. The tradeoff: rare fields (e.g., xref categories appearing in <1% of compounds) may not surface in small samples. Use `--limit 10000` as a good balance; omit `--limit` only for the final comprehensive check if needed.
 - **Common findings**: stray `None` values not cleaned by `dict_sweep`; `_id` mistakenly stored as integer instead of string; nested dicts with a single key (should have been flattened by `unlist`).
 - **On failure**: record the offending field-level statistics in `cli_validation.steps[].errors[]` and surface to the user as a parser fix-up task.
 
