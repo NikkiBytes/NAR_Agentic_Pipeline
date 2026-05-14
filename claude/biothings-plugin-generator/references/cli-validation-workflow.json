@@ -1,0 +1,113 @@
+{
+  "_metadata": {
+    "description": "biothings-cli end-to-end validation workflow for generated plugins. Run all 5 steps in order after writing plugin files.",
+    "source": "Hardened from SIGNOR v1.0 silent-failure and MetaNetX 1.2M-doc builds"
+  },
+  "prerequisites": {
+    "install": "pip install \"biothings[cli]\"",
+    "version_check": "biothings-cli --version",
+    "working_dir": "cd agent_outputs/<datasource_name>_datasource/<datasource_name>_plugin/",
+    "note": "CLI uses local SQLite data_src_database + .biothings_hub/archive/ — no external services needed"
+  },
+  "git_setup": {
+    "required": true,
+    "reason": "biothings-cli calls git rev-list and git remote internally; fails without a proper repo",
+    "commands": [
+      "git init",
+      "git add manifest.json parser.py version.py README.md",
+      "git commit -m \"Initial plugin files\" --allow-empty",
+      "git remote add origin /dev/null 2>/dev/null || true"
+    ],
+    "notes": [
+      "git init + commit: satisfies git rev-list -1 <branch> during upload",
+      "Dummy origin: satisfies git remote lookups; points to /dev/null, nothing pushed",
+      "Local-only operations — no GitHub repo or remote push required"
+    ]
+  },
+  "clean_hub_state": {
+    "required_on_reruns": true,
+    "reason": "Stale SQLite locks or cached canceled status from prior failures block new uploads",
+    "command": "rm -f .biothings_hub/data_src_database .biothings_hub/data_src_database-journal .biothings_hub/biothings_hubdb",
+    "safe_to_keep": ".biothings_hub/archive/ (data files)",
+    "files_to_remove": {
+      "data_src_database-journal": "SQLite WAL/journal lock from interrupted upload",
+      "data_src_database": "Collection store; must recreate after removing journal",
+      "biothings_hubdb": "Hub metadata caching stale/canceled status"
+    }
+  },
+  "steps": [
+    {
+      "order": 1,
+      "id": "validate",
+      "command": "biothings-cli dataplugin validate",
+      "purpose": "Lint manifest.json against BioThings schema",
+      "catches": ["missing __metadata__", "malformed data_url", "missing release wiring", "parser-reference typos"],
+      "pass_criterion": "Exit code 0; no ERROR or FAIL lines in stdout/stderr",
+      "common_failures": ["parser ref points at nonexistent function", "data_url not string or list", "__metadata__.url missing"],
+      "on_failure": "Record errors in cli_validation.steps[].errors[] and STOP"
+    },
+    {
+      "order": 2,
+      "id": "dump",
+      "command": "biothings-cli dataplugin dump",
+      "purpose": "Invoke version.py:get_release(), download all data_url files to .biothings_hub/archive/",
+      "catches": ["version.py returns None", "HTTP errors on data_url", "uncompress failures"],
+      "pass_criterion": "Exit code 0; archive folder exists; all data_url files present and non-empty",
+      "common_failures": ["version.py returns None (falls back to date string)", "HTTP 4xx/5xx", "uncompress:true on non-zip"],
+      "on_failure": "Capture URL + HTTP status; if one URL in list fails, whole dump fails"
+    },
+    {
+      "order": 3,
+      "id": "upload",
+      "command": "biothings-cli dataplugin upload",
+      "purpose": "Run parser.load_data(data_folder), write docs to local SQLite collection",
+      "catches": ["parser exceptions", "zero documents (silent failure)", "duplicate _id errors", "oversized docs"],
+      "pass_criterion": "Exit code 0; non-zero document count; collection in subsequent list output",
+      "common_failures": ["Parser raises (check stderr even on exit 0)", "Zero docs yielded (SIGNOR v1.0 mode)", "Duplicate _id with on_duplicates:error"],
+      "on_failure": "Record exception + doc count. EXIT 0 WITH documents_yielded==0 IS FAILURE — flag as silent-zero-doc",
+      "critical_rule": "A successful exit with documents_yielded == 0 is treated as FAILURE"
+    },
+    {
+      "order": 4,
+      "id": "list",
+      "command": "biothings-cli dataplugin list",
+      "purpose": "Print Dump and Upload state (data folder, collections, file list). No mutations.",
+      "catches": ["Empty collections after upload", "Missing data files"],
+      "pass_criterion": "Both Dump and Upload boxes populated; Collections lists <plugin_name>; expected files present",
+      "common_failures": ["Collections empty after successful upload = silent doc drop"],
+      "on_failure": "If Collections empty, upload silently dropped all docs — investigate via inspect"
+    },
+    {
+      "order": 5,
+      "id": "inspect",
+      "command": "biothings-cli dataplugin inspect -s <plugin_name>",
+      "command_large": "biothings-cli dataplugin inspect -s <plugin_name> --limit 1000",
+      "purpose": "Sample docs from collection, report field-level statistics (key presence, types, ranges)",
+      "catches": ["_id not string", "missing top-level datasource key", "all-null fields", "stray None values"],
+      "pass_criterion": "All docs have _id:string; datasource key in 100% of samples; no unexpectedly all-null fields",
+      "flags": {
+        "-s": "Always provide -s <plugin_name>; required when multiple uploaders exist",
+        "--limit": "Use 1000-10000 for >100K doc collections; omit only for final comprehensive check"
+      },
+      "common_failures": ["None not cleaned by dict_sweep", "_id stored as int", "nested single-key dicts (should be flattened by unlist)"],
+      "on_failure": "Record field-level stats in cli_validation.steps[].errors[]; surface as parser fix-up task"
+    }
+  ],
+  "rerun_cleanup": {
+    "prune_archives": "rm -rf .biothings_hub/archive/<plugin_name>/<old_release_string>/",
+    "rerun": "biothings-cli dataplugin dump && biothings-cli dataplugin upload"
+  },
+  "recording_results": {
+    "target": "parser_report.json → smoke_test.cli_validation",
+    "status_values": {
+      "passed": "Exit 0 AND pass criterion met",
+      "failed": "Exit non-zero, OR exit 0 but pass criterion failed (e.g. zero docs on upload)",
+      "skipped": "Not run (earlier step failed)"
+    },
+    "rollup_rule": "smoke_test.status = passed only when all 5 steps pass",
+    "discrepancy_severity": {
+      "critical": "Silent failures (zero docs, missing collection)",
+      "warning": "Loud failures (HTTP error, validation error)"
+    }
+  }
+}

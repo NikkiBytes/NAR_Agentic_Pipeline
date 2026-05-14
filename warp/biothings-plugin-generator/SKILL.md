@@ -93,6 +93,8 @@ Load and use these classifications directly instead of re-discovering them.
 ### 1b-gate. Mandatory URL Verification (do NOT skip)
 Before writing `manifest.json`, every candidate `data_url` MUST pass this verification. This is a hard gate — if a URL fails, do NOT put it in the manifest.
 
+**Canonical source preference (MUST follow):** If any candidate `data_url` points to a third-party mirror (Zenodo, Figshare, Dryad, GitHub releases, S3 archive), STOP and check the datasource's own download page first (e.g., `datasource.org/download`). Mirrors often host stale snapshots or subset files (e.g., a "lite" CSV when the full version is on the canonical site). Only use a mirror URL if the datasource's own site has no direct bulk download or is access-gated. Flag any mirror usage in `design_rationale.md` with the reason the canonical source was not used.
+
 **Step 1 — Resolve the actual file URL.** Many datasource download pages are JS-rendered, PHP-backed, or redirect chains. You must discover the terminal direct-file URL, not the landing page.
 - Fetch the download page HTML (try `curl -skL` if SSL is broken on academic servers)
 - Extract `href` attributes pointing to data files (`.csv`, `.tsv`, `.txt`, `.json`, `.xlsx`, `.zip`, `.gz`, `.sdf`)

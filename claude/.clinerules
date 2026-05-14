@@ -1,0 +1,6 @@
+# BioThings Agentic Pipeline — Project Rules
+
+## Pipeline Instructions
+All pipeline instructions live in the `claude/` directory. Read `claude/CLAUDE.md` for the project rules and `claude/SKILL.md` for the full pipeline orchestrator.
+
+When the user asks to "run the pipeline" or provides a NAR/OUP article URL, read and follow `claude/SKILL.md`.

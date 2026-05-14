@@ -1,0 +1,91 @@
+{
+  "_metadata": {
+    "description": "Parser pattern templates for BioThings data plugins. Match datasource to closest pattern.",
+    "source": "Extracted from production plugins in pending.api and mydisease.info"
+  },
+  "patterns": [
+    {
+      "id": "csv_groupby",
+      "name": "Simple CSV/TSV with groupby",
+      "reference_plugin": "DISEASES",
+      "when": "Multiple TSV files share a grouping key; merge rows into one doc per entity",
+      "imports": ["os", "csv", "itertools.groupby", "operator.itemgetter"],
+      "requires": [],
+      "code": "import os, csv\nfrom itertools import groupby\nfrom operator import itemgetter\n\ndef load_data(data_folder):\n    infile = os.path.join(data_folder, \"data.tsv\")\n    rows = []\n    with open(infile) as f:\n        for row in csv.DictReader(f, delimiter='\\t'):\n            rows.append(row)\n    rows = sorted(rows, key=itemgetter('disease_id'))\n    for key, group in groupby(rows, key=itemgetter('disease_id')):\n        merged = [doc for doc in group]\n        yield {\"_id\": key, \"source\": {\"associatedWith\": merged}}"
+    },
+    {
+      "id": "pandas_groupby",
+      "name": "Pandas groupby for multi-row aggregation",
+      "reference_plugin": "disgenet",
+      "when": "Large gzip TSV; multi-level groupby; set deduplication (e.g. pubmed IDs)",
+      "imports": ["os", "collections.defaultdict", "pandas", "biothings.utils.dataload"],
+      "requires": ["pandas"],
+      "code": "import os\nfrom collections import defaultdict\nimport pandas as pd\nfrom biothings.utils.dataload import dict_sweep, unlist\n\ndef load_data(data_folder):\n    df = pd.read_csv(os.path.join(data_folder, \"data.tsv.gz\"),\n                     sep=\"\\t\", comment=\"#\", compression=\"gzip\")\n    df = df.where(pd.notnull(df), None)\n    d = defaultdict(list)\n    for grp, subdf in df.groupby([\"diseaseId\", \"source\", \"geneId\"]):\n        records = subdf.to_dict(orient=\"records\")\n        doc = {\"source\": grp[1], \"gene_id\": int(grp[2]), \"pubmed\": []}\n        for rec in records:\n            if rec.get(\"pmid\"):\n                doc[\"pubmed\"].append(int(rec[\"pmid\"]))\n        d[grp[0]].append(doc)\n    for _id, records in d.items():\n        yield dict_sweep(unlist({\"_id\": _id, \"source\": {\"genes\": records}}), [None])"
+    },
+    {
+      "id": "hgvs_variant",
+      "name": "Variant HGVS ID generation",
+      "reference_plugin": "CCLE/FIRE",
+      "when": "Variant data with chromosomal coordinates; VCF-to-HGVS conversion",
+      "imports": ["os", "logging", "biothings.utils.common.open_anyfile", "myvariant.src.utils.hgvs"],
+      "requires": [],
+      "code": "import os, logging\nfrom biothings.utils.common import open_anyfile\nimport myvariant.src.utils.hgvs as hgvs\n\ndef load_data(data_file):\n    with open_anyfile(data_file) as f:\n        for line in f:\n            try:\n                parts = line.strip().split(\"\\t\")\n                _id = hgvs.get_hgvs_from_vcf(parts[0], parts[1], parts[2], parts[3])\n                yield {\"_id\": _id, \"source\": {\"score\": float(parts[4])}}\n            except Exception as e:\n                logging.error(\"Error with line %s: %s\" % (line.strip(), e))"
+    },
+    {
+      "id": "cross_api_resolution",
+      "name": "Cross-API ID resolution",
+      "reference_plugin": "DISEASES",
+      "when": "Source IDs need mapping to BioThings canonical IDs (e.g. DOID→MONDO, UMLS→MONDO)",
+      "imports": ["biothings_client"],
+      "requires": ["biothings_client"],
+      "code": "from biothings_client import get_client\n\ndef batch_query_mondo_from_doid(doid_list):\n    client = get_client('disease')\n    mapping = {}\n    for i in range(0, len(doid_list), 1000):\n        batch = doid_list[i:i+1000]\n        res = client.querymany(batch, scopes=\"mondo.xrefs.doid\", fields=\"_id\")\n        for doc in res:\n            mapping[doc['query']] = doc.get('_id', doc['query'])\n    return mapping"
+    },
+    {
+      "id": "multi_file_csv_dedup",
+      "name": "Multi-file CSV with deduplication",
+      "reference_plugin": "ECBD",
+      "when": "data_url is a list of CSVs with potential ID overlap between files",
+      "imports": ["os", "csv", "glob", "logging", "biothings.utils.dataload"],
+      "requires": [],
+      "code": "import os, csv, glob, logging\nfrom biothings.utils.dataload import dict_sweep, unlist\n\nlogger = logging.getLogger(__name__)\n\ndef load_data(data_folder):\n    csv_files = sorted(glob.glob(os.path.join(data_folder, \"*.csv\")))\n    assert csv_files, f\"No CSV files found in {data_folder}\"\n    seen_ids = set()\n    for infile in csv_files:\n        logger.info(\"Parsing %s\", os.path.basename(infile))\n        for doc in _parse_csv(infile, seen_ids):\n            yield doc\n\ndef _parse_csv(filepath, seen_ids):\n    with open(filepath, \"r\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            _id = row.get(\"id_field\")\n            if not _id or _id in seen_ids:\n                continue\n            seen_ids.add(_id)\n            doc = {\"_id\": _id, \"source\": {\"field\": row.get(\"field\")}}\n            yield dict_sweep(unlist(doc), [None])"
+    },
+    {
+      "id": "json_orjson",
+      "name": "JSON with orjson",
+      "reference_plugin": "FoodData_parser",
+      "when": "Source is JSON (not tabular); large files benefit from orjson speed",
+      "imports": ["os", "orjson"],
+      "requires": ["orjson"],
+      "code": "import os, orjson\n\ndef load_data(data_folder):\n    with open(os.path.join(data_folder, \"data.json\"), \"rb\") as f:\n        data = orjson.loads(f.read())\n    for record in data:\n        yield {\"_id\": str(record[\"id\"]), \"source\": record}"
+    },
+    {
+      "id": "predumped_json",
+      "name": "Pre-dumped JSON files",
+      "reference_plugin": null,
+      "when": "data_folder contains JSON files pre-staged by user; parser-side only (manifest still uses bulk download)",
+      "imports": ["os", "json", "glob", "logging", "biothings.utils.dataload"],
+      "requires": [],
+      "code": "import os, json, glob, logging\nfrom biothings.utils.dataload import dict_sweep, unlist\n\nlogger = logging.getLogger(__name__)\n\ndef load_data(data_folder):\n    json_files = sorted(glob.glob(os.path.join(data_folder, \"*.json\")))\n    assert json_files, f\"No JSON files found in {data_folder}\"\n    for jf in json_files:\n        logger.info(\"Parsing %s\", os.path.basename(jf))\n        with open(jf, \"r\") as f:\n            records = json.load(f)\n        for rec in records:\n            _id = rec.get(\"id\") or rec.get(\"_id\")\n            if not _id:\n                continue\n            doc = {\"_id\": str(_id), \"source\": rec}\n            yield dict_sweep(unlist(doc), [None])",
+      "note": "API-crawling dumper.py is backlog — see BACKLOG.md"
+    }
+  ],
+  "pattern_selection": [
+    {"data_format": "TSV, multiple files, shared grouping key", "record_structure": "Merge into one doc per key", "pattern": "csv_groupby"},
+    {"data_format": "TSV.gz, pandas-friendly, multi-level groupby", "record_structure": "Aggregate with set deduplication", "pattern": "pandas_groupby"},
+    {"data_format": "JSON, relational (entity A ↔ entity B)", "record_structure": "subject/object/relation triple", "pattern": "json_orjson"},
+    {"data_format": "OBO ontology file", "record_structure": "Ontology terms", "pattern": "shared_obo (see production-plugin-examples)"},
+    {"data_format": "CSV, single file, no aggregation", "record_structure": "Simple row → doc", "pattern": "base template in SKILL.md §3"},
+    {"data_format": "Multiple CSVs, potential ID overlap", "record_structure": "Multi-file glob + seen_ids", "pattern": "multi_file_csv_dedup"},
+    {"data_format": "Variant data with chromosomal coordinates", "record_structure": "VCF → HGVS", "pattern": "hgvs_variant"},
+    {"data_format": "Pre-dumped JSON from API", "record_structure": "Iterate JSON files in data_folder", "pattern": "predumped_json"}
+  ],
+  "additional_rules": [
+    "Use biothings.utils.common.open_anyfile for transparent .gz handling without pandas",
+    "For .gz with pandas: pd.read_csv(filepath, compression='gzip')",
+    "Large files: streaming csv.DictReader or chunked pd.read_csv(chunksize=100000)",
+    "Convert numpy.int64 to Python int before yielding",
+    "Replace NaN with None: df = df.where(pd.notnull(df), None)",
+    "SDK helpers: value_convert_to_number(), merge_duplicate_rows(), to_boolean()",
+    "Code style: PEP8, max line 160, import groups: stdlib / third-party / biothings"
+  ]
+}

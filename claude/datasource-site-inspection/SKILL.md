@@ -35,6 +35,8 @@ Do NOT parse JS bundles, reverse-engineer network layers, or dig into web app ar
 ## Instructions
 
 ### 1. Find the Download Files
+**Canonical source preference (MUST follow):** Always visit the datasource's own download page first (e.g., `datasource.org/download`). Do NOT blindly inherit URLs from the relevancy report or paper without verifying them against the datasource's current site. Third-party mirrors (Zenodo, Figshare, Dryad, GitHub releases) often host stale snapshots or subset files — they are fallbacks only, used when the datasource's own site has no direct bulk download or is access-gated. If the relevancy report lists a mirror URL, check the canonical site and replace if a direct download exists there.
+
 From the relevancy report, paper, or download page URL:
 - List each available download file with its URL, format, and description
 - Confirm each URL is directly accessible (no login, no redirect to a registration wall)

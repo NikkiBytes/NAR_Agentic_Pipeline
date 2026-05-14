@@ -17,15 +17,17 @@ Update this file immediately after each generation. Before starting a new plugin
 - **Homepage**: https://ecbd.eu
 - **Target API**: MyChem.info
 - **_id strategy**: InChIKey (`inchikey` column from CSV)
-- **Data format**: Multi-file CSV (bulk download)
-- **Files ingested**: `bioactives.csv`, `fragments.csv`, `nuisance_set.csv` (independent sub-libraries only; superset and composite files excluded)
-- **Parser pattern**: Multi-file glob + `seen_ids` deduplication
-- **on_duplicates**: `ignore` (same compound can appear in multiple files)
+- **Data format**: Multi-file CSV (bulk download, 5 independent sub-library files)
+- **Files ingested**: `bioactives.csv`, `fragments.csv`, `nuisance_set.csv`, `academic.csv`, `diverse_library.csv` — all 5 independent sub-libraries; `ecbd_all.csv` (superset), `representative_diverse_set.csv` / `pilot_library.csv` / `mini_fragments.csv` (subsets/composites) excluded
+- **Parser pattern**: Ordered multi-file loop + `seen_ids` deduplication; `sub_library` tag added per compound from filename stem
+- **on_duplicates**: `error` (deduplication in parser via `seen_ids`; 34 cross-file duplicate InChIKeys observed)
 - **requires**: none (stdlib CSV only)
-- **Output path**: `agent_outputs/ecbd_plugin/`
-- **Date generated**: 2026-03-30
-- **Version**: 1.0
-- **Notes**: Only physicochemical properties and cross-references (PubChem, ChEMBL, ZINC) are ingested. Bioactivity data requires API crawl — not included.
+- **Output path**: `agent_outputs/ecbd_datasource/ecbd_plugin/`
+- **version.py strategy**: Regex date parse from ecbd.eu/download page (verify=False); fallback Last-Modified HEAD on bioactives.csv → YYYYMMDD
+- **Date generated**: 2026-05-14
+- **Version**: 2.0 (supersedes 2026-03-30 v1.0; expanded from 3 to 5 sub-libraries; added sub_library tag; moved to ecbd_datasource/ directory)
+- **Smoke test (2026-05-14)**: 108,822 unique documents; all 5 biothings-cli steps passed (dump via curl --insecure workaround for self-signed TLS); `_id` = 27-char InChIKey; `ecbd` sub-object with eos_id/inchikey/inchi/smiles/formula/sub_library/properties/xrefs; sub-library breakdown: bioactives 2,464 | fragments 1,052 | nuisance 72 | academic 6,687 | diverse 98,547
+- **Notes**: ecbd.eu uses a self-signed TLS certificate — `biothings-cli dataplugin dump` fails with SSL verification error; workaround is to pre-download files via `curl --insecure` and register the dump in `biothings_hubdb` manually. Production deployment requires either certificate installation or a custom `dumper.py` with `verify=False`. Bioactivity assay endpoint data (2.5M public values) is only available via the REST API, not bulk download. CC BY 4.0 license.
 
 ---
 
@@ -126,17 +128,17 @@ Update this file immediately after each generation. Before starting a new plugin
 - **Homepage**: https://coconut.naturalproducts.net
 - **Target API**: MyChem.info
 - **_id strategy**: InChIKey (`standard_inchi_key` column from CSV)
-- **Data format**: Single CSV (bulk download from Zenodo, zipped)
-- **Files ingested**: `coconut-09-2024.csv` from Zenodo record 13692394 (lite CSV with InChIKey, SMILES, InChI, COCONUT ID)
-- **Parser pattern**: simple streaming CSV with `seen_ids` deduplication
-- **on_duplicates**: `ignore` (2 duplicate InChIKeys found in dataset)
+- **Data format**: Single CSV (44 columns, bulk download from canonical site, zipped)
+- **Files ingested**: `coconut_csv-05-2026.csv` from `coconut.naturalproducts.net/download` (full CSV with identifiers, molecular properties, chemical classification, NP classifier, organisms, collections, CAS, DOIs, synonyms)
+- **Parser pattern**: streaming CSV with `seen_ids` deduplication, type conversion (float/int/bool), pipe-delimited list splitting, nested document structure
+- **on_duplicates**: `error` (deduplication handled in parser via `seen_ids` set)
 - **requires**: none (stdlib CSV only)
 - **Output path**: `agent_outputs/coconut_datasource/coconut_plugin/`
-- **version.py strategy**: Zenodo API record metadata → extract date from CSV filename (`YYYYMM` format)
+- **version.py strategy**: Parse "Version: Month Year" text from canonical download page → `YYYYMM` format; fallback regex extracts date from CSV filename in page HTML
 - **Date generated**: 2026-05-14
-- **Version**: 1.0
-- **Smoke test (2026-05-14)**: biothings-cli validate ✓, dump ✓, upload ✓, list ✓, inspect ✓. 695K+ documents yielded (minus ~2 duplicates). All documents have `_id` (InChIKey), `coconut.coconut_id`, `coconut.smiles`, `coconut.inchi`.
-- **Notes**: Uses lite CSV from Zenodo with 4 columns. Full CSV on website has additional organism, property, and geographic columns — could be upgraded in future version. CC0 license — no restrictions. Natural product chemical space largely distinct from synthetic drugs in DrugBank/ChEMBL.
+- **Version**: 2.1 (validated 2026-05-14 — fixed version.py regex syntax + added seen_ids deduplication)
+- **Smoke test (2026-05-14)**: 728,421 unique documents from 738,827 CSV rows; all 5 biothings-cli steps passed; `_id` = 27-char InChIKey, `coconut` sub-object with properties/classification/np_classifier/organisms/collections/xrefs; 3 duplicate InChIKeys confirmed in source data
+- **Notes**: v1.0 used a 4-column Zenodo lite CSV (Sept 2024, 695K rows). v2.0 switched to canonical site full 44-column CSV. v2.1 fixed version.py regex (unescaped `"` inside `r"..."` caused SyntaxError) and added `seen_ids` deduplication (3 InChIKeys appear twice in the CSV; biothings SQLite backend raises UNIQUE constraint even with `on_duplicates: ignore`). CC0 license. URL contains dated path (`2026-05`) that will need updating on each new release.
 
 ---
 

@@ -1,0 +1,354 @@
+{
+    "_metadata": {
+        "description": "Registry of all data sources deployed as BioThings APIs in the pending/Translator ecosystem. These are standalone APIs built with BioThings SDK, either for the NCATS Translator project or as pending integrations into core BioThings APIs. Use this to prevent duplicate recommendations and detect overlap with in-progress work.",
+        "last_updated": "2026-05-14",
+        "source": "Compiled from biothings.ncats.io, pending.biothings.io, and the biothings/pending.api GitHub repo",
+        "repo": "https://github.com/biothings/pending.api",
+        "portals": [
+            "https://biothings.ncats.io",
+            "https://biothings.transltr.io",
+            "https://pending.biothings.io"
+        ]
+    },
+    "translator_kp_apis": [
+        {
+            "name": "BioThings AGR",
+            "api_url": "https://biothings.transltr.io/agr",
+            "source": "Alliance of Genome Resources",
+            "source_url": "https://www.alliancegenome.org/",
+            "domain": ["gene-disease", "model organisms", "orthology"],
+            "entity_types": ["gene", "disease"],
+            "identifiers": ["NCBIGene", "HGNC", "MONDO"],
+            "status": "deployed",
+            "overlap_with": ["mygene.info (orthology_agr)"]
+        },
+        {
+            "name": "BioThings BindingDB",
+            "api_url": "https://biothings.transltr.io/bindingdb",
+            "source": "BindingDB",
+            "source_url": "https://www.bindingdb.org/",
+            "domain": ["protein-chemical binding", "drug targets"],
+            "entity_types": ["chemical", "protein"],
+            "identifiers": ["UniProt", "PubChem CID", "ChEMBL", "DrugBank"],
+            "status": "deployed",
+            "overlap_with": ["mychem.info (chembl)", "mychem.info (drugbank)"],
+            "overlap_notes": "BindingDB includes ChEMBL-sourced records but adds unique binding affinity data (Ki, IC50, Kd)"
+        },
+        {
+            "name": "BioThings BioPlanet Pathway-Disease",
+            "api_url": "https://biothings.transltr.io/bioplanet_pathway_disease",
+            "source": "BioPlanet",
+            "source_url": "https://tripod.nih.gov/bioplanet/",
+            "domain": ["pathway-disease associations"],
+            "entity_types": ["pathway", "disease"],
+            "identifiers": ["MONDO", "DOID"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings BioPlanet Pathway-Gene",
+            "api_url": "https://biothings.transltr.io/bioplanet_pathway_gene",
+            "source": "BioPlanet",
+            "source_url": "https://tripod.nih.gov/bioplanet/",
+            "domain": ["pathway-gene associations"],
+            "entity_types": ["pathway", "gene"],
+            "identifiers": ["NCBIGene"],
+            "status": "deployed",
+            "overlap_with": ["mygene.info (cpdb)"],
+            "overlap_notes": "CPDB in MyGene already covers KEGG/Reactome/BioCarta pathways; BioPlanet is a distinct curated collection"
+        },
+        {
+            "name": "BioThings DDInter",
+            "api_url": "https://biothings.transltr.io/ddinter",
+            "source": "DDInter",
+            "source_url": "http://ddinter.scbdd.com/",
+            "domain": ["drug-drug interactions"],
+            "entity_types": ["chemical"],
+            "identifiers": ["DrugBank", "ChEMBL", "PubChem CID"],
+            "license": "CC-BY-NC-SA",
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings DGIdb",
+            "api_url": "https://biothings.transltr.io/dgidb",
+            "source": "DGIdb",
+            "source_url": "https://www.dgidb.org/",
+            "domain": ["drug-gene interactions", "druggability"],
+            "entity_types": ["gene", "chemical"],
+            "identifiers": ["NCBIGene", "ChEMBL"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings DISEASES",
+            "api_url": "https://biothings.ncats.io/DISEASES",
+            "source": "DISEASES (Jensen Lab)",
+            "source_url": "https://diseases.jensenlab.org/",
+            "domain": ["gene-disease associations", "text mining"],
+            "entity_types": ["gene", "disease"],
+            "identifiers": ["NCBIGene", "DOID"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings EBIgene2phenotype",
+            "api_url": "https://biothings.transltr.io/ebigene2phenotype",
+            "source": "EBI Gene2Phenotype",
+            "source_url": "https://www.ebi.ac.uk/gene2phenotype",
+            "domain": ["gene-phenotype", "clinical genetics"],
+            "entity_types": ["gene", "disease"],
+            "identifiers": ["HGNC", "MONDO"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings GO Biological Process",
+            "api_url": "https://biothings.transltr.io/go_bp",
+            "source": "Gene Ontology",
+            "source_url": "http://geneontology.org/",
+            "domain": ["gene ontology", "biological process"],
+            "entity_types": ["gene", "biological_process"],
+            "identifiers": ["NCBIGene", "GO"],
+            "status": "deployed",
+            "overlap_with": ["mygene.info (entrez_go)"],
+            "overlap_notes": "MyGene includes GO annotations per gene; this API provides association-level records"
+        },
+        {
+            "name": "BioThings GO Cellular Component",
+            "api_url": "https://biothings.transltr.io/go_cc",
+            "source": "Gene Ontology",
+            "source_url": "http://geneontology.org/",
+            "domain": ["gene ontology", "cellular component"],
+            "entity_types": ["gene", "cellular_component"],
+            "identifiers": ["NCBIGene", "GO"],
+            "status": "deployed",
+            "overlap_with": ["mygene.info (entrez_go)"]
+        },
+        {
+            "name": "BioThings GO Molecular Activity",
+            "api_url": "https://biothings.transltr.io/go_mf",
+            "source": "Gene Ontology",
+            "source_url": "http://geneontology.org/",
+            "domain": ["gene ontology", "molecular function"],
+            "entity_types": ["gene", "molecular_activity"],
+            "identifiers": ["NCBIGene", "GO"],
+            "status": "deployed",
+            "overlap_with": ["mygene.info (entrez_go)"]
+        },
+        {
+            "name": "BioThings GTRx",
+            "api_url": "https://biothings.transltr.io/gtrx",
+            "source": "GTRx",
+            "source_url": "https://gtrx.rbsapp.net/",
+            "domain": ["gene-therapy", "rare disease treatments"],
+            "entity_types": ["gene", "disease", "chemical"],
+            "identifiers": ["NCBIGene", "MONDO"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings HPO",
+            "api_url": "https://biothings.transltr.io/hpo",
+            "source": "Human Phenotype Ontology",
+            "source_url": "https://hpo.jax.org/",
+            "domain": ["phenotype-disease", "phenotype-gene"],
+            "entity_types": ["phenotype", "disease", "gene"],
+            "identifiers": ["HP", "OMIM", "NCBIGene"],
+            "status": "deployed",
+            "overlap_with": ["mydisease.info (hpo)"],
+            "overlap_notes": "MyDisease has HPO disease-phenotype data; this Translator API provides edge-level HPO associations"
+        },
+        {
+            "name": "BioThings iDISK",
+            "api_url": "https://biothings.transltr.io/idisk",
+            "source": "iDISK",
+            "source_url": "https://github.com/zhang-informatics/iDISK",
+            "domain": ["dietary supplements", "supplement-drug interactions"],
+            "entity_types": ["dietary_supplement", "chemical"],
+            "identifiers": ["UMLS", "RxNorm"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings InnateDB",
+            "api_url": "https://biothings.transltr.io/innatedb",
+            "source": "InnateDB",
+            "source_url": "https://www.innatedb.com/",
+            "domain": ["innate immunity", "protein-protein interactions"],
+            "entity_types": ["gene", "protein"],
+            "identifiers": ["NCBIGene", "UniProt"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings MGIgene2phenotype",
+            "api_url": "https://biothings.transltr.io/mgigene2phenotype",
+            "source": "MGI Gene2Phenotype",
+            "source_url": "http://www.informatics.jax.org/",
+            "domain": ["mouse gene-phenotype", "model organisms"],
+            "entity_types": ["gene", "phenotype"],
+            "identifiers": ["NCBIGene", "MP"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings PFOCR",
+            "api_url": "https://biothings.transltr.io/pfocr",
+            "source": "PFOCR (Pathway Figure OCR)",
+            "source_url": "https://pfocr.wikipathways.org/",
+            "domain": ["pathway figures", "literature mining"],
+            "entity_types": ["gene", "chemical", "disease"],
+            "identifiers": ["NCBIGene", "CHEBI", "DOID"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings RARe-SOURCE",
+            "api_url": "https://biothings.transltr.io/rare_source",
+            "source": "RARe-SOURCE",
+            "source_url": "https://rare.pfizer.com/",
+            "domain": ["rare diseases", "cell lines"],
+            "entity_types": ["disease", "cell_line"],
+            "identifiers": ["MONDO"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings Rhea",
+            "api_url": "https://biothings.transltr.io/rhea",
+            "source": "Rhea",
+            "source_url": "https://www.rhea-db.org/",
+            "domain": ["biochemical reactions", "enzyme catalysis"],
+            "entity_types": ["chemical", "protein"],
+            "identifiers": ["CHEBI", "UniProt", "EC"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings SEMMEDDB",
+            "api_url": "https://biothings.transltr.io/semmeddb",
+            "source": "SemMedDB",
+            "source_url": "https://lhncbc.nlm.nih.gov/ii/tools/SemRep_SemMedDB_SKR.html",
+            "domain": ["literature mining", "semantic relationships"],
+            "entity_types": ["gene", "chemical", "disease", "biological_process"],
+            "identifiers": ["UMLS CUI"],
+            "status": "deployed",
+            "note": "Very large: 765 operations in BTE config; primary NLP-derived knowledge source"
+        },
+        {
+            "name": "BioThings SuppKG",
+            "api_url": "https://biothings.transltr.io/suppkg",
+            "source": "SuppKG (Supplement Knowledge Graph)",
+            "source_url": "https://github.com/SuLab/SuppKG",
+            "domain": ["dietary supplements", "supplement-disease"],
+            "entity_types": ["dietary_supplement", "disease", "gene"],
+            "identifiers": ["UMLS"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings TTD",
+            "api_url": "https://biothings.transltr.io/ttd",
+            "source": "Therapeutic Target Database",
+            "source_url": "https://db.idrblab.net/ttd/",
+            "domain": ["therapeutic targets", "drug targets"],
+            "entity_types": ["gene", "chemical", "disease"],
+            "identifiers": ["UniProt", "ChEMBL", "DrugBank"],
+            "status": "deployed"
+        },
+        {
+            "name": "BioThings UBERON",
+            "api_url": "https://biothings.transltr.io/uberon",
+            "source": "UBERON Ontology",
+            "source_url": "http://uberon.github.io/",
+            "domain": ["anatomy ontology", "tissue types"],
+            "entity_types": ["anatomical_entity"],
+            "identifiers": ["UBERON"],
+            "status": "deployed"
+        }
+    ],
+    "additional_translator_apis": [
+        {
+            "name": "Clinical Risk KP",
+            "api_url": "https://biothings.ncats.io/clinical_risk_kp",
+            "domain": ["clinical risk", "EHR-derived"],
+            "status": "deployed"
+        },
+        {
+            "name": "Multiomics Wellness KP",
+            "api_url": "https://biothings.ncats.io/multiomics_wellness_kp",
+            "domain": ["multiomics", "wellness"],
+            "status": "deployed"
+        },
+        {
+            "name": "Multiomics EHR KP",
+            "api_url": "https://biothings.ncats.io/multiomics_ehr_kp",
+            "domain": ["EHR", "clinical associations"],
+            "status": "deployed"
+        },
+        {
+            "name": "Multiomics Clinical Trials",
+            "api_url": "https://biothings.ncats.io/multiomics_clinical_trials",
+            "domain": ["clinical trials", "multiomics"],
+            "status": "deployed"
+        },
+        {
+            "name": "Multiomics Drug Response KP",
+            "api_url": "https://biothings.ncats.io/drug_response_kp",
+            "domain": ["drug response", "pharmacogenomics"],
+            "status": "deployed"
+        },
+        {
+            "name": "Text Mining Co-occurrence KP",
+            "api_url": "https://biothings.ncats.io/text_mining_co_occurrence_kp",
+            "domain": ["literature mining", "co-occurrence"],
+            "status": "deployed"
+        },
+        {
+            "name": "Text Mining Targeted Association",
+            "api_url": "https://biothings.ncats.io/text_mining_targeted_association",
+            "domain": ["literature mining", "targeted associations"],
+            "status": "deployed"
+        },
+        {
+            "name": "TCGA Mutation Frequency KP",
+            "api_url": "https://biothings.ncats.io/tcga_mut_freq_kp",
+            "domain": ["cancer genomics", "mutation frequency"],
+            "status": "deployed"
+        },
+        {
+            "name": "repoDB",
+            "api_url": "https://biothings.ncats.io/repodb",
+            "source": "repoDB",
+            "domain": ["drug repurposing", "drug-disease associations"],
+            "entity_types": ["chemical", "disease"],
+            "identifiers": ["DrugBank", "UMLS"],
+            "status": "deployed"
+        },
+        {
+            "name": "NCATS Monoclonal Antibody KP",
+            "api_url": "https://biothings.ncats.io/ncats_mabs",
+            "domain": ["monoclonal antibodies"],
+            "status": "in_development",
+            "github_issue": "https://github.com/biothings/pending.api/issues/266"
+        },
+        {
+            "name": "FoodData Central",
+            "api_url": "https://biothings.ncats.io/fooddata_central",
+            "source": "USDA FoodData Central",
+            "domain": ["food composition", "nutrients"],
+            "status": "deployed",
+            "github_issue": "https://github.com/biothings/pending.api/issues/264"
+        }
+    ],
+    "pending_biothings_io": {
+        "description": "APIs hosted at pending.biothings.io, typically in staging or evaluation for eventual inclusion in core BioThings APIs",
+        "portal": "https://pending.biothings.io",
+        "known_apis": [
+            {
+                "name": "PFOCR (pending)",
+                "api_url": "https://pending.biothings.io/pfocr",
+                "status": "staging"
+            }
+        ]
+    },
+    "open_data_source_evaluations": {
+        "description": "Data sources that have been discussed in GitHub issues for potential inclusion but may not yet be deployed",
+        "issues_url": "https://github.com/biothings/pending.api/issues?q=label%3A%22data+source%22",
+        "known_candidates": [
+            {
+                "name": "Polygenic Priority Score (PoPS)",
+                "github_issue": "https://github.com/biothings/pending.api/issues/237",
+                "status": "evaluating"
+            }
+        ]
+    }
+}

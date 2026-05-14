@@ -1,0 +1,1403 @@
+{
+  "_metadata": {
+    "description": "Compact summary of production BioThings plugins — no code, just metadata for pattern matching and quick lookups. For full code, see production-plugins-registry.json.",
+    "plugin_count": 41,
+    "generated_at": "2026-05-14T05:40:24Z"
+  },
+  "plugins": [
+    {
+      "id": "DISEASES",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "proptotype.json",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "itertools_groupby",
+        "cross_api_resolution",
+        "csv_reader"
+      ],
+      "version_strategy": "hardcoded",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [
+        "biothings_client cross-API query",
+        "groupby aggregation"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "CC BY 3.0",
+      "datasource_url": "https://diseases.jensenlab.org/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/DISEASES"
+    },
+    {
+      "id": "FIRE",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parallelizer.py",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "gzip_open_anyfile"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "HGVS",
+      "requires": [],
+      "key_techniques": [
+        "transparent gzip handling",
+        "VCF→HGVS conversion"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "https://sites.google.com/site/fireregulatoryvariation",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/FIRE"
+    },
+    {
+      "id": "FoodData_parser",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "get_nutrient_stats.py",
+        "manifest.json",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "orjson_json",
+        "csv_reader"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "composite",
+      "requires": [],
+      "key_techniques": [
+        "orjson fast JSON parsing"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "https://fdc.nal.usda.gov/index.html",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/FoodData_parser"
+    },
+    {
+      "id": "TISSUES",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "itertools_groupby",
+        "multi_file_glob",
+        "subject_object_triple"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "field:None",
+      "requires": [],
+      "key_techniques": [
+        "groupby aggregation",
+        "biothings tab2list loader"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": false,
+      "license": "CC BY 3.0",
+      "datasource_url": "https://tissues.jensenlab.org/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/TISSUES"
+    },
+    {
+      "id": "agr",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "gzip_open_anyfile"
+      ],
+      "version_strategy": "hardcoded",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "transparent gzip handling",
+        "defaultdict aggregation"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "merge",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": true,
+      "license": "CC BY 4.0",
+      "datasource_url": "https://www.alliancegenome.org/downloads",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/agr"
+    },
+    {
+      "id": "atc",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "__init__.py",
+        "dumper.py",
+        "uploader.py"
+      ],
+      "parser_patterns": [
+        "csv_reader"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "field:row_mapping",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/atc"
+    },
+    {
+      "id": "ccle",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README",
+        "manifest.json",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "itertools_groupby",
+        "merge_duplicates",
+        "csv_reader"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "HGVS",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "numeric conversion",
+        "duplicate row merging",
+        "boolean conversion",
+        "VCF→HGVS conversion",
+        "groupby aggregation"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "https://portals.broadinstitute.org/ccle",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/ccle"
+    },
+    {
+      "id": "cell_ontology",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "LICENSE",
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "inferred_from_code",
+      "requires": [
+        "networkx",
+        "obonet"
+      ],
+      "key_techniques": [
+        "defaultdict aggregation"
+      ],
+      "manifest_version": "1.0",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "",
+      "datasource_url": "http://www.obofoundry.org/ontology/cl.html",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/cell_ontology"
+    },
+    {
+      "id": "chebi",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "unknown"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "unknown",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "CC BY 4.0",
+      "datasource_url": "https://www.ebi.ac.uk/chebi/aboutChebiForward.do/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/chebi"
+    },
+    {
+      "id": "clinicaltrials_gov",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "__init__.py",
+        "dumper.py",
+        "parse.py",
+        "uploader.py"
+      ],
+      "parser_patterns": [
+        "multi_file_glob",
+        "json_parsing"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup"
+      ],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/clinicaltrials_gov"
+    },
+    {
+      "id": "denovodb",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        ".gitattributes",
+        "README",
+        "__init__.py",
+        "manifest.json",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "itertools_groupby",
+        "merge_duplicates",
+        "csv_reader"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "HGVS",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "numeric conversion",
+        "duplicate row merging",
+        "VCF→HGVS conversion",
+        "groupby aggregation"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "http://denovo-db.gs.washington.edu/denovo-db",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/denovodb"
+    },
+    {
+      "id": "doid",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "unknown"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "unknown",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "Creative Commons Public Domain Dedication CC0 1.0 Universal license",
+      "datasource_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/doid"
+    },
+    {
+      "id": "ebi_gene2phenotype",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "multi_file_glob",
+        "csv_reader"
+      ],
+      "version_strategy": "other",
+      "id_strategy": "field:row",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "ignore",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/ebi_gene2phenotype"
+    },
+    {
+      "id": "fda_drugs",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "__init__.py",
+        "dumper.py",
+        "file_definitions.py",
+        "requirements.txt",
+        "uploader.py"
+      ],
+      "parser_patterns": [
+        "json_parsing"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "field:entry_map",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/fda_drugs"
+    },
+    {
+      "id": "go",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json"
+      ],
+      "parser_patterns": [
+        "unknown"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "unknown",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": false,
+      "license": "Creative Commons Attribution 4.0 Unported License",
+      "datasource_url": "http://geneontology.org/docs/go-citation-policy/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/go"
+    },
+    {
+      "id": "gwascatalog",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "LICENSE",
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "cross_api_resolution",
+        "gzip_open_anyfile",
+        "csv_reader"
+      ],
+      "version_strategy": "hardcoded",
+      "id_strategy": "HGVS",
+      "requires": [
+        "biothings_client"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "numeric conversion",
+        "transparent gzip handling",
+        "defaultdict aggregation",
+        "biothings_client cross-API query",
+        "VCF→HGVS conversion"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "EBI terms of use",
+      "datasource_url": "https://www.ebi.ac.uk/gwas/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/gwascatalog"
+    },
+    {
+      "id": "hpo",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "LICENSE",
+        "README.md",
+        "data-playground.ipynb",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "inferred_from_code",
+      "requires": [
+        "networkx",
+        "obonet"
+      ],
+      "key_techniques": [
+        "defaultdict aggregation"
+      ],
+      "manifest_version": "1.0",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": "https://hpo.jax.org",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/hpo"
+    },
+    {
+      "id": "kaviar",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README",
+        "manifest.json",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "vcf_parsing",
+        "itertools_groupby",
+        "merge_duplicates",
+        "json_parsing",
+        "csv_reader"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "HGVS",
+      "requires": [
+        "csvsort",
+        "PyVCF3"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "numeric conversion",
+        "duplicate row merging",
+        "VCF→HGVS conversion",
+        "groupby aggregation"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "http://db.systemsbiology.net/kaviar",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/kaviar"
+    },
+    {
+      "id": "mondo",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json"
+      ],
+      "parser_patterns": [
+        "unknown"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "unknown",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": "CC-BY 4.0",
+      "datasource_url": "https://mondo.monarchinitiative.org/#license",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/mondo"
+    },
+    {
+      "id": "nameres",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "__init__.py",
+        "dumper.py",
+        "static.py",
+        "uploader.py",
+        "worker.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/nameres"
+    },
+    {
+      "id": "ncit",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "unknown"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "unknown",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "CC-BY 4.0",
+      "datasource_url": "https://ncithesaurus.nci.nih.gov/ncitbrowser/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/ncit"
+    },
+    {
+      "id": "nodenorm",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "__init__.py",
+        "dumper.py",
+        "static.py",
+        "uploader.py",
+        "worker.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/nodenorm"
+    },
+    {
+      "id": "openfda_drug_events",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "__init__.py",
+        "dumper.py",
+        "uploader.py"
+      ],
+      "parser_patterns": [
+        "multi_file_glob",
+        "json_parsing"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup"
+      ],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/openfda_drug_events"
+    },
+    {
+      "id": "pfocr",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "manifest.json",
+        "mapping.py",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "json_parsing",
+        "ndjson"
+      ],
+      "version_strategy": "other",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": true,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": true,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/pfocr"
+    },
+    {
+      "id": "phewas",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "cross_api_resolution",
+        "gzip_open_anyfile",
+        "csv_reader"
+      ],
+      "version_strategy": "hardcoded",
+      "id_strategy": "inferred_from_code",
+      "requires": [
+        "biothings_client"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "numeric conversion",
+        "transparent gzip handling",
+        "defaultdict aggregation",
+        "biothings_client cross-API query"
+      ],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "CC BY 4.0",
+      "datasource_url": "https://phewascatalog.org/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/phewas"
+    },
+    {
+      "id": "pubtator3",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "__init__.py",
+        "dumper.py",
+        "uploader.py"
+      ],
+      "parser_patterns": [
+        "hgvs_variant",
+        "subject_object_triple"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "composite",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/pubtator3"
+    },
+    {
+      "id": "repoDB",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "pandas",
+        "pandas_groupby"
+      ],
+      "version_strategy": "hardcoded",
+      "id_strategy": "composite",
+      "requires": [
+        "pandas",
+        "requests"
+      ],
+      "key_techniques": [
+        "groupby aggregation",
+        "pandas CSV reader"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": true,
+      "license": "Creative Commons Attribution 4.0 International License",
+      "datasource_url": "https://unmtid-shinyapps.net/shiny/repodb/",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/repoDB"
+    },
+    {
+      "id": "uberon",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "LICENSE",
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "inferred_from_code",
+      "requires": [
+        "networkx",
+        "obonet"
+      ],
+      "key_techniques": [
+        "defaultdict aggregation"
+      ],
+      "manifest_version": "1.0",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": "",
+      "datasource_url": "http://uberon.github.io/downloads.html",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/uberon"
+    },
+    {
+      "id": "upheno_ontology",
+      "repo": "pending.api",
+      "target_api": "pending.api",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "pandas"
+      ],
+      "version_strategy": "other",
+      "id_strategy": "field:row",
+      "requires": [
+        "pandas"
+      ],
+      "key_techniques": [
+        "pandas CSV reader"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": false,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": "https://github.com/obophenotype/upheno",
+      "repo_url": "https://github.com/biothings/pending.api/tree/master/plugins/upheno_ontology"
+    },
+    {
+      "id": "ctd",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "manifest.json",
+        "mapping.py",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "pandas",
+        "pandas_groupby",
+        "json_parsing"
+      ],
+      "version_strategy": "http_last_modified",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "defaultdict aggregation",
+        "groupby aggregation",
+        "pandas CSV reader"
+      ],
+      "manifest_version": "1.0",
+      "manifest_format": "json",
+      "on_duplicates": "ignore",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": true,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/ctd"
+    },
+    {
+      "id": "disease_ontology",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "mapping.py",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "json_parsing"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "field:doid_mondo_dict",
+      "requires": [
+        "pandas",
+        "networkx",
+        "obonet"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": true,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": "https://disease-ontology.org/",
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/disease_ontology"
+    },
+    {
+      "id": "disgenet",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "manifest.json",
+        "mapping.py",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "pandas",
+        "pandas_groupby",
+        "json_parsing"
+      ],
+      "version_strategy": "http_last_modified",
+      "id_strategy": "field:did",
+      "requires": [
+        "pandas"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "defaultdict aggregation",
+        "groupby aggregation",
+        "pandas CSV reader"
+      ],
+      "manifest_version": "1.0",
+      "manifest_format": "json",
+      "on_duplicates": "ignore",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": true,
+      "has_schedule": false,
+      "has_release_wiring": true,
+      "license": "CC BY 4.0",
+      "datasource_url": "https://www.disgenet.org/static/disgenet_ap1/files/downloads/readme.txt",
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/disgenet"
+    },
+    {
+      "id": "fda_orphan_drug",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "mapping.py",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "json_parsing"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": true,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/",
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/fda_orphan_drug"
+    },
+    {
+      "id": "hpo",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "manifest.json",
+        "mapping.py",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "pandas",
+        "pandas_groupby",
+        "json_parsing"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "composite",
+      "requires": [],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "unlist flattening",
+        "defaultdict aggregation",
+        "groupby aggregation",
+        "pandas CSV reader"
+      ],
+      "manifest_version": "1.0",
+      "manifest_format": "json",
+      "on_duplicates": "ignore",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": true,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/hpo"
+    },
+    {
+      "id": "mondo",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "manifest.json",
+        "mapping.py",
+        "parser.py",
+        "version.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "http_dynamic",
+      "id_strategy": "field:node_id",
+      "requires": [
+        "networkx",
+        "obonet"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "defaultdict aggregation"
+      ],
+      "manifest_version": "1.1",
+      "manifest_format": "json",
+      "on_duplicates": "ignore",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": true,
+      "has_mapping_py": true,
+      "has_schedule": true,
+      "has_release_wiring": true,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/mondo"
+    },
+    {
+      "id": "umls",
+      "repo": "mydisease.info",
+      "target_api": "MyDisease.info",
+      "files_present": [
+        "__init__.py",
+        "dumper.py",
+        "parser.py",
+        "uploader.py"
+      ],
+      "parser_patterns": [
+        "multi_file_glob",
+        "gzip_open_anyfile"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "composite",
+      "requires": [],
+      "key_techniques": [
+        "unlist flattening",
+        "transparent gzip handling"
+      ],
+      "manifest_version": null,
+      "manifest_format": "json",
+      "on_duplicates": null,
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": true,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/mydisease.info/tree/master/src/plugins/umls"
+    },
+    {
+      "id": "fda_orphan_drug",
+      "repo": "mychem.info",
+      "target_api": "MyChem.info",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "mapping.py",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "json_parsing"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "inferred_from_code",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.1",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": true,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/",
+      "repo_url": "https://github.com/biothings/mychem.info/tree/master/src/plugins/fda_orphan_drug"
+    },
+    {
+      "id": "gtopdb",
+      "repo": "mychem.info",
+      "target_api": "MyChem.info",
+      "files_present": [
+        "manifest.yaml",
+        "mapping.py",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "pandas"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "InChIKey",
+      "requires": [
+        "numpy==1.26.4",
+        "pandas==2.2.2",
+        "lxml==5.2.2"
+      ],
+      "key_techniques": [
+        "dict_sweep cleanup",
+        "pandas CSV reader"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "yaml",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": true,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": "CC BY-SA 4.0",
+      "datasource_url": "https://www.guidetopharmacology.org",
+      "repo_url": "https://github.com/biothings/mychem.info/tree/master/src/plugins/gtopdb"
+    },
+    {
+      "id": "cell_marker",
+      "repo": "mygene.info",
+      "target_api": "MyGene.info",
+      "files_present": [
+        "README.md",
+        "data_parser.py",
+        "manifest.json",
+        "mapping.py"
+      ],
+      "parser_patterns": [
+        "unknown"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "unknown",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": true,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": null,
+      "repo_url": "https://github.com/biothings/mygene.info/tree/master/src/plugins/cell_marker"
+    },
+    {
+      "id": "orthology_agr",
+      "repo": "mygene.info",
+      "target_api": "MyGene.info",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "mapping.py",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "cross_api_resolution"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "composite",
+      "requires": [],
+      "key_techniques": [
+        "biothings_client cross-API query"
+      ],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "error",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": true,
+      "has_schedule": false,
+      "has_release_wiring": true,
+      "license": "CC BY 4.0",
+      "datasource_url": "https://www.alliancegenome.org/",
+      "repo_url": "https://github.com/biothings/mygene.info/tree/master/src/plugins/orthology_agr"
+    },
+    {
+      "id": "pantherdb",
+      "repo": "mygene.info",
+      "target_api": "MyGene.info",
+      "files_present": [
+        "README.md",
+        "manifest.json",
+        "parser.py"
+      ],
+      "parser_patterns": [
+        "simple_streaming"
+      ],
+      "version_strategy": "none",
+      "id_strategy": "field:ref_gene_uniprot_id",
+      "requires": [],
+      "key_techniques": [],
+      "manifest_version": "0.2",
+      "manifest_format": "json",
+      "on_duplicates": "merge",
+      "uses_plural_uploaders": false,
+      "has_custom_dumper": false,
+      "has_version_py": false,
+      "has_mapping_py": false,
+      "has_schedule": false,
+      "has_release_wiring": false,
+      "license": null,
+      "datasource_url": "http://pantherdb.org/",
+      "repo_url": "https://github.com/biothings/mygene.info/tree/master/src/plugins/pantherdb"
+    }
+  ]
+}

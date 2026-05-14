@@ -31,6 +31,8 @@ Extract all evaluation-relevant information from the resolved paper before proce
    - download or API URL(s)
    - stated license / terms of use
 
+   **Canonical source preference (MUST follow):** Always check the datasource's own homepage and download page (e.g., `datasource.org/download`) for bulk files BEFORE using URLs from papers, Zenodo, Figshare, Dryad, GitHub releases, or other third-party mirrors. Third-party archives often host stale snapshots (e.g., a Zenodo deposit from 2024 when the datasource has a 2026 release on its own site) and may offer only a subset of files (e.g., a "lite" CSV vs the full download). Record the canonical download URL in `urls.download[]`; only fall back to a mirror if the datasource's own site has no direct bulk download or is access-gated.
+
 2. Assess **BioThings sphere relevance** (score 0–5):
    - 5: Directly aligned — covers core BioThings entities/relations (drug, chemical, gene, variant, disease, pathway, target, adverse event, clinical evidence).
    - 3: Biomedical-adjacent but weakly structured for BioThings entity types.

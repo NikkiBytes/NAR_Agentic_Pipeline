@@ -126,17 +126,16 @@ Update this file immediately after each generation. Before starting a new plugin
 - **Homepage**: https://coconut.naturalproducts.net
 - **Target API**: MyChem.info
 - **_id strategy**: InChIKey (`standard_inchi_key` column from CSV)
-- **Data format**: Single CSV (bulk download from Zenodo, zipped)
-- **Files ingested**: `coconut-09-2024.csv` from Zenodo record 13692394 (lite CSV with InChIKey, SMILES, InChI, COCONUT ID)
-- **Parser pattern**: simple streaming CSV with `seen_ids` deduplication
-- **on_duplicates**: `ignore` (2 duplicate InChIKeys found in dataset)
+- **Data format**: Single CSV (44 columns, bulk download from canonical site, zipped)
+- **Files ingested**: `coconut_csv-05-2026.csv` from `coconut.naturalproducts.net/download` (full CSV with identifiers, molecular properties, chemical classification, NP classifier, organisms, collections, CAS, DOIs, synonyms)
+- **Parser pattern**: streaming CSV with type conversion (float/int/bool), pipe-delimited list splitting, nested document structure
+- **on_duplicates**: `error` (InChIKeys are unique in dataset)
 - **requires**: none (stdlib CSV only)
 - **Output path**: `agent_outputs/coconut_datasource/coconut_plugin/`
-- **version.py strategy**: Zenodo API record metadata → extract date from CSV filename (`YYYYMM` format)
+- **version.py strategy**: Parse "Version: Month Year" text from canonical download page → `YYYYMM` format
 - **Date generated**: 2026-05-14
-- **Version**: 1.0
-- **Smoke test (2026-05-14)**: biothings-cli validate ✓, dump ✓, upload ✓, list ✓, inspect ✓. 695K+ documents yielded (minus ~2 duplicates). All documents have `_id` (InChIKey), `coconut.coconut_id`, `coconut.smiles`, `coconut.inchi`.
-- **Notes**: Uses lite CSV from Zenodo with 4 columns. Full CSV on website has additional organism, property, and geographic columns — could be upgraded in future version. CC0 license — no restrictions. Natural product chemical space largely distinct from synthetic drugs in DrugBank/ChEMBL.
+- **Version**: 2.0 (regenerated 2026-05-14 — replaced Zenodo with canonical source)
+- **Notes**: v1.0 used a 4-column Zenodo lite CSV (Sept 2024, 695K rows). v2.0 uses the full 44-column CSV from the canonical site (May 2026, 738K rows) with molecular properties, chemical classification, NP classifier, organisms, and cross-references. CC0 license. URL contains dated path (`2026-05`) that will need updating on each new release.
 
 ---
 

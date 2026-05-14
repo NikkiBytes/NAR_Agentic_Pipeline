@@ -65,6 +65,8 @@ Apply the rule in this order:
 ### 1b-gate. Mandatory URL Verification (do NOT skip)
 Before writing `manifest.json`, every candidate `data_url` MUST pass this verification.
 
+**Canonical source preference (MUST follow):** If any candidate `data_url` points to a third-party mirror (Zenodo, Figshare, Dryad, GitHub releases, S3 archive), STOP and check the datasource's own download page first (e.g., `datasource.org/download`). Mirrors often host stale snapshots or subset files (e.g., a "lite" CSV when the full version is on the canonical site). Only use a mirror URL if the datasource's own site has no direct bulk download or is access-gated. Flag any mirror usage in `design_rationale.md` with the reason the canonical source was not used.
+
 **Step 1 — Resolve the actual file URL.** Fetch the download page HTML, extract `href` attributes pointing to data files (`.csv`, `.tsv`, `.json`, `.xlsx`, `.zip`, `.gz`, `.sdf`), construct absolute URLs.
 
 **Step 2 — Verify each URL returns data, not HTML.**
@@ -172,7 +174,7 @@ def load_data(data_folder):
             yield doc
 ```
 
-**For additional parser patterns** (groupby, pandas, multi-file, JSON, HGVS, cross-API ID resolution), see [references/parser-patterns.md](references/parser-patterns.md).
+**For additional parser patterns** (groupby, pandas, multi-file, JSON, HGVS, cross-API ID resolution), see [references/parser-patterns.json](references/parser-patterns.json).
 
 Rules for parser.py:
 - The main parse function MUST accept `data_folder` as its only argument
@@ -213,9 +215,19 @@ After saving, **update [references/built-plugins-index.md](references/built-plug
 
 ### 6a. Generate design_rationale.md (Required)
 Always generate `design_rationale.md`. Required sections:
-1. **Why These Dump Files Were Chosen** — selected vs rejected files with reasons
-2. **Why the Parser Works the Way It Does** — `_id` strategy, document structure, fields extracted/skipped, deduplication, data cleaning
-3. **Test Results Summary** — key metrics from biothings-cli test run
+1. **Quick Stats** — top-of-file summary box with key numbers at a glance:
+   - Source rows / Documents yielded / Rows skipped (with reason breakdown)
+   - Deduplication count
+   - Target API
+   - Data format and total file size
+2. **Why These Dump Files Were Chosen** — selected vs rejected files with reasons
+3. **Why the Parser Works the Way It Does** — `_id` strategy, document structure, fields extracted/skipped, deduplication, data cleaning
+4. **Sample Output Documents** — 1–2 real documents yielded by the parser, shown as formatted JSON. Pick representative examples (one typical, one edge-case if applicable). For each example, include a **Source cross-reference link** pointing to the record on the datasource's own site so reviewers can compare the parsed output against the original (e.g., `https://ecbd.eu/compound/AQTQHPDCURKLKT-PNYVAJAMSA-N` for an ECBD compound, or the download page URL if per-record links aren't available).
+5. **Field Coverage** — for each optional/sparse field, show the % of documents that have it populated (from the `inspect --limit 1000` sample). Use a simple list, e.g.:
+   - `xrefs.pubchem`: 96.0%
+   - `xrefs.chembl`: 88.6%
+   - `xrefs.zinc`: 69.5%
+6. **Test Results Summary** — key metrics from biothings-cli test run
 
 ### 6b. Optional: parser_report.json (Opt-In)
 Generate only when the user opts in via trigger phrases like "initialize run", "with parser report", "include parser report". See the full schema in the original pipeline documentation.
@@ -225,7 +237,7 @@ Generate only when the user opts in via trigger phrases like "initialize run", "
 
 Run these five commands **in order**: `validate` → `dump` → `upload` → `list` → `inspect`.
 
-For the complete step-by-step validation workflow including prerequisites, git setup, hub state cleanup, pass criteria, and failure handling, see [references/cli-validation-workflow.md](references/cli-validation-workflow.md).
+For the complete step-by-step validation workflow including prerequisites, git setup, hub state cleanup, pass criteria, and failure handling, see [references/cli-validation-workflow.json](references/cli-validation-workflow.json).
 
 **Key rules:**
 - Exit-0 with zero documents on `upload` = FAILURE (silent failure mode)
