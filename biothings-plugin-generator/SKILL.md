@@ -90,6 +90,38 @@ If `agent_outputs/` contains a prior inspection report (from a site-inspector or
 
 Load and use these classifications directly instead of re-discovering them.
 
+### 1b-gate. Mandatory URL Verification (do NOT skip)
+Before writing `manifest.json`, every candidate `data_url` MUST pass this verification. This is a hard gate — if a URL fails, do NOT put it in the manifest.
+
+**Step 1 — Resolve the actual file URL.** Many datasource download pages are JS-rendered, PHP-backed, or redirect chains. You must discover the terminal direct-file URL, not the landing page.
+- Fetch the download page HTML (try `curl -skL` if SSL is broken on academic servers)
+- Extract `href` attributes pointing to data files (`.csv`, `.tsv`, `.txt`, `.json`, `.xlsx`, `.zip`, `.gz`, `.sdf`)
+- Construct absolute URLs from relative paths (e.g., `/sites/files/data.txt` → `https://domain.org/sites/files/data.txt`)
+
+**Step 2 — Verify each URL returns data, not HTML.**
+```bash
+curl -sIL --fail -A "Mozilla/5.0" "<URL>" | grep -i "content-type"
+```
+- PASS: `content-type` is `text/plain`, `text/csv`, `text/tab-separated-values`, `application/json`, `application/octet-stream`, `application/zip`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+- FAIL: `content-type` is `text/html` — this is a web page, not a data file. Go back to Step 1.
+- FAIL: HTTP 000 / connection error — server unreachable. Flag in inspection report, try with `-k` (insecure) for old academic servers. If still fails, the URL cannot be used in the manifest.
+
+**Step 3 — Sample the first few lines** to confirm the file has the expected schema:
+```bash
+curl -skL -A "Mozilla/5.0" "<URL>" | head -3
+```
+- Confirm column headers match what the parser expects
+- Confirm the delimiter (tab vs comma) matches the parser logic
+
+**Rejection criteria — NEVER put these in `data_url`:**
+- Generic download pages: `Download.php`, `/download`, `/downloads`
+- API documentation pages: `/api-documentation`, `/api/docs`
+- Landing pages or homepages that return HTML
+- URLs that require POST requests, session cookies, or JavaScript execution to return data
+- URLs returning HTTP 000 (unreachable) from the agent's network — flag as BLOCKED in the inspection report
+
+**If you cannot find a direct-file URL:** Stop and flag the datasource as `BLOCKED` in the site inspection. Do NOT generate a plugin with a placeholder URL. Instead, document in `design_rationale.md` what you tried and recommend the user manually download the file and pre-place it in `data_folder`.
+
 **Multi-file manifest pattern:**
 When using multiple files, set `data_url` as a list. All files land in the same `data_folder`, so the parser must iterate all matching files:
 ```json

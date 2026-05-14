@@ -121,6 +121,79 @@ Update this file immediately after each generation. Before starting a new plugin
 
 ---
 
+### coconut
+- **Datasource**: COCONUT 2.0 — Collection of Open Natural Products
+- **Homepage**: https://coconut.naturalproducts.net
+- **Target API**: MyChem.info
+- **_id strategy**: InChIKey (`standard_inchi_key` column from CSV)
+- **Data format**: Single CSV (bulk download from Zenodo, zipped)
+- **Files ingested**: `coconut-09-2024.csv` from Zenodo record 13692394 (lite CSV with InChIKey, SMILES, InChI, COCONUT ID)
+- **Parser pattern**: simple streaming CSV with `seen_ids` deduplication
+- **on_duplicates**: `ignore` (2 duplicate InChIKeys found in dataset)
+- **requires**: none (stdlib CSV only)
+- **Output path**: `agent_outputs/coconut_datasource/coconut_plugin/`
+- **version.py strategy**: Zenodo API record metadata → extract date from CSV filename (`YYYYMM` format)
+- **Date generated**: 2026-05-14
+- **Version**: 1.0
+- **Smoke test (2026-05-14)**: biothings-cli validate ✓, dump ✓, upload ✓, list ✓, inspect ✓. 695K+ documents yielded (minus ~2 duplicates). All documents have `_id` (InChIKey), `coconut.coconut_id`, `coconut.smiles`, `coconut.inchi`.
+- **Notes**: Uses lite CSV from Zenodo with 4 columns. Full CSV on website has additional organism, property, and geographic columns — could be upgraded in future version. CC0 license — no restrictions. Natural product chemical space largely distinct from synthetic drugs in DrugBank/ChEMBL.
+
+---
+
+### pdcdb
+- **Datasource**: PDCdb — Peptide-Drug Conjugate Database
+- **Homepage**: https://idrblab.org/PDCdb/
+- **Target API**: pending.api
+- **_id strategy**: PDCdb internal ID (e.g., `PDC0001`)
+- **Data format**: CSV (bulk download from website)
+- **Files ingested**: All CSV/TSV files from download page
+- **Parser pattern**: simple streaming CSV with flexible column name matching
+- **on_duplicates**: `error`
+- **requires**: none (stdlib CSV only)
+- **Output path**: `agent_outputs/pdcdb_datasource/pdcdb_plugin/`
+- **version.py strategy**: Date extraction from homepage or Last-Modified header
+- **Date generated**: 2026-05-14
+- **Version**: 1.0
+- **Notes**: 2,036 peptide-drug conjugates with biological activity data (clinical trial, animal model, cell line), ADME properties, and peptide/linker/drug component details. CC BY-NC 4.0 license. Download page is JS-rendered — direct CSV URL needs browser verification. From idrblab (same group as TTD) but data is non-overlapping (PDCs vs small molecule drugs).
+
+---
+
+### sv4gd
+- **Datasource**: SV4GD — Structural Variation for Genetic Diseases
+- **Homepage**: https://bio-computing.hrbmu.edu.cn/SV4GD/
+- **Target API**: pending.api
+- **_id strategy**: Composite from genomic coordinates + SV type (e.g., `chr17_41197694_41277500_DEL`)
+- **Data format**: Excel XLSX (bulk download)
+- **Files ingested**: `Disease-Related SVs.xlsx` (2,695 curated disease-related structural variants); patient-detected SVs excluded
+- **Parser pattern**: pandas read_excel with openpyxl, `seen_ids` deduplication
+- **on_duplicates**: `error`
+- **requires**: `pandas`, `openpyxl`
+- **Output path**: `agent_outputs/sv4gd_datasource/sv4gd_plugin/`
+- **version.py strategy**: Last-Modified HEAD on download file; fallback to homepage date extraction
+- **Date generated**: 2026-05-14
+- **Version**: 1.0
+- **Notes**: 10,305 total records (2,695 curated disease-related + 7,610 patient-detected). Plugin ingests curated subset only. Covers 290 genetic diseases (58 neoplastic, 232 non-neoplastic) with GRCh38/37 coordinates, DOID, OMIM, ACMG pathogenicity, gene symbols. CC BY-NC 4.0. Download server (bio-annotation.cn) intermittently unreachable — files may need manual pre-placement.
+
+---
+
+### dmrdb
+- **Datasource**: DMRdb — Disease-Centric Mendelian Randomization Database
+- **Homepage**: http://www.inbirg.com/DMRdb/
+- **Target API**: pending.api
+- **_id strategy**: Composite of `{exposure_id}_{outcome_id}_{mr_method}`
+- **Data format**: TSV/CSV (bulk download)
+- **Files ingested**: Literature-curated causal relationship pairs (~380K from 1,223 publications)
+- **Parser pattern**: streaming CSV/TSV with auto-delimiter detection and flexible column matching
+- **on_duplicates**: `ignore` (same exposure-outcome-method triple may appear from different sources)
+- **requires**: `pandas`
+- **Output path**: `agent_outputs/dmrdb_datasource/dmrdb_plugin/`
+- **version.py strategy**: Date/version extraction from homepage
+- **Date generated**: 2026-05-14
+- **Version**: 1.0
+- **Notes**: Full database has 497M+ computational MR results; plugin targets the literature-curated subset (380K pairs) for tractable size. Covers causal relationships of diseases with genes (eQTL), proteins (pQTL), CpG sites (meQTL), metabolites, and other diseases. Subject/object/relation triple structure. CC BY-NC 4.0. Chinese academic server may have intermittent access.
+
+---
+
 ## Entry Template
 Copy this block and fill in all fields when adding a new plugin:
 
