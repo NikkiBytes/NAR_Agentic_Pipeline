@@ -13,40 +13,40 @@ Update this file immediately after each generation. Before starting a new plugin
 ## Generated Plugins
 
 ### ecbd
-- **Datasource**: European Chemical Biology Database (ECBD)
+- **Datasource**: European Chemical Biology Database (ECBD) — NAR 2025, DOI: 10.1093/nar/gkae904
 - **Homepage**: https://ecbd.eu
 - **Target API**: MyChem.info
 - **_id strategy**: InChIKey (`inchikey` column from CSV)
 - **Data format**: Multi-file CSV (bulk download, 5 independent sub-library files)
-- **Files ingested**: `bioactives.csv`, `fragments.csv`, `nuisance_set.csv`, `academic.csv`, `diverse_library.csv` — all 5 independent sub-libraries; `ecbd_all.csv` (superset), `representative_diverse_set.csv` / `pilot_library.csv` / `mini_fragments.csv` (subsets/composites) excluded
-- **Parser pattern**: Ordered multi-file loop + `seen_ids` deduplication; `sub_library` tag added per compound from filename stem
-- **on_duplicates**: `error` (deduplication in parser via `seen_ids`; 34 cross-file duplicate InChIKeys observed)
+- **Files ingested**: `bioactives.csv`, `fragments.csv`, `nuisance_set.csv`, `academic.csv`, `diverse_library.csv` — all 5 independent sub-libraries; `ecbd_all.csv` (superset, 54 fewer rows), `representative_diverse_set.csv` / `pilot_library.csv` / `mini_fragments.csv` (subsets/composites) excluded
+- **Parser pattern**: Ordered multi-file loop (bioactives→fragments→nuisance→academic→diverse) + `seen_ids` deduplication; `sub_library` tag derived from filename stem via `_SUBLIBRARY_MAP`
+- **on_duplicates**: `error` (deduplication in parser via `seen_ids`; 34 cross-file duplicate InChIKeys)
 - **requires**: none (stdlib CSV only)
-- **Output path**: `agent_outputs/ecbd_datasource/ecbd_plugin/`
+- **Output path**: `agent_outputs/ecbd_datasource/ecbd_plugin/` (under claude/agent_outputs/)
 - **version.py strategy**: Regex date parse from ecbd.eu/download page (verify=False); fallback Last-Modified HEAD on bioactives.csv → YYYYMMDD
 - **Date generated**: 2026-05-14
-- **Version**: 2.0 (supersedes 2026-03-30 v1.0; expanded from 3 to 5 sub-libraries; added sub_library tag; moved to ecbd_datasource/ directory)
-- **Smoke test (2026-05-14)**: 108,822 unique documents; all 5 biothings-cli steps passed (dump via curl --insecure workaround for self-signed TLS); `_id` = 27-char InChIKey; `ecbd` sub-object with eos_id/inchikey/inchi/smiles/formula/sub_library/properties/xrefs; sub-library breakdown: bioactives 2,464 | fragments 1,052 | nuisance 72 | academic 6,687 | diverse 98,547
-- **Notes**: ecbd.eu uses a self-signed TLS certificate — `biothings-cli dataplugin dump` fails with SSL verification error; workaround is to pre-download files via `curl --insecure` and register the dump in `biothings_hubdb` manually. Production deployment requires either certificate installation or a custom `dumper.py` with `verify=False`. Bioactivity assay endpoint data (2.5M public values) is only available via the REST API, not bulk download. CC BY 4.0 license.
+- **Version**: 1.0 (first generation in claude/agent_outputs/ pipeline)
+- **Smoke test (2026-05-14)**: 108,822 unique documents; validate/upload/list/inspect PASS; dump via `curl -k` workaround (self-signed TLS + dump state patched); `_id` = 27-char InChIKey; `ecbd` sub-object with eos_id/inchikey/inchi/smiles/formula/sub_library/properties{mw,hba,hbd,tpsa,rb,fp3,logp,violates_ro5}/xrefs{pubchem,chembl,zinc}; xrefs coverage: pubchem 96%/chembl 88.6%/zinc 69.5%
+- **Notes**: ecbd.eu uses a self-signed TLS certificate — `biothings-cli dataplugin dump` fails SSL; workaround: pre-download via `curl -k`, patch `src_dump` status to success in `biothings_hubdb`. Production requires CA cert install or custom `dumper.py` with `verify=False`. academic.csv has grown to 6,688 (paper reported 5,280 in Aug 2024). Bioassay data (2.5M+ values) is API/PostgreSQL-only — not in bulk CSVs.
 
 ---
 
 ### signor
-- **Datasource**: SIGNOR 4.0 — PhosphoSIGNOR
-- **Homepage**: https://signor.uniroma2.it/PhosphoSIGNOR/
+- **Datasource**: SIGNOR 4.0 — Full Human Signaling Interactome (NAR 2026, DOI: 10.1093/nar/gkaf1237)
+- **Homepage**: https://signor.uniroma2.it/
 - **Target API**: pending.api
-- **_id strategy**: SIGNOR interaction ID (`signor_id` column, e.g. `SIGNOR-250327`)
-- **Data format**: Single TSV (PhosphoSIGNOR-specific PHP API endpoint — no `.tsv` extension on download)
-- **Files ingested**: `https://signor.uniroma2.it/PhosphoSIGNOR/apis/v1/index.php?role=all&format=tsv&header=yes` (PhosphoSIGNOR-only; full SIGNOR interactome explicitly out of scope per SKILL.md §1b "specific files preferred" policy)
-- **Parser pattern**: `defaultdict` groupby — merges paired PTM-view rows (enzyme→phosphosite + phosphosite→substrate) into one document
-- **on_duplicates**: `error`
+- **_id strategy**: SIGNOR interaction ID (column 26, e.g. `SIGNOR-203532`)
+- **Data format**: Single TSV (28 columns, no header row) via `getData.php?organism=9606`
+- **Files ingested**: `https://signor.uniroma2.it/getData.php?organism=9606` — full human (taxid 9606) causal interactome, all mechanisms; PhosphoSIGNOR-only endpoint explicitly excluded (superseded by this broader ingestion)
+- **Parser pattern**: Sequential TSV read with hardcoded `_COL` index map; `seen_ids` deduplication; BTO multi-value split; DIRECT string→bool; SIGNOR_SCORE string→float
+- **on_duplicates**: `error` (all 42,437 SIGNOR_IDs are unique)
 - **requires**: none (stdlib CSV only)
-- **Output path**: `agent_outputs/signor_plugin/`
-- **version.py strategy**: HEAD on SIGNOR master release file (`releases/Apr2026_release.txt`) → `Last-Modified` → `YYYYMMDD`; SHA-256 fallback on API response prefix
-- **Date generated**: 2026-04-13
-- **Version**: 1.1 (patched 2026-04-30)
-- **Smoke test (2026-04-30)**: 13,411 unique interaction documents, 100% with `pmid` and `score` populated, no exceptions. Sample: SIGNOR-250327 (PRKACA → ABCA1@Ser2054, phosphorylation, up-regulates, score 0.503).
-- **Notes**: v1.0 (2026-04-13) had a critical schema-mismatch bug — manifest's data_url pointed at the full SIGNOR interactome (27 uppercase columns) while the parser expected the 9-column lowercase PhosphoSIGNOR API format. v1.1 (2026-04-30) corrected the data_url to the PhosphoSIGNOR-specific endpoint, added version.py per SKILL.md §2b, and completed the manifest __metadata__ block. Enzyme IDs mix UniProtKB with internal SIGNOR complex (`SIGNOR-C*`) and protein-family (`SIGNOR-PF*`) IDs. version.py anchors on the SIGNOR master release file's Last-Modified, which has a version-stamped filename and will need URL update on each new monthly release; the SHA-256 fallback detects content changes regardless.
+- **Output path**: `agent_outputs/signor_datasource/signor_plugin/` (under claude/agent_outputs/)
+- **version.py strategy**: HEAD on `releases/getLatestRelease.php` → `Content-Disposition: filename="Apr2026_release.txt"` → extract month/year → `YYYYMM`; fallback: scrape downloads.php for most recent release link
+- **Date generated**: 2026-05-14
+- **Version**: 2.0 (supersedes v1.1 PhosphoSIGNOR-only plugin; expanded to full interactome; 42,437 vs 13,411 docs; new fields: entity types, BTO cell/tissue context, complex IDs, modification states, sentence evidence)
+- **Smoke test (2026-05-14)**: 42,437 unique interaction documents; all 5 biothings-cli steps passed; `_id` = SIGNOR-ID string; `signor` sub-object with entity_a/entity_b/effect/mechanism/residue/sequence/tax_id/cell_data/tissue_data/pmid/direct/sentence/annotator/score; score 100% populated (float); direct 100% populated (bool); residue ~32% (phospho/PTM interactions)
+- **Notes**: v1.1 (prior PhosphoSIGNOR) had 9-column paired-row format; v2.0 uses 28-column getData.php with hardcoded column index map. getData.php has no header row — column positions derived from official release file header. TAX_ID=-1 rows (in vitro) are included. SIGNOR_SCORE (col 27) is only available via getData.php, not in release .txt files. Quarterly release cycle (Jan/Apr/Jul/Oct). version.py uses Content-Disposition header from getLatestRelease.php for clean version extraction.
 
 ---
 

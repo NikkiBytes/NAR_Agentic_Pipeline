@@ -17,11 +17,11 @@ description: >-
 ### 0. Resolve Input URL (when user provides an OUP/NAR article URL)
 If the user provides an OUP article URL (e.g., `https://academic.oup.com/nar/article/...`), do NOT attempt to fetch it directly — OUP pages are JS-rendered and will fail.
 
-Instead, follow the resolution procedure in [references/nar-url-resolution.md](references/nar-url-resolution.md) to:
-1. Extract the volume, issue, and start page from the URL
-2. Look up the PMID via PubMed E-utilities
-3. Get the PMCID from the PubMed record
-4. Fetch the full-text article from PMC (reliably fetchable)
+Follow the resolution procedure in [references/nar-url-resolution.md](references/nar-url-resolution.md), which tries in this order:
+1. **Local PDF** — check `agent_outputs/<datasource>_datasource/*.pdf`; if present, read directly and skip all HTTP calls
+2. **E-utilities → PMC PDF** — resolve OUP URL to PMCID via PubMed, then fetch the PDF at `https://pmc.ncbi.nlm.nih.gov/articles/{PMCID}/pdf/`
+3. **PMC HTML** — fallback if PDF fetch fails
+4. **Web search** — fallback if article not yet in PMC
 
 Extract all evaluation-relevant information from the resolved paper before proceeding to Step 1.
 

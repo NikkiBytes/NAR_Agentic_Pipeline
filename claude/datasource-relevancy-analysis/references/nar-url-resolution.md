@@ -2,6 +2,14 @@
 
 When a user provides an OUP article URL (e.g., `https://academic.oup.com/nar/article/53/D1/D1016/7905315`), direct fetching with `fetch_web_pages` will usually fail (JS-rendered page, bot blocking). Use this resolution procedure instead.
 
+## Step 0: Check for a local PDF (fastest path — try this first)
+
+Before making any HTTP calls, check if a PDF is already available locally:
+```bash
+ls agent_outputs/<datasource>_datasource/*.pdf 2>/dev/null
+```
+If a PDF exists, read it directly with `read_files` and skip Steps 1–4 entirely. The Data Availability and Methods sections of the PDF contain everything needed for the evaluation.
+
 ## Step 1: Extract metadata from the URL
 
 OUP NAR article URLs follow this pattern:
@@ -50,22 +58,22 @@ curl -sL "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id
 
 ## Step 4: Fetch full text from PMC
 
-All NAR Database Issue articles are open access. Use the PMCID to fetch full text:
-```bash
-curl -sL "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id={PMCID}&rettype=xml" > /tmp/nar_article.xml
+All NAR Database Issue articles are open access. **Preferred: fetch the PMC PDF directly** — it is the same content as the published paper and avoids XML parsing:
 ```
+https://pmc.ncbi.nlm.nih.gov/articles/{PMCID}/pdf/
+```
+Use `read_files` on this URL. The PDF contains the Data Availability section, Methods, entity counts, and identifiers needed for evaluation.
 
-Then read the XML file to extract:
-- Abstract
-- Data Availability section (contains download URLs, API endpoints, license info)
-- Methods/Database content sections
-- Tables with entity counts, identifiers, data types
-
-**Simpler alternative**: Fetch the PMC HTML page directly:
+**Alternative: PMC HTML page** (if PDF fetch fails):
 ```
 https://pmc.ncbi.nlm.nih.gov/articles/{PMCID}/
 ```
-Use `fetch_web_pages` on this URL — PMC pages are reliably fetchable unlike OUP pages.
+Use `fetch_web_pages` — PMC pages are reliably fetchable unlike OUP pages.
+
+**Alternative: PMC XML** (if structured data extraction is needed):
+```bash
+curl -sL "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id={PMCID}&rettype=xml" > /tmp/nar_article.xml
+```
 
 ## Step 5: Fallback — web search
 
