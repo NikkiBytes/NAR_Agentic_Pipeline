@@ -1,0 +1,68 @@
+{
+    "name": "ecbd",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "ECBD is a chemical compound database with 107,414 small molecules described by InChIKey (MyChem.info primary identifier), SMILES, InChI, molecular formula, MW, physicochemical properties (HBA, HBD, TPSA, RB, FP3, LogP, Lipinski RO5 flag), and cross-references to PubChem, ChEMBL, and ZINC. Directly aligned with MyChem.info entity type and identifier standards. Compounds organized into defined sub-libraries (diversity, bioactives, fragments, academic) covering broad chemical space relevant to drug discovery and chemical biology."
+        },
+        "novelty": {
+            "score": 3,
+            "justification": "MyChem.info already includes ChEMBL, PubChem, and ZINC which overlap with the commercially sourced ECBL portion of ECBD. However, ECBD adds: (1) EU-OPENSCREEN EOS persistent identifiers (EOS1, EOS2, ...) not in any BioThings API; (2) sub-library membership flags (ECBL diversity/bioactives/nuisance, EFSL fragments, EACL academic); (3) quality-controlled, FAIR-annotated compound metadata with standardized physicochemical properties; (4) academic compounds (EACL, ~5,280) submitted by European institutions not represented in ChEMBL/PubChem/ZINC; (5) FP3 fingerprint value and violates_ro5 boolean not standardly available in other BioThings sources. Score 3: meaningful new fields and coverage despite partial structural overlap with existing sources."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "CC BY 4.0 license explicitly stated in NAR paper and ECBD site. Five sub-library CSV files confirmed publicly accessible via direct URL with HTTP 200 (no auth, no login). Self-signed TLS certificate on ecbd.eu requires --insecure/verify=False workaround. Score 4 (not 5): CC BY requires attribution; TLS issue is a minor operational complication."
+        }
+    },
+    "evidence": {
+        "scope": "107,414 small molecule compounds from EU-OPENSCREEN research infrastructure. Includes ECBL (diversity 98,560 + bioactives 2,464 + nuisance 88 + representative subsets), EFSL fragments 1,056, and EACL academic 5,280. Each compound described by structure (SMILES, InChI, InChIKey, MolBlock), physicochemical properties, QC data, and cross-references. Also contains 89 bioassay datasets (~4.3M data points) with activity/inactivity calls — compound metadata is the ingestion target for MyChem.info.",
+        "overlap": "Diversity library and bioactives are commercially sourced molecules — high overlap with PubChem/ChEMBL/ZINC compound structures. Academic compounds (EACL) and sub-library annotation, EOS IDs, and screening metadata are novel. Cross-references to ChEMBL/PubChem/ZINC are provided in the CSV, enabling enrichment of existing MyChem documents rather than duplication.",
+        "entity_types": ["small molecule", "fragment", "academic compound"],
+        "identifiers_found": ["InChIKey", "EOS ID (EU-OPENSCREEN)", "PubChem CID", "ChEMBL ID", "ZINC ID", "SMILES", "InChI"],
+        "record_count": 107414
+    },
+    "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "restrictions": ["Attribution required — acknowledge EU-OPENSCREEN and ECBD use"]
+    },
+    "urls": {
+        "homepage": "https://ecbd.eu",
+        "download": [
+            "https://ecbd.eu/static/core/compounds/bioactives.csv",
+            "https://ecbd.eu/static/core/compounds/fragments.csv",
+            "https://ecbd.eu/static/core/compounds/nuisance_set.csv",
+            "https://ecbd.eu/static/core/compounds/academic.csv",
+            "https://ecbd.eu/static/core/compounds/diverse_library.csv"
+        ],
+        "api": "https://ecbd.eu/api/",
+        "paper_doi": "10.1093/nar/gkae904",
+        "pmid": "39441065",
+        "pmc": "PMC11701612"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://ecbd.eu/api/",
+        "auth_required": false,
+        "rate_limits": "unknown",
+        "pagination": "unknown",
+        "record_coverage": "compounds, assays, targets — full REST API",
+        "notes": "REST API documented at ecbd.eu. Paper mentions data access via UI, API, and database dump (PostgreSQL). Bulk compound CSV downloads cover compound metadata; bioassay endpoint/result data is only via API or PostgreSQL dump."
+    },
+    "target_api": "MyChem.info",
+    "risks": [
+        "ecbd.eu uses a self-signed TLS certificate — biothings-cli dump fails with SSL verification error; requires pre-download via curl --insecure or custom dumper.py with verify=False",
+        "Diverse library CSV is ~30 MB — large file but manageable for streaming",
+        "Many ECBL diversity compounds overlap structurally with ChEMBL/PubChem — InChIKey-based deduplication in BioThings handles this but creates enrichment rather than novel documents",
+        "Academic compounds (EACL) are not standardly available in public databases — most novel subset",
+        "ZINC cross-references in the CSV may be stale if ZINC has retired IDs"
+    ],
+    "next_actions": [
+        "Run site inspection to confirm all 5 CSV file schemas and verify column headers",
+        "Decide whether to ingest all 5 independent sub-libraries or the superset (diverse_library.csv covers only diversity; bioactives/fragments/academic/nuisance are independent)",
+        "Proceed to plugin generation targeting MyChem.info with InChIKey as _id"
+    ],
+    "evaluated_at": "2026-05-14"
+}
