@@ -54,6 +54,7 @@ Validated against production plugins in pending.api and mydisease.info.
 | `license` | yes | string | Short license name, e.g. `"CC BY 4.0"`, `"CC0 1.0"`, `"MIT"` |
 | `license_url` | yes | string | Direct URL to license text |
 | `url` | yes | string | Datasource homepage (not download URL) |
+| `publication` | no | object | NAR (or other) paper that describes this datasource — `{"doi": "...", "pmid": "...", "pmc": "..."}`. Pull values from the relevancy report (`urls.paper_doi`, `urls.pmid`, `urls.pmc`). Omit `pmc` if unavailable. Omit the entire key only if no paper can be identified. |
 | `author` | no | object | Nested `{"name": "...", "url": "..."}` — see note below |
 
 > **Note on `author`**: In older plugins (FoodData, go) `author` appears as a top-level key alongside `__metadata__`. In newer plugins it may be nested inside `__metadata__`. Either placement is accepted by the Hub. Prefer top-level for consistency with older plugins; nested is fine too. Do not put it in both places.
@@ -65,7 +66,12 @@ Validated against production plugins in pending.api and mydisease.info.
     "description": "A curated database of biomedical associations between genes and diseases.",
     "license": "CC BY 4.0",
     "license_url": "https://creativecommons.org/licenses/by/4.0/",
-    "url": "https://datasource-homepage.org"
+    "url": "https://datasource-homepage.org",
+    "publication": {
+        "doi": "10.1093/nar/gkXXXXXX",
+        "pmid": "XXXXXXXX",
+        "pmc": "PMCXXXXXXX"
+    }
 }
 ```
 

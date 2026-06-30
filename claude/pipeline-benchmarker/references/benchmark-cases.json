@@ -5,7 +5,7 @@
   "scoring": {
     "relevancy_max": 8,
     "site_inspection_max": 6,
-    "plugin_max": 10
+    "plugin_assessment": "detailed_session_report"
   },
   "cases": [
     {
@@ -42,7 +42,11 @@
           "id_format": "InChIKey",
           "biothings_namespace": "ecbd",
           "on_duplicates": "ignore",
-          "notes": "Multi-file: bioactives.csv + fragments.csv + nuisance_set.csv. on_duplicates ignore because IDs may span files."
+          "notes": "Multi-file: bioactives.csv + fragments.csv + nuisance_set.csv. on_duplicates ignore because IDs may span files.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "ecbd.eu uses a self-signed TLS certificate and has no documented REST API; source data is only accessible via static CSV file downloads (curl --insecure required)"
+          }
         }
       },
       "source_artifacts": {
@@ -85,7 +89,11 @@
           "id_format": "SIGNOR interaction ID (e.g. SIGNOR-250327)",
           "biothings_namespace": "signor",
           "on_duplicates": "error",
-          "notes": "PhosphoSIGNOR API endpoint (role=all&format=tsv). groupby aggregation on signor_id. 13,411 docs in reference run."
+          "notes": "PhosphoSIGNOR API endpoint (role=all&format=tsv). groupby aggregation on signor_id. 13,411 docs in reference run.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "getData.php ignores signor_id filter and always returns full 42K-row dataset; no per-record JSON REST endpoint exists. Verified 2026-06-22: getData.php?signor_id=X returns 42,527 rows regardless of value."
+          }
         }
       },
       "source_artifacts": {
@@ -237,6 +245,88 @@
       "robustness_tag": "no_license"
     },
     {
+      "id": "coconut",
+      "name": "COCONUT — Collection of Open Natural Products",
+      "url": "https://coconut.naturalproducts.net",
+      "test_prompt": "Evaluate COCONUT at https://coconut.naturalproducts.net for BioThings ingestion",
+      "stages": ["relevancy", "site_inspection", "plugin"],
+      "tags": ["core", "full_pipeline", "myChem", "cc0", "recommend"],
+      "ground_truth": {
+        "relevancy": {
+          "verdict": "RECOMMEND_INGEST",
+          "relevance_score": 5,
+          "novelty_score": 4,
+          "openness_verdict": "PASS",
+          "openness_score": 5,
+          "license": "CC0 1.0",
+          "target_api": "MyChem.info",
+          "rationale": "738K+ natural product structures with NPLikeness, NP Classifier annotations, organism provenance, and 63+ collection sources — NP-specific annotation layer largely absent from ChEMBL/PubChem; CC0 public domain; single public bulk CSV download with no auth"
+        },
+        "site_inspection": {
+          "status": "VERIFIED",
+          "download_accessible": true,
+          "primary_key_field": "standard_inchi_key",
+          "target_api": "MyChem.info",
+          "novel_fields": ["np_likeness", "np_classifier_pathway", "np_classifier_class", "organisms", "collections", "annotation_level"]
+        },
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 700000,
+          "id_format": "InChIKey",
+          "biothings_namespace": "coconut",
+          "on_duplicates": "error",
+          "notes": "Single large CSV (738K rows, 248 MB zipped). Streaming parser required. 44 source columns mapped to nested coconut.* namespace with properties, classification, np_classifier, organisms, collections, synonyms, and xrefs sub-dicts.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "COCONUT REST API requires user registration (email + password via Laravel Sanctum). Pipeline policy: any source requiring authentication is a hard skip — no logins or credentials for automated spot checks.",
+            "reference": {
+              "note": "Field map and fetch spec preserved for manual verification only. Not used in automated benchmarking.",
+              "api_spec": "https://coconut.naturalproducts.net/vendor/rest/openapi.json",
+              "fetch": {
+                "method": "POST",
+                "url": "https://coconut.naturalproducts.net/api/molecules/search",
+                "payload_template": {
+                  "search": {
+                    "filters": [{"field": "identifier", "operator": "=", "value": "{{example_id}}"}],
+                    "includes": [{"relation": "properties"}],
+                    "page": 1,
+                    "limit": 1
+                  }
+                },
+                "auth": {"type": "bearer", "login_url": "https://coconut.naturalproducts.net/api/auth/login"},
+                "result_path": "data[0]"
+              },
+              "example_id": "CNP0116685.1",
+              "example_plugin_id": "AOENXCFCECBJAP-PGRDOPGGSA-N",
+              "field_map": [
+                {"api": "identifier",                    "plugin": "coconut.coconut_id"},
+                {"api": "standard_inchi_key",            "plugin": "_id"},
+                {"api": "iupac_name",                    "plugin": "coconut.iupac_name"},
+                {"api": "annotation_level",              "plugin": "coconut.properties.annotation_level"},
+                {"api": "properties.alogp",              "plugin": "coconut.properties.alogp"},
+                {"api": "properties.molecular_weight",   "plugin": "coconut.properties.molecular_weight"},
+                {"api": "properties.np_likeness_score",  "plugin": "coconut.properties.np_likeness"},
+                {"api": "properties.contains_sugar",     "plugin": "coconut.properties.contains_sugar"}
+              ],
+              "api_only_fields": [
+                "sugar_free_smiles", "structural_comments", "name_trust_level",
+                "variants_count", "status", "active", "has_variants",
+                "has_stereo", "is_tautomer", "is_parent", "is_placeholder"
+              ]
+            }
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/coconut_datasource/coconut_relevancy.json",
+        "site_inspection": "agent_outputs/coconut_datasource/coconut_inspection.json",
+        "plugin_dir": "agent_outputs/coconut_datasource/coconut_plugin"
+      }
+    },
+    {
       "id": "rnacentral",
       "name": "RNAcentral 2026",
       "url": "https://rnacentral.org",
@@ -270,13 +360,255 @@
           "id_format": "RNAcentral URS ID",
           "biothings_namespace": "rnacentral",
           "on_duplicates": "ignore",
-          "notes": "Multi-file (hgnc.tsv + ensembl_gencode.tsv + refseq.tsv + mirbase.tsv). human-only (taxon 9606). Reference run produced a plugin."
+          "notes": "Multi-file (hgnc.tsv + ensembl_gencode.tsv + refseq.tsv + mirbase.tsv). human-only (taxon 9606). Reference run produced a plugin.",
+          "api_spot_check": {
+            "type": "GET_JSON",
+            "example_id": "URS0000000A8C",
+            "example_plugin_id": "URS0000000A8C",
+            "fetch": {
+              "method": "GET",
+              "url": "https://rnacentral.org/api/v1/rna/{{example_id}}/?format=json",
+              "auth": {"type": "none"},
+              "result_path": null
+            },
+            "field_map": [
+              {"api": "rnacentral_id",      "plugin": "_id",                        "note": "primary key"},
+              {"api": "rna_type",           "plugin": "rnacentral.rna_type"},
+              {"api": "description",        "plugin": "rnacentral.description"},
+              {"api": "length",             "plugin": "rnacentral.length"},
+              {"api": "distinct_databases", "plugin": "rnacentral.database_xrefs",  "note": "list of source DB names"}
+            ],
+            "api_only_fields": [
+              "md5",
+              "sequence",
+              "count_distinct_organisms",
+              "is_active",
+              "xrefs",
+              "publications",
+              "url"
+            ],
+            "plugin_only_fields": [
+              "rnacentral.rfam_family",
+              "rnacentral.disease_associations"
+            ],
+            "notes": "xrefs and publications are returned as pagination URLs (not inline data); rfam_family and disease_associations require additional API calls beyond the base endpoint and are expected to come from the FTP source files instead"
+          }
         }
       },
       "source_artifacts": {
         "relevancy": "agent_outputs/_testing/rnacentral_datasource/rnacentral_relevancy_evaluation_20260507.md",
         "site_inspection": "agent_outputs/_testing/rnacentral_datasource/rnacentral_site_inspection_20260507.md"
       }
+    },
+    {
+      "id": "tpddb",
+      "name": "TPDdb (Targeted Protein Degrader Database)",
+      "url": "https://idrblab.org/TPDdb/",
+      "test_prompt": "Evaluate TPDdb at https://idrblab.org/TPDdb/ for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 27000,
+          "id_format": "TPD ID (e.g. TPD-P58QBR)",
+          "biothings_namespace": "tpddb",
+          "on_duplicates": "error",
+          "notes": "Multi-file: 6 main tables + 3 activity files + diseases + PDB. One doc per degrader compound keyed by TPD ID. Targets pending.api. 28K+ degraders (PROTAC 21K + MG 6K + LYTAC/ATTEC/AUTAC/AUTOTAC).",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "TPDdb has no per-record REST API endpoint; all data available only as bulk TSV file downloads from tpddb.idrblab.net/sites/files/tpd_download/"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/tpddb_datasource/tpddb_relevancy.json",
+        "site_inspection": "agent_outputs/tpddb_datasource/tpddb_inspection.json",
+        "plugin_dir": "agent_outputs/tpddb_datasource/tpddb_plugin"
+      }
+    },
+    {
+      "id": "medic",
+      "name": "MeDIC (Matrix Drug Indication and Contraindication)",
+      "url": "https://medic.renci.org/",
+      "test_prompt": "Evaluate MeDIC at https://medic.renci.org/ for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc0", "recommend"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 4000,
+          "id_format": "Drug CURIE (e.g. CHEBI:8327, UNII:xxx, PUBCHEM.COMPOUND:xxx)",
+          "biothings_namespace": "medic",
+          "on_duplicates": "error",
+          "notes": "3 files: drugList.tsv + indicationList.xlsx + contraindicationList.xlsx. One doc per drug keyed by CURIE. Nested indications[] and contraindications[] lists with MONDO disease IDs.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "MeDIC has no public per-record REST API; data distributed exclusively via GitHub release TSV/XLSX downloads (everycure-org/matrix-drug-list and matrix-indication-list repos)"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/medic_datasource/medic_relevancy.json",
+        "site_inspection": "agent_outputs/medic_datasource/medic_inspection.json",
+        "plugin_dir": "agent_outputs/medic_datasource/medic_plugin"
+      }
+    },
+    {
+      "id": "chemprob",
+      "name": "Chem(Pro)2 (ChemoProteomic Probe Square)",
+      "url": "https://chemprosquare.idrblab.net/",
+      "test_prompt": "Evaluate Chem(Pro)2 at https://chemprosquare.idrblab.net/ for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "myChem", "cc_by_nc_4", "recommend"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 1500,
+          "id_format": "InChIKey (e.g. PBZVMJKEJBZODL-UHFFFAOYSA-N)",
+          "biothings_namespace": "chemprob",
+          "on_duplicates": "error",
+          "notes": "603 probes + 1087 competitors, each keyed by InChIKey. Experiment-level data joined from chemoproteomics_experiment.txt. Targets MyChem.info.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "ChemPro2 / chemprosquare.idrblab.net has no documented per-record JSON REST API; source data available only as static TSV file downloads"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/chemprob_datasource/chemprob_relevancy.json",
+        "site_inspection": "agent_outputs/chemprob_datasource/chemprob_inspection.json",
+        "plugin_dir": "agent_outputs/chemprob_datasource/chemprob_plugin"
+      }
+    },
+    {
+      "id": "gto",
+      "name": "GTO (Gene Therapy Omnibus)",
+      "url": "http://www.inbirg.com/gto/",
+      "test_prompt": "Evaluate GTO at http://www.inbirg.com/gto/ for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "academic_only", "recommend"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 3500,
+          "id_format": "GTOID (e.g. GTC0001)",
+          "biothings_namespace": "gto",
+          "on_duplicates": "error",
+          "notes": "Primary file: GTO_clinic_data.xlsx (6333 rows). Joined with GTO_indication.xlsx for DOID/MONDO cross-refs. One doc per gene therapy clinical trial record keyed by GTOID.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "GTO (inbirg.com) has no public per-record REST API; all data distributed via Excel file downloads only"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/gto_datasource/gto_relevancy.json",
+        "site_inspection": "agent_outputs/gto_datasource/gto_inspection.json",
+        "plugin_dir": "agent_outputs/gto_datasource/gto_plugin"
+      }
+    },
+    {
+      "id": "geneasso",
+      "name": "GENEasso (Gene-Disease Association Atlas)",
+      "url": "https://www.geneasso.net/",
+      "test_prompt": "Evaluate GENEasso at https://www.geneasso.net/ for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "open_access", "recommend"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 600000,
+          "id_format": "composite ENSG+DAGENA+Method (e.g. ENSG00000145335_GA00002_MAGMA)",
+          "biothings_namespace": "geneasso",
+          "on_duplicates": "ignore",
+          "notes": "11 method-specific TSV files (MAGMA/DEPICT/PASCAL/LDAK-GBAT/RWAS/SMR_*). Each row is a gene-GWAS-method association. Composite key: ENSG + DAGENA + Method. 716K total associations across methods. Free for all including commercial use.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "GENEasso bulk files are method-level flat exports; no per-record REST endpoint returning individual association records by composite key"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/geneasso_datasource/geneasso_relevancy.json",
+        "site_inspection": "agent_outputs/geneasso_datasource/geneasso_inspection.json",
+        "plugin_dir": "agent_outputs/geneasso_datasource/geneasso_plugin"
+      }
+    },
+    {
+      "id": "sctwas_atlas",
+      "name": "scTWAS Atlas (Single-Cell TWAS eQTL Atlas)",
+      "url": "https://ngdc.cncb.ac.cn/sctwas/",
+      "test_prompt": "Evaluate scTWAS Atlas at https://ngdc.cncb.ac.cn/sctwas/ for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 900000,
+          "id_format": "composite ensembl|cell_type|cell_condition|snp_id (e.g. ENSG00000197728|Megakaryocyte|Normal|rs1131017)",
+          "biothings_namespace": "sctwas_atlas",
+          "on_duplicates": "error",
+          "notes": "Single 127MB TSV (Allstudies_sig_eQTL.txt). ~1.3M SNP-gene-celltype-condition rows. Composite key: Ensembl ID + Cell Type + Cell Condition + SNP ID. Note: contains sc-eQTL INPUT data, not TWAS associations (those are not bulk-downloadable).",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "scTWAS Atlas (ngdc.cncb.ac.cn) has no per-record REST API; data available only as bulk static TSV file download. TWAS associations are web-only (MySQL backend, not exportable)."
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/sctwas_atlas_datasource/sctwas_atlas_relevancy.json",
+        "site_inspection": "agent_outputs/sctwas_atlas_datasource/sctwas_atlas_inspection.json",
+        "plugin_dir": "agent_outputs/sctwas_atlas_datasource/sctwas_atlas_plugin"
+      }
+    },
+    {
+      "id": "molbic",
+      "name": "MolBIC (Molecular Binding Interaction Compendium)",
+      "url": "https://molbic.idrblab.net/",
+      "test_prompt": "Evaluate MolBIC at https://molbic.idrblab.net/ for BioThings ingestion",
+      "stages": [],
+      "tags": ["core", "blocked", "myChem", "cc_by_nc_4"],
+      "ground_truth": {},
+      "source_artifacts": {
+        "relevancy": "agent_outputs/molbic_datasource/molbic_relevancy.json",
+        "site_inspection": "agent_outputs/molbic_datasource/molbic_inspection.json"
+      },
+      "blocked_reason": "Download files cannot be fetched programmatically — Drupal serves them only via browser JS click. Standard biothings-cli dump will fail. Plugin stage blocked until manual download workaround is implemented.",
+      "robustness_tag": "js_download_blocker"
+    },
+    {
+      "id": "persade",
+      "name": "PersADE (Personalized Adverse Drug Event database)",
+      "url": "https://idrblab.org/persade/",
+      "test_prompt": "Evaluate PersADE at https://idrblab.org/persade/ for BioThings ingestion",
+      "stages": [],
+      "tags": ["core", "blocked", "myChem", "cc_by_nc_4"],
+      "ground_truth": {},
+      "source_artifacts": {
+        "relevancy": "agent_outputs/persade_datasource/persade_relevancy.json",
+        "site_inspection": "agent_outputs/persade_datasource/persade_inspection.json"
+      },
+      "blocked_reason": "Available bulk download is the 2023 mtADENet dataset (~461K associations), not the full 2026 PersADE (4M claimed). Personalization data (the key novel feature) is not available in bulk download. Plugin stage blocked until full 2026 export is available.",
+      "robustness_tag": "data_not_available"
     }
   ]
 }

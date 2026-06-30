@@ -13,16 +13,15 @@ This folder contains the Claude/Cline implementation of the NAR BioThings agenti
 ## Skills
 
 ### Pipeline Orchestrator
-**`SKILL.md`** — Runs the complete datasource-to-plugin pipeline in one shot. Chains Stage 1 → Stage 2 → Stage 3 with gate checks between each. Reads each stage's `SKILL.md` as it reaches that stage.
+**`SKILL.md`** — Runs the complete datasource-to-plugin pipeline in one shot. Chains Stage 1 → Stage 2 with gate checks between each. Reads each stage's `SKILL.md` as it reaches that stage.
 
 ### Stage Skills
 
 | Folder | Stage | What it does |
 |--------|-------|--------------|
 | `nar-biothings-scanner/` | Upstream discovery | Scans a NAR Database Issue to produce a ranked list of 10–20 ingestible candidates |
-| `datasource-relevancy-analysis/` | Stage 1 | Scores a datasource on relevance (0–5), novelty (0–5), and openness (PASS/FAIL). Outputs a verdict: `RECOMMEND_INGEST`, `NEEDS_REVIEW`, or `DO_NOT_INGEST` |
-| `datasource-site-inspection/` | Stage 2 | Verifies download URLs, samples the data schema, assesses field novelty. Outputs: `VERIFIED`, `PARTIALLY_VERIFIED`, or `BLOCKED` |
-| `biothings-plugin-generator/` | Stage 3 | Generates `manifest.json`, `parser.py`, `version.py`, and `design_rationale.md`. Validates with `biothings-cli` |
+| `datasource-evaluation/` | Stage 1 | Combined relevancy analysis + site inspection in one pass. Scores relevance (0–5), novelty (0–5), openness (PASS/FAIL); verifies downloads, samples schema, classifies fields. Outputs both `_relevancy.json` (verdict) and `_inspection.json` (status) |
+| `biothings-plugin-generator/` | Stage 2 | Generates `manifest.json`, `parser.py`, `version.py`, and `design_rationale.md`. Validates with `biothings-cli` |
 | `pipeline-benchmarker/` | Evaluation | Runs all pipeline stages against curated ground-truth cases and scores accuracy |
 
 ## References
@@ -58,7 +57,7 @@ Scan NAR 2025 for BioThings-ingestible databases
 ```
 
 **Optional pipeline flags:**
-- `--skip-plugin` — stop after site inspection
+- `--skip-plugin` — stop after evaluation
 - `--force` — continue past `NEEDS_REVIEW` without pausing
 - `--with-reports` — also write `.md` reports alongside JSON outputs
 - `--with-parser-report` — include `parser_report.json` in plugin output

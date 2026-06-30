@@ -104,7 +104,12 @@ Always use version `"1.0"`, always include `__metadata__`, and always wire `vers
         "description": "<one sentence describing what this datasource contains>",
         "license": "CC BY 4.0",
         "license_url": "https://creativecommons.org/licenses/by/4.0/",
-        "url": "https://datasource-homepage.org"
+        "url": "https://datasource-homepage.org",
+        "publication": {
+            "doi": "<doi of the NAR paper describing this datasource>",
+            "pmid": "<PubMed ID>",
+            "pmc": "<PMC ID if available>"
+        }
     },
     "dumper": {
         "data_url": ["<only_the_specific_files_needed>"],
@@ -117,6 +122,8 @@ Always use version `"1.0"`, always include `__metadata__`, and always wire `vers
     }
 }
 ```
+
+Pull `doi`, `pmid`, and `pmc` from the datasource's relevancy report (`urls.paper_doi`, `urls.pmid`, `urls.pmc`) if available; otherwise search PubMed. Omit `pmc` if not found. Omit the entire `publication` block only if no paper can be identified.
 
 See [references/manifest-schema.md](references/manifest-schema.md) for the complete field reference and validated examples.
 

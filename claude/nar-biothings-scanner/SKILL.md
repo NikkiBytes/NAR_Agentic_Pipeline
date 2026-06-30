@@ -77,7 +77,7 @@ For each candidate:
 ### 5. Deep-Dive the Top Candidates
 For the databases that pass the filter (aim for 10-20), fetch the individual paper and extract the details below.
 
-**Important — OUP URL resolution**: Do NOT fetch OUP article URLs directly (`academic.oup.com/nar/article/...`) — they are JS-rendered and will fail. Instead, follow the resolution procedure in [../datasource-relevancy-analysis/references/nar-url-resolution.md](../datasource-relevancy-analysis/references/nar-url-resolution.md) to resolve each OUP URL to its PMC equivalent via PubMed E-utilities. PMC pages are reliably fetchable.
+**Important — OUP URL resolution**: Do NOT fetch OUP article URLs directly (`academic.oup.com/nar/article/...`) — they are JS-rendered and will fail. Instead, follow the resolution procedure in [../datasource-evaluation/references/nar-url-resolution.md](../datasource-evaluation/references/nar-url-resolution.md) to resolve each OUP URL to its PMC equivalent via PubMed E-utilities. PMC pages are reliably fetchable.
 
 For each candidate, extract:
 - **Data format**: what download formats are available (CSV, TSV, JSON, SDF, REST API, FTP, SQL dump)
@@ -145,11 +145,11 @@ See [references/example-output.md](references/example-output.md) for the exact o
 - **Pathways**: KEGG, Reactome, GO
 
 ## Next Steps
-<Recommend running datasource-relevancy-analysis on top picks, then datasource-site-inspection, then biothings-plugin-generator>
+<Recommend running datasource-evaluation on top picks, then biothings-plugin-generator>
 ```
 
 ## Interaction with Other Skills
-- **Upstream of**: `datasource-relevancy-analysis` → `datasource-site-inspection` → `biothings-plugin-generator`
+- **Upstream of**: `datasource-evaluation` → `biothings-plugin-generator`
 - The report produced here provides the candidate list. Users then run the downstream skills on individual candidates.
 - If a prior report exists in `agent_outputs/`, load it and note which candidates have already been evaluated.
 

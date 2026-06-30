@@ -124,21 +124,21 @@ Update this file immediately after each generation. Before starting a new plugin
 ---
 
 ### coconut
-- **Datasource**: COCONUT 2.0 — Collection of Open Natural Products
+- **Datasource**: COCONUT 2.0 — COlleCtion of Open Natural prodUcTs (NAR 2025, DOI: 10.1093/nar/gkae1063)
 - **Homepage**: https://coconut.naturalproducts.net
 - **Target API**: MyChem.info
 - **_id strategy**: InChIKey (`standard_inchi_key` column from CSV)
-- **Data format**: Single CSV (44 columns, bulk download from canonical site, zipped)
-- **Files ingested**: `coconut_csv-05-2026.csv` from `coconut.naturalproducts.net/download` (full CSV with identifiers, molecular properties, chemical classification, NP classifier, organisms, collections, CAS, DOIs, synonyms)
-- **Parser pattern**: streaming CSV with `seen_ids` deduplication, type conversion (float/int/bool), pipe-delimited list splitting, nested document structure
-- **on_duplicates**: `error` (deduplication handled in parser via `seen_ids` set)
+- **Data format**: Single CSV (44 columns, bulk download from canonical S3 URL, zipped)
+- **Files ingested**: `coconut_csv-05-2026.csv` — full annotated CSV with identifiers, NP-specific annotations (np_likeness, np_classifier, classyfire, organisms, collections, dois, synonyms, sugar flags, murcko scaffold, annotation_level); `coconut_csv_lite` excluded (missing all novel NP fields); SDF/SQL excluded (larger/harder to parse)
+- **Parser pattern**: streaming CSV with `seen_ids` deduplication, type conversion helpers (`_to_float/_to_int/_to_bool`), `_split_pipe()` for pipe-delimited list fields, nested sub-objects (`classyfire`, `np_classifier`)
+- **on_duplicates**: `error` (deduplication handled in parser via `seen_ids` set; SQLite UNIQUE raises even with `on_duplicates: ignore`)
 - **requires**: none (stdlib CSV only)
 - **Output path**: `agent_outputs/coconut_datasource/coconut_plugin/`
-- **version.py strategy**: Parse "Version: Month Year" text from canonical download page → `YYYYMM` format; fallback regex extracts date from CSV filename in page HTML
-- **Date generated**: 2026-05-14
-- **Version**: 2.1 (validated 2026-05-14 — fixed version.py regex syntax + added seen_ids deduplication)
-- **Smoke test (2026-05-14)**: 728,421 unique documents from 738,827 CSV rows; all 5 biothings-cli steps passed; `_id` = 27-char InChIKey, `coconut` sub-object with properties/classification/np_classifier/organisms/collections/xrefs; 3 duplicate InChIKeys confirmed in source data
-- **Notes**: v1.0 used a 4-column Zenodo lite CSV (Sept 2024, 695K rows). v2.0 switched to canonical site full 44-column CSV. v2.1 fixed version.py regex (unescaped `"` inside `r"..."` caused SyntaxError) and added `seen_ids` deduplication (3 InChIKeys appear twice in the CSV; biothings SQLite backend raises UNIQUE constraint even with `on_duplicates: ignore`). CC0 license. URL contains dated path (`2026-05`) that will need updating on each new release.
+- **version.py strategy**: Regex on download page HTML to extract month/year from CSV filename `coconut_csv-{MM}-{YYYY}.zip` → `YYYYMM`
+- **Date generated**: 2026-05-15
+- **Version**: 1.0 (first generation in pipeline)
+- **Smoke test (2026-05-15)**: 728,421 unique documents from 738,827 CSV rows (10,406 skipped: missing InChIKey or duplicate); validate/list PASS; dump_and_upload PASS (upload standalone has biothings v1.0.2 bug — routes to do_parallel_upload causing AttributeError:jobs); inspect via SQLite direct query; `_id` = 27-char InChIKey; `coconut` sub-object with coconut_id/name/iupac_name/smiles/inchi/cas/annotation_level/np_likeness/contains_sugar/contains_ring_sugars/contains_linear_sugars/murcko_framework/number_of_minimal_rings/van_der_waals_volume/classyfire{class,subclass,superclass,direct_parent}/np_classifier{pathway,superclass,class,is_glycoside}/organisms/collections/synonyms/dois
+- **Notes**: Dataset is CC0 (public domain). np_likeness 100% populated; organisms 34.8%; dois 32.7%; cas 7.5%. Download URL contains dated path (2026-05) — version.py must scrape download page for current release link. `biothings-cli dataplugin upload` has a biothings v1.0.2 bug where Optional[bool] --parallel is treated as True, calling do_parallel_upload instead of do_upload → AttributeError:jobs. Workaround: use `dump_and_upload` command instead.
 
 ---
 
@@ -196,10 +196,204 @@ Update this file immediately after each generation. Before starting a new plugin
 
 ---
 
+### circtarget
+- **Datasource**: CircTarget — circRNA-target RNA interactions (NAR 2026, DOI: 10.1093/nar/gkaf1280)
+- **Homepage**: https://circtarget.cn
+- **Target API**: pending.api
+- **_id strategy**: circRNA ID directly (`circRNA ID` column; two namespaces: circBase format `hsa_circ_XXXXXXX` and host-gene format `hsa-GENENAME_XXXX`)
+- **Data format**: CSV (comma-delimited .txt inside RAR3 archive); single file `all.txt` (132,517 rows, 10 columns)
+- **Files ingested**: `all.rar` (canonical superset at circtarget.cn/static/download/all.rar); 14 per-cell-line RARs excluded (strict subsets with identical schema)
+- **Parser pattern**: defaultdict groupby on circRNA ID → one doc per circRNA with nested `interactions` list; RAR extraction via `rarfile` module in parser
+- **on_duplicates**: `error` (each circRNA ID is unique after groupby)
+- **requires**: `rarfile`
+- **Output path**: `agent_outputs/circtarget_datasource/circtarget_plugin/`
+- **version.py strategy**: Last-Modified HTTP HEAD on all.rar → `YYYYMMDD`; fallback None
+- **Date generated**: 2026-05-15
+- **Version**: 1.0
+- **Smoke test (2026-05-15)**: 6,651 unique circRNA documents (from 132,517 source rows); validate/list PASS; dump PASS (release 20251013); upload via dump_and_upload workaround (biothings v1.0.2 bug); inspect via SQLite; 100% field coverage for all fields; top circRNA hsa_circ_0001946 has 4,165 interactions; BSJ_supported 9,935 / nonBSJ_supported 122,582; RIC-seq dominant (119,388/132,517)
+- **Notes**: No explicit license declared on site; "freely accessible" language in NAR 2026 paper implies open research use. RAR format not natively supported by BioThings Hub uncompress — handled in parser via `rarfile`. Two circRNA ID namespaces (circBase and host-gene format) used verbatim as `_id`. Genome assembly is hg19 (implied from methods). Data as of 2025-10-13. `biothings-cli upload` has v1.0.2 bug → use `dump_and_upload`. `inspect --sub-source-name` has arg parsing bug → use SQLite direct query.
+
+---
+
+### ttd
+- **Datasource**: Therapeutic Target Database 2026 — TTD (NAR 2026, DOI: 10.1093/nar/gkaf1154)
+- **Homepage**: https://db.idrblab.net/ttd/
+- **Target API**: pending.api
+- **_id strategy**: TTD Drug ID (e.g., `D00UZR`) — InChIKey available as `ttd.inchikey` cross-reference (~59% of docs); TTD Drug ID chosen because it is present for all 42,938 entries including biologics/peptides without chemical structures
+- **Data format**: TXT (custom key-value row format); two flavors: 3-column entity-prefixed (P1-02/P1-03) and 2-column blank-separated (P1-05)
+- **Files ingested**: `P1-02-TTD_drug_download.txt` (drug metadata), `P1-03-TTD_crossmatching.txt` (PubChem/ChEBI/CAS/ATC cross-refs), `P1-05-Drug_disease.txt` (ICD-11 drug-disease indications); P1-01 (targets), P1-04 (synonyms), P1-06 (target-disease), P1-08 (biomarkers) excluded — different entity types or redundant
+- **Parser pattern**: Two-phase: `_parse_3col_file()` for P1-02/P1-03 (streaming by entity ID prefix), `_parse_disease_file()` for P1-05 (blank-line entity separation, tracking `current_id`); dict merge at yield time
+- **on_duplicates**: `error` (42,938 unique TTD Drug IDs)
+- **requires**: none (stdlib only + biothings SDK)
+- **Output path**: `agent_outputs/ttd_datasource/ttd_plugin/`
+- **version.py strategy**: Regex `Version X.Y.Z (YYYY.MM.DD)` from P1-02 file header (first ~20 lines) → `{version}_{YYYYMMDD}`; fallback None
+- **Date generated**: 2026-05-28
+- **Version**: 1.0
+- **Smoke test (2026-05-28)**: 42,938 unique drug documents; dump release 10.1.01_20240110; validate/dump/dump_and_upload/list PASS; inspect via SQLite (CLI inspect arg-parsing bug); `_id` = TTD Drug ID; `ttd` sub-object with drug_id/name/company/therapeutic_class/drug_type/highest_status/inchikey/inchi/smiles/xrefs{pubchem_cid,chebi,cas,atc}/indications[{disease,icd11,status}]; highest_status 100% / smiles 59.4% / indications 55.5% / name (trade name) 0.3%
+- **Notes**: Existing BioThings TTD v8.1.01 (2023, 876K records) already deployed at `https://biothings.transltr.io/ttd` — this plugin targets pending.api update with v10.1.01 data and ICD-11 disease annotations. TTD 2026 paper-specific new features (CMap perturbation profiles, FDA label data, cytotoxic activities) are NOT yet in bulk download files. Plugin covers drug-centric records only; target-centric records (P1-01 + P1-06) would be a separate plugin. Download domain changed from `db.idrblab.net` to `ttd.idrblab.cn`. CC BY-NC 4.0 license — non-commercial use compatible with BioThings research posture.
+
+---
+
+### gto
+- **Datasource**: Gene Therapy Omnibus (GTO) — NAR 2025, DOI: 10.1093/nar/gkae1051
+- **Homepage**: http://www.inbirg.com/gto/
+- **Target API**: pending.api
+- **_id strategy**: GTOID (`GTOID` column, e.g., `GTC0001`) — unique per clinical trial record
+- **Data format**: Multi-file Excel XLSX (bulk download, 2 files joined at parse time)
+- **Files ingested**: `GTO_clinic_data.xlsx` (6,333 rows, 46 cols — clinical metadata) + `GTO_indication.xlsx` (6,061 rows, 18 cols — disease cross-refs DOID/MONDO/MeSH) joined on GTOID; `GTO_clinic_basic.xlsx` excluded (strict subset); omics/DEG ZIPs excluded (different entity type / too large)
+- **Parser pattern**: pandas read_excel for both files; `indication_map` dict for O(1) join; `seen_ids` deduplication (6,333 rows → 4,014 unique GTOIDs); `_extract_mondo/mesh/omim()` parse pipe-delimited xref strings
+- **on_duplicates**: `error` (deduplication in parser via `seen_ids`)
+- **requires**: `pandas`, `openpyxl`
+- **Output path**: `agent_outputs/gto_datasource/gto_plugin/`
+- **version.py strategy**: HEAD on `clinical_data_download` endpoint for `Last-Modified` header → YYYYMMDD; fallback: homepage date regex; final fallback: `20250106` (paper publication date)
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 4,014 unique documents; validate/dump/dump_and_upload/list/inspect PASS; dump release 20250106; `_id` = GTOID string (7 chars); `gto` sub-object with gtoid/year/trial_id/country/phase/status/therapy_type/treatment/altered_gene/vector/disease/disease_xrefs{doid,mondo,mesh,omim,umls}/outcome/sponsor; year 100%/altered_gene 93.7%/outcome 46.3%/disease_xrefs.mondo ~85%
+- **Notes**: 6,333 source rows deduplicate to 4,014 unique trials (multiple patient cohort groups per trial share same GTOID). GTO download URLs use Content-Disposition headers (filenames not in URL path) — biothings-cli correctly saves as `.xlsx` files. License is academic/research use only (no CC license); Chinese academic server (Chongqing Medical University InBRG). Omics data (40.5 GB expression profiles) not ingested. biothings v1.0.2 `upload` bug — use `dump_and_upload` workaround.
+
+---
+
+### chemprob
+
+- **Datasource**: Chem(Pro)² — Chemoproteomic Probes Atlas (NAR 2025, DOI: 10.1093/nar/gkae943)
+- **Homepage**: <https://chemprosquare.idrblab.net/>
+- **Target API**: MyChem.info
+- **_id strategy**: InChIKey (`inchikey` from `general_probe.txt` and `general_competitor.txt`)
+- **Data format**: Multi-file TSV (9 direct-download .txt files from idrblab.net CDN)
+- **Files ingested**: `general_probe.txt` (603 probes), `general_competitor.txt` (1,087 competitors), `chemoproteomics_experiment.txt` (480KB, experiment-level probe-target links), `general_cell.txt` (cell line metadata), `general_target_*.txt` (5 target class files, index only); `chemoproteomics_enzyme.txt` (924MB) and `chemoproteomics_other.txt` (~852MB) excluded — 2.1M binding ratio records, too large and entity-level rather than compound-level
+- **Parser pattern**: Three in-memory indices built before main loop (`target_index`, `cell_index`, `probe_experiments`/`competitor_experiments`); two-pass main loop (probes → competitors) with `seen_ids` deduplication
+- **on_duplicates**: `error` (deduplication in parser via `seen_ids`; 54 cross-file duplicate InChIKeys)
+- **requires**: `pandas` (in manifest, though parser uses stdlib csv)
+- **Output path**: `agent_outputs/chemprob_datasource/chemprob_plugin/`
+- **version.py strategy**: Regex date from download page; fallback Last-Modified HEAD on general_probe.txt → YYYYMMDD; hardcoded fallback `20240923`
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 1,636 unique documents (603 probes + 1,033 unique-InChIKey competitors, 54 duplicates skipped); all 5 biothings-cli steps PASS; dump release 20240918; `_id` = 27-char InChIKey; `chemprob` sub-object with entity_type/probe_id/competitor_id/name/probe_type/inchi/smiles/iupac_name/properties{mw/mf/polar_area/complexity/xlogp/heavy_atom_count/hbond_donor/hbond_acceptor/rotatable_bonds}/xrefs{pubchem/synonyms}/experiments[{method_id/reference_id/criteria/probe_concentration/quantitative_method/cell{cell_name/tissue/cellosaurus_accession}}]
+- **Notes**: chemprosquare.idrblab.net (not idrblab.org — JS-rendered). CC BY-NC 4.0. Quantitative binding ratio files (chemoproteomics_enzyme.txt 924MB, chemoproteomics_other.txt 852MB) NOT ingested — these contain 2.1M probe-binding-site-ratio records and are better as a separate pending.api plugin keyed by probe-target pair. biothings v1.0.2 `upload` bug → use `dump_and_upload` workaround. typer ≥0.26 incompatibility → use biothings_wrapper.py monkey-patch.
+
+---
+
+### molbic
+
+- **Datasource**: MolBiC — Cell-Based Molecular Bioactivities Database (NAR 2025, DOI: 10.1093/nar/gkae868)
+- **Homepage**: <https://molbic.idrblab.net/>
+- **Target API**: MyChem.info
+- **_id strategy**: InChIKey (`InChIKey` from `1-3. Compound.txt`)
+- **Data format**: Multi-file TSV (4 files; literal spaces in filenames)
+- **Files ingested**: `1-3. Compound.txt` (321,086 compounds), `2-1. CMBs_All.txt` (550,093 bioactivity records), `1-1. Cell_Line.txt` (988 cell lines), `5-2. Proteins_with_Uniprot_IDs.txt` (protein→UniProt mapping); activity subsets (CMBs_High/Moderate/Low) excluded (strict subsets); SDF archive excluded (structure duplicate)
+- **Parser pattern**: Two supporting indices (cell_index, protein_index) + one CMB index (InChIKey→[records]) built in memory; main loop over Compound.txt; `_find_file()` tries spaced and underscore-substituted names
+- **on_duplicates**: `error` (one document per unique InChIKey)
+- **requires**: none (stdlib csv + biothings SDK)
+- **Output path**: `agent_outputs/molbic_datasource/molbic_plugin/`
+- **version.py strategy**: Last-Modified HEAD on `1-3.%20Compound.txt`; fallback homepage date regex; hardcoded fallback `20241001`
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 5 test documents (from representative fixture with 5 known kinase inhibitors); validate PASS; dump FAIL (expected — Drupal 8 JS-only, 404 on URL-encoded filenames); upload PASS with pre-placed files; list PASS; inspect PASS (SQLite); `_id` = 27-char InChIKey; `molbic` sub-object with compound_id/name/inchikey/inchi/smiles/properties{formula/logp/rotatable_bonds/heavy_atom_count/polar_area}/xrefs{pubchem/chembl}/activity_summary{total_cmbs/high_activity/moderate_activity/low_activity}/cmbs[{protein/uniprot_id/cell_line/cell_info{cellosaurus_accession/tissue/disease/organ/species}/bioactivity_value/bioactivity_unit/activity_type/activity_class/drug_development_stage/assay_type/pmid}]
+- **Notes**: CRITICAL DUMP BLOCKER — MolBiC files have literal spaces in filenames (`1-3. Compound.txt`, `2-1. CMBs_All.txt`, etc.). Drupal 8 serves them only via browser JS click. URL-encoding (%20) returns 404. biothings-cli dump will fail. Files must be manually downloaded and pre-placed in archive dir, then `src_dump` patched and `upload` run directly. Production doc count: ~321,086 (one per InChIKey from Compound.txt). CC BY-NC 4.0 assumed. biothings v1.0.2 `upload` bug → use direct upload after patching. typer ≥0.26 incompatibility → use biothings_wrapper.py.
+
+---
+
+### persade
+
+- **Datasource**: PersADE — Personalized Adverse Drug Event Database (NAR 2026, DOI: 10.1093/nar/gkaf1095)
+- **Homepage**: <https://persade.idrblab.net/>
+- **Target API**: MyChem.info
+- **_id strategy**: InChIKey (`InChI Key` column with space, from `Global_Drug_*.xlsx`)
+- **Data format**: Multi-file XLSX (3 files, direct-download from persade.idrblab.net)
+- **Files ingested**: `Global_Drug_20230627.xlsx` (8,802 drugs with xrefs and properties), `Global_ADE_20230627.xlsx` (4,380 ADEs with MeSH tree numbers), `Global_associations_20230627.xlsx` (461,848 drug-ADE pairs); `C04_associations_*.xlsx` excluded (strict neoplasm subset)
+- **Parser pattern**: Two supporting indices (ade_index, assoc_index) built before main loop over Global_Drug file; `_parse_xref_links()` parses pipe-delimited `Source$ID` cross-reference strings; CASRN `$` prefix stripped
+- **on_duplicates**: `error` (one document per unique InChIKey; 207 duplicate rows in source deduplicated)
+- **requires**: `openpyxl`
+- **Output path**: `agent_outputs/persade_datasource/persade_plugin/`
+- **version.py strategy**: Last-Modified HEAD on Global_Drug XLSX → YYYYMMDD; fallback regex on resource.php for dated filename; hardcoded fallback `20230627`
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 8,595 unique documents; validate/dump/dump_and_upload/list PASS; dump release 20240621; `_id` = 27-char InChIKey; `persade` sub-object with inchikey/mesh_drug_id/name/smiles/properties{formula/mw/logp}/atc_code/drug_type/xrefs{pubchem/bindingdb/chebi/chembl/iuphar_bps.../kegg/ttd/zinc/cas}/ade_count/ade_associations[{mesh_id/tree_number/name}]; ade_count 1-100+ per drug; xrefs comprehensive (8 source types)
+- **Notes**: DATA GAP — available download is 2023 mtADENet data (461K non-personalized associations). The 2026 NAR paper PersADE core feature (4M personalized associations with demographic stratification by age/sex/route/dose) is NOT in bulk download. Plugin ingests available data; full PersADE should be monitored for future release. `InChI Key` column has a space in the header — parser handles both `InChI Key` and `InChIKey`. CASRN values sometimes have leading `$` character. biothings v1.0.2 `upload` bug → use `dump_and_upload` workaround. typer ≥0.26 incompatibility → use biothings_wrapper.py.
+
+---
+
+### geneasso
+
+- **Datasource**: GENEasso — Disease-Gene Association Database from GWAS (NAR 2025, DOI: 10.1093/nar/gkaf1097)
+- **Homepage**: <https://www.geneasso.net/>
+- **Target API**: pending.api
+- **_id strategy**: Composite `f"{ENSG}_{DAGENA}_{method_key}"` where method_key is the method name lowercased with `-` and spaces replaced by `_` (e.g. `ENSG00000145335_GA00002_magma`, `ENSG00000145335_GA00002_ldak_gbat`)
+- **Data format**: Multi-file TSV (11 uncompressed .download.txt files, one per gene-based method, all HTTP 200)
+- **Files ingested**: `MAGMA.download.txt`, `DEPICT.download.txt`, `PASCAL.download.txt`, `LDAK-GBAT.download.txt`, `RWAS.download.txt`, `SMR_CAGE.download.txt`, `SMR_Geuvadis.download.txt`, `SMR_GTEx-top1tissue.download.txt`, `SMR_GTEx-top2tissue.download.txt`, `SMR_GTEx-top3tissue.download.txt`, `SMR_PsychENCODE.download.txt`; `Script.download.txt` excluded (analysis scripts, not data)
+- **Parser pattern**: Multi-file glob + `csv.DictReader`, one doc per row (no groupby — each triplet is a unique row by design); method-specific fields added conditionally by testing column name in row dict; `seen_ids` deduplication in `load_data()` (19,869 duplicate triplets found in source, primarily LDAK-GBAT)
+- **on_duplicates**: `ignore` (seen_ids dedup in parser ensures no dupes reach DB; `ignore` as safe backstop)
+- **requires**: none (stdlib csv + biothings SDK helpers)
+- **Output path**: `agent_outputs/geneasso_datasource/geneasso_plugin/`
+- **version.py strategy**: Fetch `https://www.geneasso.net/api/download/list` JSON API → use file count as change signal → `20250101_{N}files`; fallback: today's date YYYYMMDD
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 640,732 unique documents from 660,601 source rows (19,869 deduped); validate/upload/list PASS; MAGMA 141,545 / PASCAL 225,878 / LDAK-GBAT 169,306 / DEPICT 21,089 / RWAS 7,609 / SMR_CAGE 22,700 / SMR_Geuvadis 6,235 / SMR_GTEx-top[1/2/3]tissue 12,111/12,637/12,358 / SMR_PsychENCODE 9,264; `_id` = `{ENSG}_{DAGENA}_{method_key}`; `geneasso` sub-object with dagena/reported_trait/efo_code/efo_ontology_trait/efo_trait_tree/gene_symbol/ensg/gene_biotype/chromosome/start_pos/end_pos/pvalue/method + method-specific: MAGMA+RWAS{zscore}, MAGMA+PASCAL+RWAS+SMR{n_eqtl}, LDAK-GBAT{h2}, DEPICT+SMR{top_eqtl}, SMR{beta}, RWAS{peak,model,r2}
+- **Notes**: GENEasso server has expired SSL certificate — `biothings-cli dataplugin dump` fails with SSLCertVerificationError; workaround is to pre-download via `curl -k` and patch src_dump hubdb manually. Source data contains 19,869 duplicate ENSG+DAGENA+Method triplets (data quality issue in upstream release, mainly LDAK-GBAT) — handled by `seen_ids` deduplication in parser. `process_inspect()` returns empty for multi-source plugins — use SQLite direct query on `.biothings_hub/data_src_database`. `biothings-cli` v1.0.2 Typer incompatibility — use `asyncio.run(do_upload())` workaround. License: free for all users including commercial (stated in NAR 2025 paper; no formal CC license). GENEasso covers 716,122 total associations at p<0.05/FDR threshold across all methods; 640,732 after dedup.
+
+---
+
+### sctwas_atlas
+- **Datasource**: scTWAS Atlas — Single-Cell TWAS eQTL Database (NAR 2025, DOI: 10.1093/nar/gkae931)
+- **Homepage**: https://ngdc.cncb.ac.cn/sctwas/
+- **Target API**: pending.api
+- **_id strategy**: Composite: `{ensembl_id}|{cell_type_norm}|{cell_condition_norm}|{snp_id}` (pipe-separated; spaces→underscores, parentheses removed from cell type)
+- **Data format**: Single TSV (127MB, uncompressed) — `Allstudies_sig_eQTL.txt`
+- **Files ingested**: `Allstudies_sig_eQTL.txt` — combined significant sc-eQTLs across all 21 cell types; per-cell-type files excluded (strict subsets)
+- **Parser pattern**: Streaming TSV with `csv.DictReader`; `seen_ids` deduplication; SNP location "chr:pos" string parsed to separate chrom (str) + position (int); `_safe_float()` for statistics
+- **on_duplicates**: `error` (deduplication handled via `seen_ids` in parser)
+- **requires**: `pandas` (declared; parser uses stdlib csv only)
+- **Output path**: `agent_outputs/sctwas_atlas_datasource/sctwas_atlas_plugin/`
+- **version.py strategy**: HTTP HEAD Last-Modified on `Allstudies_sig_eQTL.txt` → `YYYYMMDD`; fallback scrapes homepage for year
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 947,906 unique eQTL documents; validate/dump/dump_and_upload/list PASS; inspect --limit 1000 PASS (15 fields, 0 None); release 20250102; `_id` pipe-separated composite; `sctwas_atlas` sub-object with snp{id,location,chrom,position,ref_allele,alt_allele}/gene{ensembl_id,symbol}/eqtl{beta,pval,zscore}/cell_type/cell_condition/dataset
+- **Notes**: SCOPE LIMITATION — ingests sc-eQTL INPUT data (947K associations), NOT the 2.7M scTWAS output associations (the primary database value — MySQL-only, not bulk-downloadable; flagged api_only_backlog). CC-BY-NC 4.0. Server at CNCB (Chinese NGDC). `biothings-cli upload` Typer 0.12.5 bug → use `dump_and_upload` workaround.
+
+---
+
 ## Entry Template
 Copy this block and fill in all fields when adding a new plugin:
 
 ```
+### medic
+- **Datasource**: MeDIC — Medicines, Diseases, Indications, and Contraindications (NAR 2026, DOI: 10.1093/nar/gkaf1312)
+- **Homepage**: https://medic.renci.org/
+- **Target API**: MyChem.info
+- **_id strategy**: Drug CURIE (e.g. `CHEBI:8327`, `UNII:N0A21N6RAU`) — CHEBI is plurality (55% of 3,857 drugs); InChIKey available in alternate_ids for 58.9% of drugs
+- **Data format**: TSV (drugList.tsv) + 2 XLSX files (indicationList.xlsx, contraindicationList.xlsx) from GitHub releases
+- **Files ingested**: `drugList.tsv` (v2.3.1) + `indicationList.xlsx` + `contraindicationList.xlsx` (v1.4.1); downfilled/inferred XLSX files excluded (NOT government regulatory)
+- **Parser pattern**: 3-phase join — drug dict + `defaultdict(list)` for indications/contraindications; `ast.literal_eval` for ATC codes list parsing; xref deduplication
+- **on_duplicates**: `error` (all 4,652 drug CURIEs are unique)
+- **requires**: `pandas`, `openpyxl`
+- **Output path**: `agent_outputs/medic_datasource/medic_plugin/`
+- **version.py strategy**: GitHub API for latest release tags on matrix-drug-list + matrix-indication-list → `{drug_tag}_{indication_tag}` (e.g. `v2.3.1_v1.4.1`)
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 4,652 unique drug documents; validate/upload/list/inspect PASS; version v2.3.1_v1.4.1; indications 51.9% / contraindications 21.1% / inchikey 58.9% / atc_codes 45.7%; `medic.drug_id` 100%
+- **Notes**: Drug CURIE prefix non-uniform (CHEBI 55%, RXCUI 15%, UNII 16%, PUBCHEM 11%); not all drugs have InChIKey. GitHub releases/latest URLs redirect via 302 — biothings-cli dump should follow redirects. alternate_ids TSV field contains Python list literal strings AND duplicate entries (deduped in parser). drug_name field can contain repeated ingredient names artifact from the source. Downfilled inferred files (~302K pairs) excluded — not government-regulatory approved. Figshare archive is CC0; GitHub release files have no explicit LICENSE.
+
+---
+
+### tpddb
+- **Datasource**: TPDdb — Targeted Protein Degraders Database (NAR 2026, DOI: 10.1093/nar/gkaf996)
+- **Homepage**: https://idrblab.org/TPDdb/ (redirects to https://tpddb.idrblab.net)
+- **Target API**: pending.api
+- **_id strategy**: TPD ID (e.g. `TPD-P58QBR`) — InChIKey absent from bulk files; TPD ID is globally unique across all modalities
+- **Data format**: Multi-file TSV (11 files: 6 main tables + 3 activity tables + disease table + PDB table)
+- **Files ingested**: All 6 modality main tables (PROTAC, MG, LYTAC, ATTEC, AUTAC, AUTOTAC) + 3 activity files + TPD_Related_Diseases.txt + TPD_PDB.txt
+- **Parser pattern**: 4-phase join — compound dict + `defaultdict(list)` for activities/diseases/PDB; header-skip fix for PROTAC mid-file duplicate header
+- **on_duplicates**: `error` (all 27,904 TPD IDs are unique)
+- **requires**: `pandas` (declared in manifest; stdlib CSV used in parser)
+- **Output path**: `agent_outputs/tpddb_datasource/tpddb_plugin/`
+- **version.py strategy**: Regex on `/download` page for "Last updated: YYYY-MM-DD"; fallback Last-Modified HEAD on PROTAC_main_table.txt → YYYYMMDD
+- **Date generated**: 2026-06-25
+- **Version**: 1.0
+- **Smoke test (2026-06-25)**: 27,904 unique docs; validate/upload/list/inspect PASS; modality breakdown: PROTAC 21,429 / MG 6,004 / LYTAC 249 / ATTEC 170 / AUTAC 23 / AUTOTAC 29; smiles 99.6% / diseases 86.7% / activities 41.0% / pdb_ids 0.6%; `tpddb.target` 100%
+- **Notes**: InChIKey not in bulk files — RDKit needed for MyChem.info; pending.api with TPD ID chosen. PROTAC_main_table.txt has a duplicate header row mid-file at line 21,055 (data quality issue in source). Activity values are heterogeneous strings (numeric+units, qualitative, bounds). CC BY-NC 4.0 license. No public API (Drupal 8 without JSON API). idrblab.org redirects to tpddb.idrblab.net.
+
+---
+
 ### <datasource_name>
 - **Datasource**: <full name>
 - **Homepage**: <URL>
