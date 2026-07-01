@@ -394,6 +394,24 @@ Copy this block and fill in all fields when adding a new plugin:
 
 ---
 
+### prime
+- **Datasource**: PRIME — Phenotypic Reference for Integrated Microbiome Enrichment (NAR 2026, DOI: 10.1093/nar/gkaf1057)
+- **Homepage**: https://primedb.sjtu.edu.cn
+- **Target API**: pending.api (new microbiome API; user-override of DO_NOT_INGEST gate — colleague's pipeline requirement)
+- **_id strategy**: SRA run accession (`Run` column, e.g., `DRR396973`) — globally unique per NCBI/ENA/DDBJ
+- **Data format**: Single CSV (`samples_metadata.csv`, 38.2 MB) from Zenodo archive
+- **Files ingested**: `samples_metadata.csv` only — sample metadata, sequencing params, processing pipeline settings, phenotype/geography/clinical fields; 24 abundance table files excluded (scope: metadata-first v1; phylum-level join planned for v2)
+- **Parser pattern**: Simple streaming CSV; explicit known-column mapping to sub-objects; sparse clinical/host columns → `host` dict (flexible, forward-compatible)
+- **on_duplicates**: `error` (SRA accessions are globally unique)
+- **requires**: none (stdlib CSV + biothings SDK)
+- **Output path**: `agent_outputs/prime_datasource/prime_plugin/`
+- **version.py strategy**: Zenodo Records API `https://zenodo.org/api/records/15711237` → `metadata.publication_date` → `YYYYMMDD`; fallback HEAD Last-Modified on samples_metadata.csv
+- **Date generated**: 2026-06-30
+- **Version**: 1.0
+- **Notes**: Entity type mismatch with existing BioThings APIs (microbiome samples ≠ gene/variant/chemical/disease) — generated on user override for colleague's pipeline. Canonical download page is JS-rendered; Zenodo is the confirmed fallback (referenced in paper Data Availability). CC BY 4.0 + MIT. Abundance tables (9.1 GB total, 24 files) not ingested in v1 — would require wide→long pivot. biothings v1.0.2 `upload` bug possible → use `dump_and_upload`. PRIME API (primedb.sjtu.edu.cn/api/v1) is open and unauthenticated — alternative to Zenodo bulk download if Zenodo is rate-limited.
+
+---
+
 ### <datasource_name>
 - **Datasource**: <full name>
 - **Homepage**: <URL>

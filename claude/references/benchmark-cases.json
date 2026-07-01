@@ -1,0 +1,199 @@
+{
+  "version": "1.0",
+  "created": "2026-06-08",
+  "description": "Curated benchmark cases derived from agent_outputs/ ground-truth runs. Each case represents a fully evaluated and validated BioThings data plugin.",
+  "cases": [
+    {
+      "case_id": "ecbd",
+      "case_name": "ECBD (European Chemical Biology Database)",
+      "tags": ["core", "plugin"],
+      "stages": ["relevancy", "site_inspection", "plugin"],
+      "test_prompt": "Evaluate ECBD (European Chemical Biology Database) from https://ecbd.eu — a collection of EU-OPENSCREEN small molecule compounds for BioThings ingest.",
+      "ground_truth": {
+        "relevancy": {
+          "verdict": "RECOMMEND_INGEST",
+          "relevance_score": 5,
+          "novelty_score": 3,
+          "openness_verdict": "PASS",
+          "openness_score": 4,
+          "license": "CC BY 4.0"
+        },
+        "site_inspection": {
+          "status": "VERIFIED",
+          "download_accessible": true,
+          "primary_key_field": "inchikey",
+          "target_api": "MyChem.info",
+          "ssl_workaround_required": true,
+          "total_unique_docs": 108822
+        },
+        "plugin": {
+          "min_documents": 100000,
+          "id_format": "InChIKey",
+          "id_pattern": "^[A-Z]{14}-[A-Z]{10}-[A-Z]$",
+          "novel_fields": ["eos", "smiles", "inchi", "formula", "mw", "hba", "hbd", "tpsa", "rb", "fp3", "logp", "violates_ro5", "sub_library"],
+          "on_duplicates": "error",
+          "license_expected": "CC BY 4.0"
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/ecbd_datasource/ecbd_relevancy.json",
+        "site_inspection": "agent_outputs/ecbd_datasource/ecbd_inspection.json",
+        "plugin_dir": "agent_outputs/ecbd_datasource/ecbd_plugin"
+      },
+      "notes": "Self-signed TLS on ecbd.eu requires --insecure workaround for dump. 34 cross-file duplicate InChIKeys handled via seen_ids dedup in parser."
+    },
+    {
+      "case_id": "signor",
+      "case_name": "SIGNOR (Signaling Network Open Resource)",
+      "tags": ["core", "plugin"],
+      "stages": ["relevancy", "site_inspection", "plugin"],
+      "test_prompt": "Evaluate SIGNOR (Signaling Network Open Resource) from https://signor.uniroma2.it — manually curated causal signaling interactions for BioThings ingest.",
+      "ground_truth": {
+        "relevancy": {
+          "verdict": "RECOMMEND_INGEST",
+          "relevance_score": 5,
+          "novelty_score": 3,
+          "openness_verdict": "PASS",
+          "openness_score": 5,
+          "license": "CC BY 4.0"
+        },
+        "site_inspection": {
+          "status": "VERIFIED",
+          "download_accessible": true,
+          "primary_key_field": "SIGNOR_ID",
+          "target_api": "pending.api",
+          "total_unique_docs": 42441
+        },
+        "plugin": {
+          "min_documents": 40000,
+          "id_format": "SIGNOR ID",
+          "id_pattern": "^SIGNOR-\\d{6}$",
+          "novel_fields": ["EFFECT", "MECHANISM", "RESIDUE", "SEQUENCE", "CELL_DATA", "TISSUE_DATA", "MODULATOR_COMPLEX", "TARGET_COMPLEX", "DIRECT", "SENTENCE", "SIGNOR_SCORE"],
+          "on_duplicates": "error",
+          "license_expected": "CC BY 4.0"
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/signor_datasource/signor_relevancy.json",
+        "site_inspection": "agent_outputs/signor_datasource/signor_inspection.json",
+        "plugin_dir": "agent_outputs/signor_datasource/signor_plugin"
+      },
+      "notes": "getData.php?organism=9606 has no header row — column positions hardcoded from official release file mapping. SIGNOR_SCORE at col 27 present only in getData.php."
+    },
+    {
+      "case_id": "coconut",
+      "case_name": "COCONUT (Collection of Open Natural Products)",
+      "tags": ["core", "plugin"],
+      "stages": ["relevancy", "site_inspection", "plugin"],
+      "test_prompt": "Evaluate COCONUT (Collection of Open Natural Products) from https://coconut.naturalproducts.net — open natural product structures for BioThings ingest.",
+      "ground_truth": {
+        "relevancy": {
+          "verdict": "RECOMMEND_INGEST",
+          "relevance_score": 5,
+          "novelty_score": 4,
+          "openness_verdict": "PASS",
+          "openness_score": 5,
+          "license": "CC0 1.0"
+        },
+        "site_inspection": {
+          "status": "VERIFIED",
+          "download_accessible": true,
+          "primary_key_field": "standard_inchi_key",
+          "target_api": "MyChem.info",
+          "total_unique_docs": 738827
+        },
+        "plugin": {
+          "min_documents": 700000,
+          "id_format": "InChIKey",
+          "id_pattern": "^[A-Z]{14}-[A-Z]{10}-[A-Z]$",
+          "novel_fields": ["name", "iupac_name", "molecular_formula", "molecular_weight", "np_likeness", "qed_drug_likeliness", "chemical_class", "chemical_super_class", "np_classifier_pathway", "organisms", "collections"],
+          "on_duplicates": "error",
+          "license_expected": "CC0 1.0"
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/coconut_datasource/coconut_relevancy.json",
+        "site_inspection": "agent_outputs/coconut_datasource/coconut_inspection.json",
+        "plugin_dir": "agent_outputs/coconut_datasource/coconut_plugin"
+      },
+      "notes": "Large dataset — 738K rows, 248 MB zipped. Download URL contains dated path (2026-05/); must be updated each release. version.py parses release date from download page."
+    },
+    {
+      "case_id": "ttd",
+      "case_name": "TTD (Therapeutic Target Database)",
+      "tags": ["core", "plugin"],
+      "stages": ["relevancy", "site_inspection", "plugin"],
+      "test_prompt": "Evaluate TTD (Therapeutic Target Database) from https://db.idrblab.net/ttd — drug-target-disease associations for BioThings ingest.",
+      "ground_truth": {
+        "relevancy": {
+          "verdict": "RECOMMEND_INGEST",
+          "relevance_score": 5,
+          "novelty_score": 3,
+          "openness_verdict": "PASS",
+          "openness_score": 4,
+          "license": "CC BY-NC 4.0"
+        },
+        "site_inspection": {
+          "status": "VERIFIED",
+          "download_accessible": true,
+          "primary_key_field": "DRUG__ID",
+          "target_api": "pending.api",
+          "total_unique_docs": 42938
+        },
+        "plugin": {
+          "min_documents": 40000,
+          "id_format": "TTD Drug ID",
+          "id_pattern": "^D[0-9A-Z]{5}$",
+          "novel_fields": ["TARGTYPE", "HIGHSTAT", "INDICATI", "TRADNAME", "THERCLAS", "SUPDRATC", "DRUGINFO"],
+          "on_duplicates": "error",
+          "license_expected": "CC BY-NC 4.0"
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/ttd_datasource/ttd_relevancy.json",
+        "site_inspection": "agent_outputs/ttd_datasource/ttd_inspection.json",
+        "plugin_dir": "agent_outputs/ttd_datasource/ttd_plugin"
+      },
+      "notes": "Key-value row format (not CSV) requires custom aggregation parser. 3 files: P1-02 (drug), P1-03 (crossmatching), P1-05 (drug-disease). dump_and_upload workaround used previously."
+    },
+    {
+      "case_id": "circtarget",
+      "case_name": "CircTarget (circRNA-target RNA interactions)",
+      "tags": ["core", "plugin"],
+      "stages": ["relevancy", "site_inspection", "plugin"],
+      "test_prompt": "Evaluate CircTarget from https://circtarget.cn — experimentally-derived circRNA-target RNA interactions for BioThings ingest.",
+      "ground_truth": {
+        "relevancy": {
+          "verdict": "RECOMMEND_INGEST",
+          "relevance_score": 4,
+          "novelty_score": 5,
+          "openness_verdict": "PASS",
+          "openness_score": 3,
+          "license": "Unspecified (freely accessible)"
+        },
+        "site_inspection": {
+          "status": "VERIFIED",
+          "download_accessible": true,
+          "primary_key_field": "circRNA ID",
+          "target_api": "pending.api",
+          "total_unique_docs": 6651,
+          "total_interaction_rows": 132517
+        },
+        "plugin": {
+          "min_documents": 6000,
+          "id_format": "circBase ID or host-gene format",
+          "id_pattern": "^(hsa|mmu)(_circ_\\d+|-[A-Z0-9]+_\\d+)$",
+          "novel_fields": ["gene_type", "chimeric_read_count", "p_value", "cell_line_tissue", "species", "interaction_type", "detected_method"],
+          "on_duplicates": "error",
+          "license_expected": "Unspecified"
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/circtarget_datasource/circtarget_relevancy.json",
+        "site_inspection": "agent_outputs/circtarget_datasource/circtarget_inspection.json",
+        "plugin_dir": "agent_outputs/circtarget_datasource/circtarget_plugin"
+      },
+      "notes": "RAR format — requires rarfile Python module. One BioThings doc per circRNA (6,651 docs), with interactions as nested array. dump_and_upload workaround used previously."
+    }
+  ]
+}

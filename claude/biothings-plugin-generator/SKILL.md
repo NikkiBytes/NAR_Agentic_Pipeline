@@ -65,11 +65,28 @@ Apply the rule in this order:
 ### 1b-gate. Mandatory URL Verification (do NOT skip)
 Before writing `manifest.json`, every candidate `data_url` MUST pass this verification.
 
-**Canonical source preference (MUST follow):** If any candidate `data_url` points to a third-party mirror (Zenodo, Figshare, Dryad, GitHub releases, S3 archive), STOP and check the datasource's own download page first (e.g., `datasource.org/download`). Mirrors often host stale snapshots or subset files (e.g., a "lite" CSV when the full version is on the canonical site). Only use a mirror URL if the datasource's own site has no direct bulk download or is access-gated. Flag any mirror usage in `design_rationale.md` with the reason the canonical source was not used.
+**Canonical source preference (MUST follow):** If any candidate `data_url` points to a third-party mirror (Zenodo, Figshare, Dryad, GitHub releases, S3 archive), STOP and exhaust the steps below before accepting it. Mirrors often host stale snapshots or subset files. Only use a mirror URL after confirming the canonical site has no directly fetchable bulk download. Flag any mirror usage in `design_rationale.md` with the reason and the steps attempted.
 
-**Step 1 — Resolve the actual file URL.** Fetch the download page HTML, extract `href` attributes pointing to data files (`.csv`, `.tsv`, `.json`, `.xlsx`, `.zip`, `.gz`, `.sdf`), construct absolute URLs.
+**Step 1 — Attempt to resolve a direct file URL from the canonical site.**
+Fetch the download page HTML and extract `href` attributes pointing to data files (`.csv`, `.tsv`, `.json`, `.xlsx`, `.zip`, `.gz`, `.sdf`), then construct absolute URLs.
 
-**Step 2 — Verify each URL returns data, not HTML.**
+**If the download page is JS-rendered** (returns no useful content), work through these steps in order before accepting a third-party URL:
+
+1a. **Probe common URL patterns directly on the canonical domain** — even without a working download page, files are often at predictable paths. Try `/download`, `/downloads`, `/data`, `/files`, `/bulk`, `/static/data`, `/release`, `/export`, and append known filenames from the evaluation report (e.g., `mydb.org/data/full.tsv.gz`). A `content-type: text/csv` (not `text/html`) response confirms a real file URL.
+
+1b. **Targeted web search for canonical file URLs** — search specifically for direct-download links on the datasource's own domain using: `"<datasource name>" download site:<datasource-domain> filetype:gz OR filetype:csv OR filetype:tsv`
+
+1c. **Re-read the paper's Data Availability section** — papers often list exact FTP or HTTPS paths that bypass the JS UI entirely.
+
+1d. **Check the R/Python package source** (if one exists) — client libraries frequently hardcode the API base URL or file paths used for bulk access.
+
+**After steps 1a–1d, distinguish the two JS-rendered cases before accepting a fallback:**
+
+> **Type A — Static files behind a JS UI**: The download page is JS-rendered but the files themselves live at stable, predictable URLs on the canonical domain. Steps 1a–1b should surface these. Use the canonical URL in `manifest.json`.
+>
+> **Type B — Dynamically generated download links**: The server generates a temporary (e.g., 24-hour) signed URL on button click. No static canonical URL exists. In this case, a Zenodo/Figshare archive that the authors explicitly publish IS the correct `data_url` — not a lazy fallback. Confirm by checking whether the paper's Data Availability section cites the archive as the permanent release mechanism.
+
+**Step 2 — Verify each candidate URL returns data, not HTML.**
 ```bash
 curl -sIL --fail -A "Mozilla/5.0" "<URL>" | grep -i "content-type"
 ```
@@ -81,7 +98,7 @@ curl -sIL --fail -A "Mozilla/5.0" "<URL>" | grep -i "content-type"
 curl -skL -A "Mozilla/5.0" "<URL>" | head -3
 ```
 
-**If no direct-file URL can be found:** Stop and flag as `BLOCKED`. Do NOT generate a plugin with a placeholder URL.
+**If no direct-file URL can be found after all steps above:** Stop and flag as `BLOCKED`. Do NOT generate a plugin with a placeholder URL. Do NOT use an API endpoint as `data_url` — the manifest bulk-download path does not support live API calls.
 
 ### 1c. Ingestion Strategy — Manifest-First (Bulk Download)
 The default — and currently the **only** — supported ingestion strategy is **bulk download via the manifest**. Every generated plugin must declare its data via `dumper.data_url`.
