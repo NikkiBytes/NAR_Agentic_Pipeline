@@ -113,6 +113,15 @@ Check both the paper and the datasource site for license information:
 - Note any NC/ND restrictions that affect redistribution
 - Flag discrepancies between paper and site
 
+#### 1f. Verify Citation (DOI / PMID / PMC)
+
+**Never record a `paper_doi`, `pmid`, or `pmc` from memory.** NAR DOIs within the same volume/issue are sequential and superficially similar (e.g. `gkad818` vs. `gkad824`), which makes a recalled-from-memory DOI look plausible even when it points to a completely unrelated paper. Every citation MUST come from an actual lookup performed in this session:
+
+1. Resolve the citation via a real tool call — Europe PMC (`https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:<doi>&format=json`) or Crossref (`https://api.crossref.org/works/<doi>`) or a PubMed search by title — never type a DOI/PMID from recollection.
+2. **Verify the match**: fetch the resolved DOI and confirm the returned `title` contains the datasource's name or a close paraphrase of its description. If it doesn't match, the DOI is wrong — re-search by title (`query.bibliographic=<datasource name> <one-line description>&filter=container-title:Nucleic+Acids+Research`) rather than proceeding with an unverified guess.
+3. Take `pmid` and `pmc` from the **same** lookup result as the verified DOI (Europe PMC returns all three together) — do not source DOI from one lookup and PMID/PMC from a separate, potentially inconsistent recollection.
+4. If no matching paper can be found after a real search, omit the `publication`/`paper_doi` field entirely rather than guessing — an omitted citation is a smaller error than a wrong one.
+
 ### Phase 2: Relevancy Assessment
 
 Using the evidence gathered in Phase 1, score the datasource.

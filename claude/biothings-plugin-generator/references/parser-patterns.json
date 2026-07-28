@@ -20,7 +20,7 @@
       "when": "Large gzip TSV; multi-level groupby; set deduplication (e.g. pubmed IDs)",
       "imports": ["os", "collections.defaultdict", "pandas", "biothings.utils.dataload"],
       "requires": ["pandas"],
-      "code": "import os\nfrom collections import defaultdict\nimport pandas as pd\nfrom biothings.utils.dataload import dict_sweep, unlist\n\ndef load_data(data_folder):\n    df = pd.read_csv(os.path.join(data_folder, \"data.tsv.gz\"),\n                     sep=\"\\t\", comment=\"#\", compression=\"gzip\")\n    df = df.where(pd.notnull(df), None)\n    d = defaultdict(list)\n    for grp, subdf in df.groupby([\"diseaseId\", \"source\", \"geneId\"]):\n        records = subdf.to_dict(orient=\"records\")\n        doc = {\"source\": grp[1], \"gene_id\": int(grp[2]), \"pubmed\": []}\n        for rec in records:\n            if rec.get(\"pmid\"):\n                doc[\"pubmed\"].append(int(rec[\"pmid\"]))\n        d[grp[0]].append(doc)\n    for _id, records in d.items():\n        yield dict_sweep(unlist({\"_id\": _id, \"source\": {\"genes\": records}}), [None])"
+      "code": "import os\nfrom collections import defaultdict\nimport pandas as pd\nfrom biothings.utils.dataload import dict_sweep, unlist\n\ndef load_data(data_folder):\n    df = pd.read_csv(os.path.join(data_folder, \"data.tsv.gz\"),\n                     sep=\"\\t\", comment=\"#\", compression=\"gzip\")\n    # astype(object) is required: on pandas's default \"str\" dtype columns,\n    # `.where(pd.notnull(df), None)` alone silently keeps float('nan') in place.\n    df = df.astype(object).where(pd.notnull(df), None)\n    d = defaultdict(list)\n    for grp, subdf in df.groupby([\"diseaseId\", \"source\", \"geneId\"]):\n        # Use to_dict(orient=\"records\"), not iterrows() -- iterrows() re-infers\n        # a dtype per row and can turn already-cleaned None back into NaN.\n        records = subdf.to_dict(orient=\"records\")\n        doc = {\"source\": grp[1], \"gene_id\": int(grp[2]), \"pubmed\": []}\n        for rec in records:\n            if rec.get(\"pmid\"):\n                doc[\"pubmed\"].append(int(rec[\"pmid\"]))\n        d[grp[0]].append(doc)\n    for _id, records in d.items():\n        yield dict_sweep(unlist({\"_id\": _id, \"source\": {\"genes\": records}}), [None])"
     },
     {
       "id": "hgvs_variant",
@@ -81,10 +81,12 @@
   ],
   "additional_rules": [
     "Use biothings.utils.common.open_anyfile for transparent .gz handling without pandas",
-    "For .gz with pandas: pd.read_csv(filepath, compression='gzip')",
+    "Prefer biothings-native readers (csv.DictReader, biothings.utils.dataload.tabfile_feeder/tab2dict_iter) over pandas for plain CSV/TSV; reserve pandas for formats it uniquely handles well, like .xlsx",
+    "For .gz with pandas (when pandas is genuinely needed): pd.read_csv(filepath, compression='gzip')",
     "Large files: streaming csv.DictReader or chunked pd.read_csv(chunksize=100000)",
     "Convert numpy.int64 to Python int before yielding",
-    "Replace NaN with None: df = df.where(pd.notnull(df), None)",
+    "Replace NaN with None: df = df.astype(object).where(pd.notnull(df), None) -- plain df.where(pd.notnull(df), None) silently fails on pandas's default 'str' dtype columns, leaving raw float('nan') in place (which is truthy, so `if not value:` checks won't catch it, and it later crashes orjson-based serialization in biothings-cli)",
+    "Extract rows with df.to_dict(orient='records'), not df.iterrows() -- iterrows() re-infers a dtype per row and can turn an already-cleaned None back into NaN even after the astype(object) fix above",
     "SDK helpers: value_convert_to_number(), merge_duplicate_rows(), to_boolean()",
     "Code style: PEP8, max line 160, import groups: stdlib / third-party / biothings"
   ]

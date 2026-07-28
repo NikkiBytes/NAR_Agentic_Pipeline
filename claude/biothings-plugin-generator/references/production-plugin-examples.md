@@ -158,7 +158,7 @@ from biothings.utils.dataload import dict_sweep, unlist
 def process_gene(file_path):
     """Group gene-disease associations by (UMLS disease ID, source, gene ID), merge pubmed sets."""
     df = pd.read_csv(file_path, encoding="ISO-8859-1", sep="\t", comment="#", compression="gzip")
-    df = df.where(pd.notnull(df), None)   # replace NaN with None
+    df = df.astype(object).where(pd.notnull(df), None)   # replace NaN with None; astype(object) is required on pandas's default "str" dtype columns
     d = defaultdict(list)
     for grp, subdf in df.groupby(["diseaseId", "source", "geneId"]):
         doc = {"source": grp[1], "gene_id": int(grp[2]), "pubmed": set()}
@@ -205,7 +205,8 @@ def load_data(data_folder):
 ```
 
 Key parser notes:
-- Always `df = df.where(pd.notnull(df), None)` immediately after reading — eliminates NaN in output
+- Always `df = df.astype(object).where(pd.notnull(df), None)` immediately after reading — eliminates NaN in output. The `astype(object)` is required: plain `.where(pd.notnull(df), None)` silently fails on pandas's default `"str"` dtype columns, leaving raw `float('nan')` in place, which is truthy in Python and later crashes `orjson`-based serialization in `biothings-cli`.
+- Extract rows with `df.to_dict(orient="records")`, not `df.iterrows()` — `iterrows()` re-infers a dtype per row and can turn an already-cleaned `None` back into `NaN` even after the `astype(object)` fix above.
 - Always convert `numpy.int64` → `int` before yielding — Hub rejects numpy types
 - Use `set()` for pubmed deduplication during groupby, convert to `list()` before yield
 - Bundle a reference ontology file (here `mondo.json`) in `data_url` to enable ID resolution without network calls at parse time

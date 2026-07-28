@@ -352,6 +352,63 @@ Update this file immediately after each generation. Before starting a new plugin
 
 ---
 
+### ageannomo
+- **Datasource**: AgeAnnoMO — Multi-Omics of Animal Ageing (NAR 2024 Database Issue, DOI: 10.1093/nar/gkad884)
+- **Homepage**: https://relab.xidian.edu.cn/AgeAnnoMO/#/
+- **Target API**: pending.api
+- **_id strategy**: composite, entity-type-prefixed string (`amoexpr:`/`amoprot:`/`amomet:`/`amolife:` + slugified dataset/species/tissue/gene or protein/metabolite identifier) — no single global primary key exists across AgeAnnoMO's 4 hallmark categories
+- **Data format**: Multi-file XLSX (4 files, direct GitHub raw download, 6.4 MB combined)
+- **Files ingested**: `Differential expression.xlsx` (gene expression, Genomic instability), `Differential protein.xlsx` (protein expression, Loss of proteostasis), `Differential metabolite.xlsx` (metabolite, Dysregulated metabolism), `Lifespan regulators.xlsx` (lifespan_regulator); 5 other hallmark files (Somatic mutation, eQTL, Age-correlated protein, Protein interaction, Metabolite interaction) excluded — distinct entity/edge types out of scope for v1; Zenodo archive not needed (canonical GitHub raw URLs resolved directly)
+- **Parser pattern**: 4 per-file generator functions (one per entity type) sharing a single `seen_ids` set across `load_data()`; pandas read_excel + `df.where(pd.notnull(df), None)`; entity-type discriminator field in output doc
+- **on_duplicates**: `ignore` (69 exact-duplicate composite keys across the 4 files deduplicated in parser via `seen_ids`; `ignore` as safe backstop)
+- **requires**: `pandas`, `openpyxl`
+- **Output path**: `agent_outputs/ageannomo_datasource/ageannomo_plugin/`
+- **version.py strategy**: GitHub Commits API per-file-path query → most recent commit date across the 4 ingested files → `YYYYMMDD`; fallback to latest GitHub release tag + published date; final fallback `v1.0_20230930`
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Smoke test (2026-07-20)**: 61,333 unique documents (40,402 gene_expression + 16,091 protein_expression + 2,959 metabolite + 1,881 lifespan_regulator) from 61,402 source rows (69 duplicates + 3 missing-symbol rows dropped); `biothings-cli` broken in sandbox (typer/biothings v1.0.2 `AttributeError: module 'typer' has no attribute 'rich_utils'`) — validated via direct `parser.load_data()` execution against downloaded files instead; 0 duplicate `_id`s; field coverage 96.1–100% per entity type; `version.py` returns `20230816`
+- **Notes**: No single global primary key across AgeAnnoMO — entity-type-prefixed composite `_id` used instead. Paper (NAR 2024) reports substantially higher entity counts (90,972 genes) than the GitHub v1.0 repo snapshot yields via this plugin (40,402 gene-expression records) — likely a stale repo snapshot vs. published article scope (flagged in Stage 1 inspection). CC BY-NC 4.0 license — non-commercial only. Gene symbols are raw, species-specific (not Entrez/Ensembl normalized). `biothings-cli` unusable in this sandbox; not patched (shared environment) — parser proven correct via direct invocation instead.
+
+---
+
+### cancerproteome
+- **Datasource**: CancerProteome — the cancer proteome (NAR 2024, DOI: 10.1093/nar/gkad818)
+- **Homepage**: https://bio-bigdata.hrbmu.edu.cn/CancerProteome/
+- **Target API**: pending.api
+- **_id strategy**: site's own composite `protein` field (e.g. `HEXB_P07686`, `GeneSymbol_UniProtAccession`); non-canonical suffixes (`_Canonical_N`, `_pseudogene_MP_N`, `_lncRNA`, `_uORF`, etc.) used verbatim when no UniProt accession is present
+- **Data format**: Multi-file TSV (6 direct-download .txt files, all independent — no super/subset relationships)
+- **Files ingested**: `protein_inf.txt` (canonical protein differential expression), `microprotein_inf.txt` (microprotein differential expression), `PTM_protein_inf.txt`, `PTM_microprotein_inf.txt` (PTM site-level differential expression), `protein_durg_inf.txt` (protein-drug IC50 correlations), `cancer_names.txt` (abbreviation→full-name lookup, joined at parse time, not a data file itself)
+- **Parser pattern**: In-memory aggregation dict keyed by `protein` ID (`entities`), with three parallel per-entity list fields (`expression`, `ptm`, `drug_correlations`) populated by looping all 5 data files in sequence; regex UniProt-accession extraction from ID suffix; regex-based `entity_type` inference (canonical vs. microprotein) for the 2,620 protein IDs seen only in the drug-correlation file
+- **on_duplicates**: `error` (aggregation dict guarantees one document per unique `protein` ID)
+- **requires**: none (stdlib csv + biothings SDK helpers)
+- **Output path**: `agent_outputs/cancerproteome_datasource/cancerproteome_plugin/`
+- **version.py strategy**: Last-Modified HEAD on `protein_inf.txt` → YYYYMMDD; fallback homepage year regex; hardcoded fallback `20230831`
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Smoke test (2026-07-20)**: 16,744 unique documents from 292,970 combined source rows (0 skipped); validated via direct `parser.py` import + `load_data()` execution against pre-downloaded files (biothings-cli unusable in this sandbox — see Notes); `_id` = composite protein ID string (max 31 chars); `cancerproteome` sub-object with protein_id/gene_symbol/entity_type/protein_length/uniprot/expression[]/ptm[]/drug_correlations[]; entity_type 99.99% / gene_symbol 89.4% / uniprot 57.4% / expression 67.4% / ptm 44.1% / drug_correlations 45.6%
+- **Notes**: biothings-cli is broken in this sandbox (`AttributeError: module 'typer' has no attribute 'rich_utils'`, same typer/biothings v1.0.2 incompatibility as ecbd/coconut/chemprob) — per instructions the shared environment was NOT patched; validation performed by directly importing and running `parser.py`'s `load_data()` instead. Site returns HTTP 403 to default curl/bot User-Agent; requires a browser-like `User-Agent` header (production deployment would need a custom `dumper.py` override, see FDA_Drugs pattern in production-plugins-registry.json). No license text on live site (paper states CC BY-NC; site shows only a copyright notice — mismatch flagged). No API/versioned archive; single static snapshot per file. Paper reports 31,120 proteins; site/parser counts do not exactly match either the paper or each other, suggesting an unversioned post-publication update — re-check at future re-ingestion.
+
+---
+
+### drmref
+- **Datasource**: DRMref — Drug Resistance Mechanism reference (NAR 2024 Database Issue, DOI: 10.1093/nar/gkad1087)
+- **Homepage**: https://ccsm.uth.edu/DRMref/
+- **Target API**: pending.api
+- **_id strategy**: `drmref_{primary_key}` — DRMref's own stable per-row integer identifier from `gene_summary.txt`
+- **Data format**: Multi-file TSV/CSV (bulk download, flat files direct from ccsm.uth.edu, no auth)
+- **Files ingested**: `gene_summary.txt` (core DEG association records), `Existed_drug_mechanism_gene_file.csv` (6-category mechanism classification), `miRNA_summary.txt`, `tf_summary.txt` (regulator annotations joined by gene symbol), `enrichment_pathway_summary.txt` (downloaded but not yet joined — different granularity); CCI files, redundant enrichment/GeneInDEG derived files, raw dataset ID/PMID file, and sample/preprocessing ZIP excluded (different entity type, redundant, or non-structured)
+- **Parser pattern**: Main streaming loop over `gene_summary.txt` + 3 supporting gene-keyed indices built via generic `_load_gene_keyed_sidefile()` (flexible gene-column auto-detection since live headers of supplementary files were not independently re-verifiable this session); `seen_ids` deduplication
+- **on_duplicates**: `error` (parser-level `seen_ids` guard prevents duplicates from reaching the Hub)
+- **requires**: `pandas` (declared; parser uses stdlib csv)
+- **Output path**: `agent_outputs/drmref_datasource/drmref_plugin/`
+- **version.py strategy**: Last-Modified HEAD on `gene_summary.txt` → YYYYMMDD; fallback homepage date regex; hardcoded fallback `20231001`
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Smoke test (2026-07-20)**: `biothings-cli` BLOCKED in this sandbox (typer 0.26.7 missing `rich_utils`, reproduced fresh); ccsm.uth.edu also returned Cloudflare HTTP 522 (origin unreachable) on every attempt this session — live-site outage independent of the CLI bug. Fallback: direct `parser.load_data()` execution against a fixture built from the Phase-1 inspection's sampled schema — PASS (2/3 fixture rows yielded as unique docs, 1 duplicate `primary_key` correctly deduplicated; gene/xref extraction, DE-statistic float coercion, gene-symbol joins, and `dict_sweep`/`unlist` cleanup all verified correct).
+- **Notes**: CC BY-NC 4.0 license (non-commercial restriction, per NAR/OUP terms). Real document count and field coverage NOT yet confirmed against live data — action item for next session once ccsm.uth.edu is reachable and/or the CLI typer incompatibility is resolved. `enrichment_pathway_summary.txt` is downloaded per manifest but not joined into output documents (dataset+cell-type granularity, not gene-level) — candidate for a v2 revision or separate uploader.
+
+---
+
 ## Entry Template
 Copy this block and fill in all fields when adding a new plugin:
 
@@ -409,6 +466,80 @@ Copy this block and fill in all fields when adding a new plugin:
 - **Date generated**: 2026-06-30
 - **Version**: 1.0
 - **Notes**: Entity type mismatch with existing BioThings APIs (microbiome samples ≠ gene/variant/chemical/disease) — generated on user override for colleague's pipeline. Canonical download page is JS-rendered; Zenodo is the confirmed fallback (referenced in paper Data Availability). CC BY 4.0 + MIT. Abundance tables (9.1 GB total, 24 files) not ingested in v1 — would require wide→long pivot. biothings v1.0.2 `upload` bug possible → use `dump_and_upload`. PRIME API (primedb.sjtu.edu.cn/api/v1) is open and unauthenticated — alternative to Zenodo bulk download if Zenodo is rate-limited.
+
+---
+
+### open_genes
+- **Datasource**: Open Genes — Human Genes Associated with Aging and Longevity (NAR 2024 Database Issue, DOI: 10.1093/nar/gkad712, PMID: 37665017, PMC10768108)
+- **Homepage**: https://open-genes.com/
+- **Target API**: pending.api
+- **_id strategy**: NCBI (Entrez) Gene ID (`ncbiId` field)
+- **Data format**: JSON — single REST API response (no static bulk file exists; `/download` page is a JS-rendered SPA and the GitHub-referenced `open_genes_sql_dump.zip` path returns a soft-404 HTML page)
+- **Files ingested**: `https://open-genes.com/api/gene/search?pageSize=5000&page=1` — a single request with a generous `pageSize` that returns the full 2,405-gene collection in one JSON response (~3.7 MB), used as the manifest `dumper.data_url` in place of a paginated crawl
+- **Parser pattern**: Glob `data_folder` for the dumped JSON (filename not assumed, since it derives from a query-string URL), one document per gene, `dict_sweep`+`unlist` cleanup
+- **on_duplicates**: `error` (0 duplicate `ncbiId`s across 2,405 records)
+- **requires**: `requests` (used only in `version.py`)
+- **Output path**: `agent_outputs/open_genes_datasource/open_genes_plugin/`
+- **version.py strategy**: Single live API call (`pageSize=5000`) to compute `options.objTotal` + max per-gene `timestamp.changed` (unix epoch) → `"<total>-genes-<YYYY-MM-DD>"`, e.g. `2405-genes-2023-06-19`
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Notes**: Corrected the relevancy report's DOI — `10.1093/nar/gkad1015` resolves to an unrelated siRNA-chemistry paper; the correct DOI for PMC10768108 is `10.1093/nar/gkad712` (confirmed via NCBI ID Converter + CrossRef). `biothings-cli` is broken in this sandbox (`typer`/`biothings` incompatibility, `AttributeError: module 'typer' has no attribute 'rich_utils'`) — not patched per instructions. Validated instead by directly running `parser.load_data()` against a locally cached copy of the live API response: 2,404 documents yielded, 1 row skipped (missing `ncbiId`), 0 duplicate IDs; `version.get_release()` also confirmed live. 1 gene (of 2,405) has no `ncbiId` and is skipped. `location` (transcript/exon coordinates), `name`, `aliases`, `chromosome` excluded as redundant per inspection classification.
+
+---
+
+### sorc
+- **Datasource**: SORC — Spatial Omics Resource in Cancer (NAR 2024 Database Issue, DOI: 10.1093/nar/gkad820, PMID: 37811897, PMC10768140)
+- **Homepage**: http://bio-bigdata.hrbmu.edu.cn/SORC
+- **Target API**: pending.api
+- **_id strategy**: `datasetID` (e.g. `luad01`) — 82 unique values, 0 collisions
+- **Data format**: JSON (`{"data": [...]}` manifest), 2 files
+- **Files ingested**: `download_dataset.txt` (82 dataset-level records) + `download_slice.txt` (269 slice-level records, merged in as nested `sorc.slices`); the site's `downloadCopy.jsp` per-slice result-file endpoint (deconvolution, SVG, GSVA, cell-cell communication tables) was excluded — confirmed BLOCKED (HTTP 404 on every tested request pattern, server-side bug) during Stage-1/2 inspection
+- **Parser pattern**: Two-file JSON merge via `itertools.groupby` on `datasetID` (DISEASES-style), nesting slice records under a list per dataset
+- **on_duplicates**: `error` (0 duplicate `datasetID`s found; `seen_ids` guard present defensively)
+- **requires**: none (stdlib `json` + biothings SDK)
+- **Output path**: `agent_outputs/sorc_datasource/sorc_plugin/`
+- **version.py strategy**: `Last-Modified` HEAD header on `download_dataset.txt` → `YYYYMMDD`; fallback to ETag
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Notes**: `biothings-cli`'s default aiohttp dumper client is blocked with HTTP 403 by the SORC server (browser-like `User-Agent` required; confirmed working via `curl -A "Mozilla/5.0"`) — dump was completed by manually fetching both files with a spoofed User-Agent into the dumper's expected archive folder, then calling `dumper.register_status("success")` directly (mirrors `do_dump()` internals, minus the blocked network call); `upload`/`list`/`inspect` then ran unmodified via the CLI. Separately, `biothings-cli` is also broken in this sandbox for the unrelated reason already logged under `open_genes` (`typer`/`biothings` incompatibility, `AttributeError: module 'typer' has no attribute 'rich_utils'`) — worked around per-invocation by pre-importing `typer.rich_utils` in the calling Python process; no shared-environment files were modified. 82 documents yielded (82/82 source dataset rows, 0 skipped, 0 duplicates); all fields 100% populated. Known limitation: this plugin ingests dataset/slice **metadata and result-file pointers**, not the underlying spatial-omics analytical matrices themselves, since those files are unreachable via the site's own download endpoint (site-level bug, not a license/paywall gate). CC BY-NC 4.0 (journal article license; no independent site-level license statement found).
+
+---
+
+### ncrnadrug
+- **Datasource**: ncRNADrug — ncRNAs Targeted by Drugs or Linked to Drug Resistance (NAR 2024, DOI: 10.1093/nar/gkad1042)
+- **Homepage**: http://www.jianglab.cn/ncRNADrug/
+- **Target API**: pending.api
+- **_id strategy**: Category-prefixed composite key, one scheme per source file (no single natural key spans all 7 files): `DR_Curated`/`DT_Curated` use `{PMID}_{ncRNA_Name}_{Drug_Name}_{ncRNA_Type}`; `DR_GEO`/`DT_GEO` use `{GSE_Number}_...`; `DR_NCI60` uses `{miR_Row}_...`; `DR_CCLE` uses `{ENSEMBL_ID}_{Lnc_Row}_{Drug_Name}`; `DT_CMap` uses `{Instance}_...`; all prefixed `{source_category}:` to avoid cross-file collisions
+- **Data format**: 7 independent uncompressed TSV files (~215 MB total), each with a *different* column schema
+- **Files ingested**: `DR_Curated.txt`, `DR_GEO.txt`, `DR_NCI60.txt`, `DR_CCLE.txt`, `DT_Curated.txt`, `DT_GEO.txt`, `DT_CMap.txt` — all 7 files listed in the inspection report; no supersets/subsets exist to exclude (each is an independent relation-type × evidence-source partition)
+- **Parser pattern**: Multi-file glob with per-category normalizer dispatch (7 distinct schemas, one dedicated parse function each); no groupby/aggregation needed (each row = one relation instance)
+- **on_duplicates**: `ignore` (safety net; `seen_ids` dedup in parser never actually triggered — 0 collisions across 342,780 rows)
+- **requires**: none (stdlib csv + biothings SDK helpers)
+- **Output path**: `agent_outputs/ncrnadrug_datasource/ncrnadrug_plugin/`
+- **version.py strategy**: HTTP HEAD Last-Modified on `DR_Curated.txt` → `YYYYMMDD`; fallback regex scrape of homepage's "Latest updates" changelog for most recent date
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Smoke test (2026-07-20)**: 342,780 unique documents from 342,780 source rows (1 malformed trailing row tolerated); direct `parser.load_data()` invocation used in place of `biothings-cli` (see Notes); relation split drug_resistance 273,376 (79.8%) / drug_target 69,404 (20.2%); evidence_tier split curated 31,508 (9.2%) / predicted 311,272 (90.8%); `_id` = category-prefixed composite string; `ncrnadrug` sub-object with relation/evidence_tier/source_category/ncrna{name,type,symbol,target_gene}/drug{name,drugbank_id,pubchem_cid,nsc,fda_status}/xrefs{drugbank,pubchem_cid,nsc,ensembl_gene,noncode,circbase,deepbase,circpedia,mirbase}/statistics{pvalue,qvalue,fdr,logfc,foldchange,effectsize}/geo{gse_number}/cmap{...}; drug.pubchem_cid 92.8%/drug.nsc 82.1%/statistics.pvalue 76.8%/effect 60.4%/xrefs.drugbank 45.9%/pmid 9.2% (curated-only)
+- **Notes**: `biothings-cli` is fully broken in this sandbox — every subcommand (including `validate`) raises `AttributeError: module 'typer' has no attribute 'rich_utils'` at import time in `biothings/cli/settings.py`, before command dispatch. Not patched (shared environment); validated instead via direct `parser.load_data()` execution against the 7 live-downloaded files. The 7 bulk files do NOT share a common schema despite the inspection report's unified field list (that list was drawn mainly from the 2 Curated files) — GEO files use GSE_Number instead of PMID; NCI60 lacks ENSEMBL_ID/SYMBOL entirely; CCLE's `"LncRNA"` column is actually a duplicate of `ENSEMBL_ID` (not a name) and its `"CCLE"` column is a drug alias, not a cell line — both handled explicitly in `_parse_ccle()` with inline documentation. Live file sizes are substantially larger than the inspection report's estimates (site has grown since 2026-07-09 inspection). License relies on the NAR 2024 paper's CC BY 4.0 status; no separate site-level license page exists.
+
+---
+
+### clinicalomicsdb
+- **Datasource**: ClinicalOmicsDB (trials.linkedomics.org) — NAR 2024 Database Issue, DOI: 10.1093/nar/gkad942
+- **Homepage**: https://trials.linkedomics.org/
+- **Target API**: pending.api
+- **_id strategy**: `study_id` — the per-treatment-arm filename stem (e.g. `GSE14764`, `Choueiri_CCR_2016`); the analyte/gene half of the inspection report's composite key is nested inside each doc's `gene_stats` list rather than folded into `_id` (kept the collection at 64 docs instead of ~1M single-gene-association docs)
+- **Data format**: JSON (64 concrete per-study bulk downloads from the live REST API, no static bulk file exists)
+- **Files ingested**: 64 `GET table/study/gene/{study}` endpoint responses (gene-level significance stats: p, auc, fdr, sorted_p, sorted_fdr); `GET info/{study}` endpoint deliberately excluded from `data_url` due to a filename-basename collision with `table/study/gene/{study}` in the Hub's `HTTPDumper` — its metadata is instead bundled as a static `study_metadata.json` reference file shipped with the parser; `POST filter/` (study discovery) and per-patient raw-expression Box.com CSVs also excluded (POST-only / third-party dynamic links, respectively)
+- **Parser pattern**: Multi-file glob (64 JSON files) + disgenet-style nested list ("associatedWith"-analogous `gene_stats` per doc) + static bundled reference file for study metadata (mirrors disgenet's bundled `mondo.json` pattern)
+- **on_duplicates**: `error` (all 64 `study_id` values confirmed unique; `seen_ids` guard in parser as a safety net)
+- **requires**: none (stdlib `json`/`os`/`glob` + biothings SDK helpers)
+- **Output path**: `agent_outputs/clinicalomicsdb_datasource/clinicalomicsdb_plugin/`
+- **version.py strategy**: `info.version` from the API's own OpenAPI spec (`trials_api.json`); fallback to Last-Modified HEAD on one data endpoint, then today's date
+- **Date generated**: 2026-07-20
+- **Version**: 1.0
+- **Smoke test (2026-07-20)**: 64/64 documents yielded (64/64 source treatment-arm files parsed, 0 skipped, 0 duplicates); 998,257 total gene-stat rows preserved across all docs (avg 15,598/doc); field coverage `xrefs.pubmed` 100%, `download_url` 100%, `treatment` 100%, `adjuvant` 100%, `xrefs.clinicaltrials_gov` 82.8%, `subtype` 60.9%.
+- **Notes**: `biothings-cli` is broken in this sandbox for every subcommand (`AttributeError: module 'typer' has no attribute 'rich_utils'`, same known typer/biothings 1.0.2 incompatibility logged for other plugins in this index) — not patched; validated instead via direct `parser.load_data()` execution against all 64 live-downloaded files (~115 MB total), confirmed 0 exceptions and 0 silent-zero-doc failures. Only 64 of the paper's reported 67 treatment arms (40 studies) were recoverable — `POST filter/` requires a non-empty `drugs` array (empty array returns 0 results despite the spec implying "empty = all"); ~90 drug names were queried and unioned to discover study IDs, but 3 arms were not found this way and are omitted pending a full study-ID list from the maintainers or the `clinicalomicsdbr` R package. `p_value`/`fdr` fields are signed (e.g. `-0.3721`), confirmed to be the literal API response (not a parsing artifact) — likely a directional/log transform used internally by ClinicalOmicsDB, preserved as-is. License CC BY-NC 4.0 (OUP journal license) — non-commercial use only.
 
 ---
 

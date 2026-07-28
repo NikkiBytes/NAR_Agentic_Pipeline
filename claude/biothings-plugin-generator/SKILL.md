@@ -142,6 +142,12 @@ Always use version `"1.0"`, always include `__metadata__`, and always wire `vers
 
 Pull `doi`, `pmid`, and `pmc` from the datasource's relevancy report (`urls.paper_doi`, `urls.pmid`, `urls.pmc`) if available; otherwise search PubMed. Omit `pmc` if not found. Omit the entire `publication` block only if no paper can be identified.
 
+**Do not trust the relevancy report's citation blindly — re-verify it before writing the manifest.** A prior citation can be wrong even when it was recorded earlier in the pipeline (NAR DOIs within the same volume/issue are sequential and superficially similar, e.g. `gkad818` vs. `gkad824`, so a bad DOI is easy to miss on a first pass). Before writing `manifest.json`:
+
+1. Fetch the carried-forward `doi` (Europe PMC: `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:<doi>&format=json`, or Crossref: `https://api.crossref.org/works/<doi>`).
+2. Confirm the returned title contains the datasource's name or a close paraphrase of its description. If it doesn't match, the citation is wrong — re-search by title/description and use the corrected `doi`/`pmid`/`pmc` from that lookup (and flag the correction in `design_rationale.md` so the upstream relevancy report can be fixed too).
+3. Never re-type a DOI/PMID from memory as a "confirmation" — the verification step must be an actual tool call, not a recollection check.
+
 See [references/manifest-schema.md](references/manifest-schema.md) for the complete field reference and validated examples.
 
 ### 2b. Generate version.py
@@ -207,9 +213,11 @@ Rules for parser.py:
 - All field keys MUST be lowercase with underscores
 - Nest all datasource-specific fields under a top-level key matching the datasource name
 - Use SDK helpers: `dict_sweep(doc, [None])` removes None/empty values; `unlist(doc)` flattens single-item lists
-- For `.gz` files with pandas: `pd.read_csv(filepath, compression='gzip')`
+- Prefer biothings-native readers over pandas for plain delimited text: `csv.DictReader` or `biothings.utils.dataload.tabfile_feeder`/`tab2dict_iter` for `.csv`/`.tsv` (including `.gz`, via `open_anyfile`). Reserve pandas for formats it uniquely handles well, like `.xlsx`.
+- For `.gz` files with pandas (when pandas is genuinely needed): `pd.read_csv(filepath, compression='gzip')`
 - Convert `numpy.int64` to Python `int` before yielding
-- Replace NaN with None: `df = df.where(pd.notnull(df), None)`
+- Replace NaN with None: `df = df.astype(object).where(pd.notnull(df), None)` — the plain `df.where(pd.notnull(df), None)` (no `astype(object)`) silently fails on pandas >= 2.x's default `"str"` dtype columns, leaving raw `float('nan')` in place. Since `nan` is truthy in Python, `if not value:` guards won't catch it either, and it will later crash strict-JSON serializers (`orjson`) used by `biothings-cli`.
+- Extract rows with `df.to_dict(orient="records")`, not `df.iterrows()`. In pandas >= 2.x, `iterrows()` reconstructs each row as its own `Series` and re-infers a dtype across that row's columns — this can re-convert an already-`None` cell back into `float('nan')` even after the `astype(object)` fix above. `to_dict(orient="records")` does not have this problem.
 
 ### 4. Choose _id Strategy Based on Target API
 - **MyChem.info**: InChIKey (e.g., `KTUFNOKKBVMGRW-UHFFFAOYSA-N`)
