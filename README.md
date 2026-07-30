@@ -2,6 +2,8 @@
 
 An agentic pipeline for discovering, evaluating, and ingesting biomedical datasources from the [Nucleic Acids Research (NAR) Database Issue](https://academic.oup.com/nar/issue/53/D1) into the [BioThings](https://biothings.io) API ecosystem (MyChem.info, MyGene.info, MyDisease.info, MyVariant.info, pending.api).
 
+Given nothing more than a datasource name or URL, the pipeline decides whether it's worth ingesting, checks that its data is actually reachable and usable, and — if so — writes the BioThings plugin code needed to pull it in. Claude/Cline agent skills drive each step; gated verdicts stop the run early on datasources that turn out to be duplicates, closed, or unreachable, so effort isn't wasted generating plugins for sources that shouldn't be ingested.
+
 ## Overview
 
 The pipeline takes a datasource — identified by a NAR article URL, a datasource homepage, or a name — and drives it through two automated stages (plus an optional upstream discovery step):
