@@ -1,0 +1,94 @@
+{
+    "name": "ncrnadrug",
+    "status": "VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DR_Curated.txt", "filename": "DR_Curated.txt", "format": "TSV", "access": "public", "size_mb": 7.9, "description": "Curated (experimentally validated) ncRNAs associated with drug resistance"},
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DR_GEO.txt", "filename": "DR_GEO.txt", "format": "TSV", "access": "public", "size_mb": 7.0, "description": "Predicted ncRNA-drug-resistance associations derived from GEO"},
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DR_NCI60.txt", "filename": "DR_NCI60.txt", "format": "TSV", "access": "public", "size_mb": 6.7, "description": "Predicted ncRNA-drug-resistance associations derived from NCI60 cell line panel"},
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DR_CCLE.txt", "filename": "DR_CCLE.txt", "format": "TSV", "access": "public", "size_mb": 7.2, "description": "Predicted ncRNA-drug-resistance associations derived from CCLE"},
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DT_Curated.txt", "filename": "DT_Curated.txt", "format": "TSV", "access": "public", "size_mb": 7.7, "description": "Curated (experimentally validated) ncRNAs targeted by drugs"},
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DT_GEO.txt", "filename": "DT_GEO.txt", "format": "TSV", "access": "public", "description": "Predicted ncRNAs targeted by drugs, derived from GEO"},
+        {"url": "http://www.jianglab.cn/ncRNADrug/data_download/DT_CMap.txt", "filename": "DT_CMap.txt", "format": "TSV", "access": "public", "description": "Predicted ncRNAs targeted by drugs, derived from Connectivity Map (CMap)"}
+    ],
+    "schema": {
+        "fields": [
+            {"name": "PMID", "type": "integer", "sample": "28040594", "classification": "IDENTIFIER"},
+            {"name": "Reference", "type": "string", "sample": "Transcriptome analysis of EGFR tyrosine kinase inhibitors resistance associated long noncoding RNA in non-small cell lung cancer", "classification": "REDUNDANT"},
+            {"name": "ncRNA_Name", "type": "string", "sample": "7SK", "classification": "IDENTIFIER"},
+            {"name": "ENSEMBL_ID", "type": "string", "sample": "ENSG00000202198", "classification": "IDENTIFIER"},
+            {"name": "SYMBOL", "type": "string", "sample": "LINC02198", "classification": "IDENTIFIER"},
+            {"name": "NONCODE_ID", "type": "string", "sample": "NONHSAG040598", "classification": "NOVEL"},
+            {"name": "circBase_ID", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "DeepBase_ID", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "CIRCpedia_ID", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "miRBase_ID", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "ncRNA_Type", "type": "string", "sample": "lncRNA", "classification": "NOVEL"},
+            {"name": "Drug_Name", "type": "string", "sample": "Gefitinib", "classification": "IDENTIFIER"},
+            {"name": "DrugBank_ID", "type": "string", "sample": "DB00317", "classification": "IDENTIFIER"},
+            {"name": "CID", "type": "string", "sample": "123631", "classification": "IDENTIFIER"},
+            {"name": "NSC", "type": "string", "sample": "NSC715055", "classification": "NOVEL"},
+            {"name": "FDA", "type": "string", "sample": "approved", "classification": "REDUNDANT"},
+            {"name": "ncRNA_Target_Gene", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "Pathway", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "Effect", "type": "string", "sample": "sensitive", "classification": "NOVEL"},
+            {"name": "ncRNA_Expression_Pattern", "type": "string", "sample": "down-regulated", "classification": "NOVEL", "note": "Field present in DT_* files instead of Effect"},
+            {"name": "Detection_Method", "type": "string", "sample": "Microarray", "classification": "NOVEL"},
+            {"name": "Throughput", "type": "string", "sample": "High", "classification": "NOVEL"},
+            {"name": "Species", "type": "string", "sample": "Homo sapiens", "classification": "NOVEL"},
+            {"name": "Phenotype", "type": "string", "sample": "Non-Small Cell Lung Cancer", "classification": "NOVEL"},
+            {"name": "Condition", "type": "string", "sample": "cell line (PC-9)", "classification": "NOVEL"},
+            {"name": "Support", "type": "string", "sample": "The GSE34228 microarray data analysis showed that 114 lncRNAs were dysregulated...", "classification": "NOVEL"},
+            {"name": "Published_Year", "type": "integer", "sample": "2017", "classification": "REDUNDANT"}
+        ],
+        "primary_key": {
+            "field": "synthesized (PMID + ncRNA_Name + Drug_Name + ncRNA_Type)",
+            "type": "custom",
+            "sample": "28040594_7SK_Gefitinib_lncRNA"
+        },
+        "identifiers": [
+            {"type": "DrugBank", "field": "DrugBank_ID", "sample": "DB00317"},
+            {"type": "PubChem CID", "field": "CID", "sample": "123631"},
+            {"type": "NSC (NCI)", "field": "NSC", "sample": "NSC715055"},
+            {"type": "Ensembl Gene", "field": "ENSEMBL_ID", "sample": "ENSG00000202198"},
+            {"type": "NONCODE Gene", "field": "NONCODE_ID", "sample": "NONHSAG040598"},
+            {"type": "miRBase accession", "field": "miRBase_ID", "sample": "hsa-mir-21 (example)"},
+            {"type": "circBase ID", "field": "circBase_ID", "sample": "hsa_circ_0001946 (example)"},
+            {"type": "gene_symbol", "field": "SYMBOL", "sample": "LINC02198"},
+            {"type": "PMID", "field": "PMID", "sample": "28040594"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "no explicit standalone license statement found on homepage/document/manual pages",
+        "match": false,
+        "restrictions": ["Attribution expected per journal license; no separate data-usage terms published on the site itself"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_Curated.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_GEO.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_NCI60.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_CCLE.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DT_Curated.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DT_GEO.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DT_CMap.txt"
+        ],
+        "primary_key_field": "synthesized composite (PMID + ncRNA_Name + Drug_Name + ncRNA_Type)",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["NONCODE_ID", "circBase_ID", "DeepBase_ID", "CIRCpedia_ID", "miRBase_ID", "ncRNA_Type", "NSC", "ncRNA_Target_Gene", "Pathway", "Effect", "ncRNA_Expression_Pattern", "Detection_Method", "Throughput", "Species", "Phenotype", "Condition", "Support"],
+        "redundant_fields": ["Reference", "FDA", "Published_Year"]
+    },
+    "paper_vs_reality": [
+        {"claim": "29,551 experimentally validated drug-response entries", "observed": "15,981 data rows in DR_Curated.txt (header excluded)", "match": false},
+        {"claim": "32,969 experimentally validated drug-target entries", "observed": "15,959 data rows in DT_Curated.txt (header excluded)", "match": false},
+        {"claim": "9,195 ncRNAs (2,248 miRNA, 4,145 lncRNA, 2,802 circRNA) in validated drug-response set", "observed": "not independently re-counted; row counts in the curated file are lower than the paper's stated entry counts, suggesting either the site's Curated download is a subset/different vintage from the paper's reported total, or paper counts include the GEO/NCI60/CCLE predicted files under a different aggregation", "match": "uncertain"},
+        {"claim": "CC BY 4.0 open access", "observed": "confirmed for the NAR article itself; no separate license badge/text found on jianglab.cn site pages checked (document.html, manual.html, download.html)", "match": "partial"}
+    ],
+    "risks": [
+        "Row counts in the downloaded Curated files are roughly half the entry counts stated in the 2024 NAR paper — likely reflects data growth/pruning since publication or a difference between 'entries' (paper) and 'unique rows' (file); needs reconciliation before finalizing plugin dumper row-count expectations.",
+        "No API; plugin must parse large (7-8 MB) TSV files directly — straightforward but should stream rather than load fully into memory.",
+        "Site license ambiguity (paper CC BY 4.0 vs. no site-level license statement) should be flagged to maintainers or documented as inherited from the publication."
+    ]
+}

@@ -1,0 +1,105 @@
+{
+    "name": "persade",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "url": "https://persade.idrblab.net/download/mtADENet/Global_associations_20230627.xlsx",
+            "filename": "Global_associations_20230627.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 5.81,
+            "description": "Global drug-ADE associations (InChIKey + MeSH ID pairs), 461,848 rows, dated 2023-06-27"
+        },
+        {
+            "url": "https://persade.idrblab.net/download/mtADENet/Global_Drug_20230627.xlsx",
+            "filename": "Global_Drug_20230627.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 3.78,
+            "description": "Drug information: InChIKey, MeSH ID, CASRN, drug name, SMILES, cross-references (PubChem/BindingDB/ChEBI/ChEMBL/IUPHAR/KEGG/TTD/ZINC), formula, MW, logP, physicochemical properties, ATC code, drug type (Drug/Approved/etc.), 8,802 rows"
+        },
+        {
+            "url": "https://persade.idrblab.net/download/mtADENet/Global_ADE_20230627.xlsx",
+            "filename": "Global_ADE_20230627.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 0.5,
+            "description": "ADE information: MeSH ID, Tree Number, Name, 4,380 unique ADEs"
+        },
+        {
+            "url": "https://persade.idrblab.net/download/mtADENet/C04_associations_20230627.xlsx",
+            "filename": "C04_associations_20230627.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "description": "Neoplasm-category drug-ADE associations (C04 MeSH tree)"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "InChI Key", "type": "string", "sample": "AAAQFGUYHFJNHI-SFHVURJKSA-N", "classification": "IDENTIFIER"},
+            {"name": "MeSH ID", "type": "string", "sample": "D004844", "classification": "IDENTIFIER"},
+            {"name": "CASRN", "type": "string", "sample": "$1260907-17-2", "classification": "IDENTIFIER"},
+            {"name": "Drug name", "type": "string", "sample": "2-[(4s)-6-(4-Chlorophenyl)...]", "classification": "REDUNDANT"},
+            {"name": "SMILES", "type": "string", "sample": "CCNC(=O)C[C@@H]1N=C...", "classification": "REDUNDANT"},
+            {"name": "Link", "type": "string", "sample": "PubChem$46943432|BindingDB$50365463|ChEBI$95082|...", "classification": "IDENTIFIER"},
+            {"name": "Formula", "type": "string", "sample": "C22H22ClN5O2", "classification": "REDUNDANT"},
+            {"name": "MW", "type": "float", "sample": "423.89", "classification": "REDUNDANT"},
+            {"name": "logP", "type": "float", "sample": "3.48", "classification": "REDUNDANT"},
+            {"name": "ATC Code", "type": "string", "sample": "", "classification": "NOVEL"},
+            {"name": "Type", "type": "string", "sample": "Drug", "classification": "NOVEL"},
+            {"name": "Tree Number", "type": "string", "sample": "C04.557.386", "classification": "NOVEL"},
+            {"name": "Name", "type": "string", "sample": "Neoplasm", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "InChI Key",
+            "type": "InChIKey",
+            "sample": "AAAQFGUYHFJNHI-SFHVURJKSA-N",
+            "note": "InChIKey maps to MyChem.info _id. The Global_associations file has InChIKey+MeSH pairs; group by InChIKey to get all ADEs per drug."
+        },
+        "identifiers": [
+            {"type": "InChIKey", "field": "InChI Key", "sample": "AAAQFGUYHFJNHI-SFHVURJKSA-N"},
+            {"type": "MeSH", "field": "MeSH ID", "sample": "D004844"},
+            {"type": "CAS", "field": "CASRN", "sample": "1260907-17-2"},
+            {"type": "ATC", "field": "ATC Code", "sample": ""},
+            {"type": "PubChem CID", "field": "Link (PubChem$...)", "sample": "46943432"},
+            {"type": "ChEMBL ID", "field": "Link (CHEMBL$...)", "sample": "CHEMBL1232461"}
+        ]
+    },
+    "license": {
+        "stated_paper": "Freely accessible by all users without login requirement",
+        "observed_site": "Download files publicly accessible without auth at persade.idrblab.net/resource.php",
+        "match": true,
+        "restrictions": ["License not explicitly stated; assumed CC BY-NC 4.0 from idrblab pattern"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://persade.idrblab.net/download/mtADENet/Global_associations_20230627.xlsx",
+            "https://persade.idrblab.net/download/mtADENet/Global_Drug_20230627.xlsx",
+            "https://persade.idrblab.net/download/mtADENet/Global_ADE_20230627.xlsx"
+        ],
+        "primary_key_field": "InChI Key",
+        "target_api": "MyChem.info",
+        "ingestion_path": "bulk_download",
+        "novel_fields": [
+            "drug_ade_associations (MeSH IDs grouped per drug)",
+            "ade_tree_numbers (MeSH disease hierarchy)",
+            "atc_code",
+            "drug_type classification"
+        ],
+        "redundant_fields": ["SMILES", "Formula", "MW", "logP", "drug name"],
+        "data_gap_warning": "The available download files (dated 2023-06-27) represent the older mtADENet database (~461K drug-ADE pairs), NOT the full PersADE dataset described in the 2026 NAR paper (4,061,772 personalized associations with demographic stratification, 108,677 drug-protein interactions, mechanistic triplets). The plugin will ingest the available 2023 data; the full PersADE personalized data does not appear to be available for bulk download yet."
+    },
+    "paper_vs_reality": [
+        {"claim": "4,061,772 personalized drug-ADE associations", "observed": "461,848 drug-ADE pairs (InChIKey+MeSH) in Global_associations_20230627.xlsx", "match": false, "note": "Major discrepancy — paper data not yet available as bulk download"},
+        {"claim": "10,235 compounds with InChIKey", "observed": "8,802 rows in Global_Drug_20230627.xlsx", "match": false, "note": "Partial — older dataset"},
+        {"claim": "19,991 ADE terms", "observed": "4,380 unique ADEs in Global_ADE_20230627.xlsx", "match": false, "note": "Older dataset subset"},
+        {"claim": "Demographic stratification (age/sex/route/dose)", "observed": "NOT present in available download files", "match": false, "note": "Core PersADE feature not in bulk download"}
+    ],
+    "risks": [
+        "MISMATCH: Available download is from 2023 mtADENet database, not the full 2026 PersADE. Plugin will ingest ~461K associations vs. 4M claimed.",
+        "Personalization data (key novel feature) not available in bulk download",
+        "XLSX format requires openpyxl dependency",
+        "ATC codes appear sparsely populated in Global_Drug file"
+    ]
+}

@@ -1,0 +1,56 @@
+{
+    "name": "persade",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with BioThings entity types. 10,235 compounds with InChIKey annotations (→ MyChem.info), 6,980 human proteins with UniProt IDs, 19,991 ADE terms mapped to MeSH/UMLS CUIs, 4,061,772 personalized drug-ADE associations with demographic stratification, 108,677 drug-protein interactions, 31,756 protein-ADE associations. Covers drugs, proteins, and adverse events — three BioThings entity types. Structured relational data with standard identifiers."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "Novel in three ways: (1) Personalized ADEs — 4M+ associations stratified by age, sex, weight, administration route, and disease indication; not in SIDER, AEOLUS, or OFFSIDES. (2) Mechanistic drug-protein-ADE triplets — 194,874 triplets with confidence tiers (Valid/High/Medium) and organ specificity; not in existing BioThings sources. (3) Off-target drug-protein interactions (17,208 with quantitative binding affinity) mapped to ADEs — extends ChEMBL bioactivity data with ADE context. SIDER in MyChem.info covers only label-derived drug-ADE pairs without personalization or mechanistic context."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Paper states 'freely accessible at https://idrblab.org/PersADE' and 'without login requirement'. Download page (persade.idrblab.net/resource.php) is accessible and serves XLSX files publicly. However: (1) Latest available download files are dated 2023-06-27, not matching the 2026 NAR paper's 4M record count (download has ~461K associations); (2) license not explicitly stated. Files are downloadable without login or API key. Assumed CC BY-NC 4.0 from idrblab pattern."
+        }
+    },
+    "evidence": {
+        "scope": "Personalized drug-adverse event associations with molecular mechanism context. 4,061,772 personalized drug-ADE associations, 31,756 protein-ADE associations, 108,677 drug-protein interactions (17,208 quantitative), 10,235 compounds (InChIKey), 6,980 proteins (UniProt), 19,991 ADE terms (UMLS/MeSH), 194,874 drug-protein-ADE triplets, pharmacogenomic data from PharmGKB. Key demographic stratification: age, sex, weight, administration route, dosage form, disease indication.",
+        "overlap": "Partial overlap with SIDER (label-derived drug-ADE) and AEOLUS (FAERS-derived). Novel: personalized stratification, mechanistic triplets, off-target protein mapping, confidence scoring system.",
+        "entity_types": ["drug/chemical", "protein/target", "adverse_event"],
+        "identifiers_found": ["InChIKey", "DrugBank ID", "ATC code", "UniProt ID", "UMLS CUI", "MeSH ID", "ICD-11", "PharmGKB ID"],
+        "record_count": 4061772
+    },
+    "license": {
+        "name": "CC BY-NC 4.0 (assumed, consistent with other idrblab databases)",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only — BioThings academic deployment compatible"]
+    },
+    "urls": {
+        "homepage": "https://persade.idrblab.net/",
+        "homepage_alt": "https://idrblab.org/PersADE/",
+        "download_page": "https://persade.idrblab.net/resource.php",
+        "download": [
+            "https://persade.idrblab.net/download/mtADENet/Global_associations_20230627.xlsx",
+            "https://persade.idrblab.net/download/mtADENet/Global_Drug_20230627.xlsx",
+            "https://persade.idrblab.net/download/mtADENet/Global_ADE_20230627.xlsx"
+        ],
+        "paper_doi": "10.1093/nar/gkaf1095",
+        "pmid": "41217945",
+        "pmc": "PMC12807753"
+    },
+    "api_info": {
+        "exists": false
+    },
+    "target_api": "MyChem.info",
+    "risks": [
+        "CRITICAL: Download page shows files dated 2023-06-27 with only ~461K drug-ADE pairs (InChIKey+MeSH format), not the 4M personalized associations described in the 2026 NAR paper. The full PersADE dataset appears not yet available for bulk download.",
+        "License not explicitly stated — assumed CC BY-NC 4.0",
+        "Personalization data (age/sex/route stratification) may only be accessible via web interface, not bulk download",
+        "The resource.php page appears to serve the older mtADENet database files, not the new PersADE-specific data"
+    ],
+    "next_actions": ["Proceed to inspection with available download files — flag data gap between paper and download"],
+    "evaluated_at": "2026-06-25"
+}
