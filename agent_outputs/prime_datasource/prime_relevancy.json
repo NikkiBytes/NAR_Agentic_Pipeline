@@ -1,0 +1,59 @@
+{
+    "name": "prime",
+    "verdict": "DO_NOT_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 2,
+            "justification": "PRIME's primary entities are microbiome samples (SRA run accessions) and bacterial taxa — neither maps to any existing BioThings entity type (gene, variant, chemical, disease). Checklist: does NOT map to a core BioThings entity type; uses SRA/NCBI Taxonomy identifiers rather than HGNC/ChEMBL/MONDO/dbSNP; relationships are sample→phenotype and sample→taxon, not gene-disease/chemical-gene; data IS structured and actively maintained. Only 2 of 5 checklist items pass."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API (MyGene, MyVariant, MyChem, MyDisease, pending.api) contains 16S rRNA microbiome abundance data, cross-study harmonized phenotypic metadata, or SRA-level microbiome sample collections. Completely new data type for the BioThings ecosystem."
+        },
+        "openness": {
+            "pass": true,
+            "score": 5,
+            "justification": "Full bulk download on Zenodo (9.1 GB, CC BY 4.0, uploaded July 18 2025, no login required). REST API at primedb.sjtu.edu.cn/api/v1 requires no auth and has no rate limits. MIT license for data files. All 6 openness checklist items pass."
+        }
+    },
+    "evidence": {
+        "scope": "Curated 16S rRNA amplicon sequencing database: 53,449 human microbiome samples from 111 public studies, taxonomic abundance profiles (SILVA 138.2 and Greengenes2 2024.09) at 6 taxonomic ranks, harmonized phenotypic and contextual metadata covering 93 body sites and 101 phenotypic categories",
+        "overlap": "No overlap with existing BioThings sources — microbiome sample-level data is an entirely new data type. The 101 phenotypic categories include diseases (IBD, IBS, seasonal allergies) that overlap conceptually with MyDisease.info, but PRIME's primary key is an SRA run accession, not a disease identifier, making direct integration into MyDisease infeasible without significant transformation.",
+        "entity_types": ["microbiome_sample", "bacterial_taxon", "phenotype", "study"],
+        "identifiers_found": ["SRA run accession (DRR/ERR prefix)", "NCBI BioProject accession (PRJDB prefix)", "NCBI Taxonomy IDs (via SILVA/Greengenes2)"],
+        "record_count": 53449
+    },
+    "license": {
+        "name": "MIT + CC BY 4.0",
+        "url": "https://zenodo.org/doi/10.5281/zenodo.15711237",
+        "restrictions": []
+    },
+    "urls": {
+        "homepage": "https://primedb.sjtu.edu.cn",
+        "download": ["https://zenodo.org/doi/10.5281/zenodo.15711237"],
+        "api": "https://primedb.sjtu.edu.cn/api/v1",
+        "paper_doi": "10.1093/nar/gkaf1057",
+        "pmid": "41171140",
+        "pmc": "PMC12807763"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://primedb.sjtu.edu.cn/api/v1",
+        "auth_required": false,
+        "rate_limits": "none currently enforced",
+        "pagination": "not documented; list endpoints return flat arrays of accessions",
+        "record_coverage": "full"
+    },
+    "risks": [
+        "Entity type mismatch: microbiome samples and bacterial taxa are not supported BioThings entity types — ingestion would require a new API infrastructure rather than a plugin to an existing API",
+        "Abundance tables are large (up to 1.8 GB per file at species level); full data volume is 9.1 GB",
+        "Download page is JS-rendered; bulk downloads only available via Zenodo (third-party archive) or API crawl — canonical site's direct download URLs could not be confirmed",
+        "Phenotype-disease links use free-text disease names, not MONDO/OMIM identifiers, limiting cross-reference with MyDisease.info"
+    ],
+    "next_actions": [
+        "STOP: DO_NOT_INGEST verdict issued due to entity type mismatch with existing BioThings APIs",
+        "If BioThings team wants to create a new microbiome-specific pending.api instance, PRIME would be an excellent candidate: open, comprehensive, well-maintained, and fully bulk-downloadable",
+        "If disease-microbiome associations are desired for MyDisease.info, PRIME could be re-evaluated after a data transformation step that pre-computes taxon-disease association tables keyed by disease identifier"
+    ],
+    "evaluated_at": "2026-06-30"
+}
