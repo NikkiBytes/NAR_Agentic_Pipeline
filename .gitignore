@@ -1,0 +1,18 @@
+claude/benchmark_outputs/
+datasource-relevancy-analysis/
+datasource-site-inspection/
+
+# BioThings Hub runtime data/logs (local, regenerated)
+.biothings_hub/
+
+# Python
+__pycache__/
+*.pyc
+
+# Large/binary data blobs
+*.rar
+*.zip
+
+# OS/editor cruft
+.DS_Store
+image (2).png
