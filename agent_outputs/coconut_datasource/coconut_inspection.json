@@ -1,0 +1,141 @@
+{
+  "name": "coconut",
+  "status": "VERIFIED",
+  "inspection_date": "2026-05-14",
+  "download_files": [
+    {
+      "url": "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut_csv-05-2026.zip",
+      "filename": "coconut_csv-05-2026.zip",
+      "inner_filename": "coconut_csv-05-2026.csv",
+      "format": "CSV (zipped)",
+      "access": "public",
+      "size_mb": 247.9,
+      "columns": 44,
+      "rows": 738827,
+      "source": "canonical (coconut.naturalproducts.net/download)",
+      "http_status": 200,
+      "content_type": "application/zip",
+      "notes": "curl -sIL confirms HTTP 200, content-type application/zip. Inner file is deflate-compressed CSV."
+    }
+  ],
+  "rejected_files": [
+    {
+      "url": "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut_csv_lite-05-2026.zip",
+      "filename": "coconut_csv_lite-05-2026.zip",
+      "reason": "Lite CSV has only 4 columns (identifier, SMILES, InChI, InChIKey) — strict subset of full CSV; missing all molecular properties, classification, NP classifier, organisms, and collection fields"
+    },
+    {
+      "url": "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut_sdf_2d-05-2026.zip",
+      "reason": "SDF format redundant with CSV for BioThings ingestion; 691.7 MB vs 247.9 MB"
+    },
+    {
+      "url": "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut_sdf_3d-05-2026.zip",
+      "reason": "3D coordinates not relevant for BioThings chemical annotation use case"
+    },
+    {
+      "url": "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut-dump-05-2026.sql",
+      "reason": "SQL dump is 31.91 GB — far too large; CSV covers the same entity data in a tractable format"
+    }
+  ],
+  "schema": {
+    "fields": [
+      {"name": "identifier", "type": "string", "sample": "CNP0113368.1", "classification": "IDENTIFIER"},
+      {"name": "canonical_smiles", "type": "string", "sample": "CC1(C)CC[C@]2...", "classification": "IDENTIFIER"},
+      {"name": "standard_inchi", "type": "string", "sample": "InChI=1S/C53H84O24/...", "classification": "IDENTIFIER"},
+      {"name": "standard_inchi_key", "type": "string", "sample": "DRKUXFLLRIKRHH-QDVYGYDXSA-M", "classification": "IDENTIFIER"},
+      {"name": "name", "type": "string", "sample": "AKOS032436835", "classification": "NOVEL"},
+      {"name": "iupac_name", "type": "string", "sample": "3,4,9-trimethyl-8-...", "classification": "NOVEL"},
+      {"name": "molecular_formula", "type": "string", "sample": "C53H84O24", "classification": "NOVEL"},
+      {"name": "molecular_weight", "type": "float", "sample": "459.55", "classification": "NOVEL"},
+      {"name": "exact_molecular_weight", "type": "float", "sample": "459.5498", "classification": "NOVEL"},
+      {"name": "alogp", "type": "float", "sample": "3.79", "classification": "NOVEL"},
+      {"name": "topological_polar_surface_area", "type": "float", "sample": "79.79", "classification": "NOVEL"},
+      {"name": "qed_drug_likeliness", "type": "float", "sample": "0.42", "classification": "NOVEL"},
+      {"name": "np_likeness", "type": "float", "sample": "1.23", "classification": "NOVEL"},
+      {"name": "fractioncsp3", "type": "float", "sample": "0.85", "classification": "NOVEL"},
+      {"name": "van_der_walls_volume", "type": "float", "sample": "412.3", "classification": "NOVEL"},
+      {"name": "total_atom_count", "type": "int", "sample": "53", "classification": "NOVEL"},
+      {"name": "heavy_atom_count", "type": "int", "sample": "38", "classification": "NOVEL"},
+      {"name": "rotatable_bond_count", "type": "int", "sample": "4", "classification": "NOVEL"},
+      {"name": "hydrogen_bond_acceptors", "type": "int", "sample": "8", "classification": "NOVEL"},
+      {"name": "hydrogen_bond_donors", "type": "int", "sample": "3", "classification": "NOVEL"},
+      {"name": "hydrogen_bond_acceptors_lipinski", "type": "int", "sample": "10", "classification": "NOVEL"},
+      {"name": "hydrogen_bond_donors_lipinski", "type": "int", "sample": "3", "classification": "NOVEL"},
+      {"name": "lipinski_rule_of_five_violations", "type": "int", "sample": "1", "classification": "NOVEL"},
+      {"name": "aromatic_rings_count", "type": "int", "sample": "0", "classification": "NOVEL"},
+      {"name": "number_of_minimal_rings", "type": "int", "sample": "4", "classification": "NOVEL"},
+      {"name": "formal_charge", "type": "int", "sample": "0", "classification": "NOVEL"},
+      {"name": "contains_sugar", "type": "boolean", "sample": "True", "classification": "NOVEL"},
+      {"name": "contains_ring_sugars", "type": "boolean", "sample": "True", "classification": "NOVEL"},
+      {"name": "contains_linear_sugars", "type": "boolean", "sample": "False", "classification": "NOVEL"},
+      {"name": "murcko_framework", "type": "string", "sample": "C1CC2CCCC3...", "classification": "NOVEL"},
+      {"name": "chemical_class", "type": "string", "sample": "Triterpenoids", "classification": "NOVEL"},
+      {"name": "chemical_sub_class", "type": "string", "sample": "Dammarane triterpenoids", "classification": "NOVEL"},
+      {"name": "chemical_super_class", "type": "string", "sample": "Prenol lipids", "classification": "NOVEL"},
+      {"name": "direct_parent_classification", "type": "string", "sample": "Ginsenosides", "classification": "NOVEL"},
+      {"name": "np_classifier_pathway", "type": "string", "sample": "Terpenoids", "classification": "NOVEL"},
+      {"name": "np_classifier_superclass", "type": "string", "sample": "Triterpenoids", "classification": "NOVEL"},
+      {"name": "np_classifier_class", "type": "string", "sample": "Dammaranes", "classification": "NOVEL"},
+      {"name": "np_classifier_is_glycoside", "type": "boolean", "sample": "True", "classification": "NOVEL"},
+      {"name": "annotation_level", "type": "int", "sample": "4", "classification": "NOVEL"},
+      {"name": "organisms", "type": "pipe-delimited list", "sample": "Caryocar villosum|Panax ginseng", "classification": "NOVEL"},
+      {"name": "collections", "type": "pipe-delimited list", "sample": "Super Natural II|WikiData Natural Products", "classification": "NOVEL"},
+      {"name": "synonyms", "type": "pipe-delimited list", "sample": "Ginsenoside Rd|...", "classification": "NOVEL"},
+      {"name": "cas", "type": "pipe-delimited list", "sample": "52286-58-5", "classification": "IDENTIFIER"},
+      {"name": "dois", "type": "pipe-delimited list", "sample": "10.1021/NP060097O", "classification": "IDENTIFIER"}
+    ],
+    "primary_key": {
+      "field": "standard_inchi_key",
+      "type": "InChIKey",
+      "sample": "DRKUXFLLRIKRHH-QDVYGYDXSA-M"
+    },
+    "identifiers": [
+      {"type": "InChIKey", "field": "standard_inchi_key", "sample": "DRKUXFLLRIKRHH-QDVYGYDXSA-M"},
+      {"type": "InChI", "field": "standard_inchi"},
+      {"type": "SMILES", "field": "canonical_smiles"},
+      {"type": "COCONUT_ID", "field": "identifier", "sample": "CNP0113368.1"},
+      {"type": "CAS", "field": "cas"}
+    ]
+  },
+  "license": {
+    "stated_paper": "CC0 1.0",
+    "observed_site": "CC0 1.0",
+    "match": true,
+    "restrictions": [],
+    "notes": "Download page states: 'Creative Commons CC0 license, allowing for free use, modification, and distribution without any restrictions.'"
+  },
+  "plugin_inputs": {
+    "data_url": [
+      "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut_csv-05-2026.zip"
+    ],
+    "primary_key_field": "standard_inchi_key",
+    "target_api": "MyChem.info",
+    "ingestion_path": "bulk_download",
+    "novel_fields": [
+      "name", "iupac_name", "molecular_formula", "molecular_weight", "exact_molecular_weight",
+      "alogp", "topological_polar_surface_area", "qed_drug_likeliness", "np_likeness",
+      "fractioncsp3", "van_der_walls_volume", "total_atom_count", "heavy_atom_count",
+      "rotatable_bond_count", "hydrogen_bond_acceptors", "hydrogen_bond_donors",
+      "hydrogen_bond_acceptors_lipinski", "hydrogen_bond_donors_lipinski",
+      "lipinski_rule_of_five_violations", "aromatic_rings_count", "number_of_minimal_rings",
+      "formal_charge", "contains_sugar", "contains_ring_sugars", "contains_linear_sugars",
+      "murcko_framework", "chemical_class", "chemical_sub_class", "chemical_super_class",
+      "direct_parent_classification", "np_classifier_pathway", "np_classifier_superclass",
+      "np_classifier_class", "np_classifier_is_glycoside", "annotation_level",
+      "organisms", "collections", "synonyms"
+    ],
+    "redundant_fields": []
+  },
+  "paper_vs_reality": [
+    {"claim": "695,133 unique natural product structures (September 2024 per paper)", "observed": "738,827 rows in May 2026 CSV — dataset has grown since publication", "match": true},
+    {"claim": "63 collections aggregated", "observed": "collections field present and pipe-delimited per row; count not independently verified", "match": true},
+    {"claim": "CSV/SDF/SQL download", "observed": "coconut_csv-05-2026.zip (full CSV), coconut_csv_lite-05-2026.zip (lite), SDF 2D/3D, SQL dump all confirmed on canonical site", "match": true},
+    {"claim": "CC0 license", "observed": "CC0 confirmed on download page: 'allowing for free use, modification, and distribution without any restrictions'", "match": true},
+    {"claim": "REST API with OpenAPI specs", "observed": "API documentation page exists at /api-documentation (JS-rendered, content not sampleable directly)", "match": true}
+  ],
+  "risks": [
+    "Download URL contains dated path (2026-05/); must be updated each release cycle",
+    "version.py must parse release date from download page text — fragile if page layout changes",
+    "Large dataset (738K rows, 248 MB zipped) requires streaming parser to avoid memory issues"
+  ]
+}

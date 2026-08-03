@@ -1,0 +1,72 @@
+{
+  "name": "coconut",
+  "verdict": "RECOMMEND_INGEST",
+  "scores": {
+    "relevance": {
+      "score": 5,
+      "justification": "Directly aligned with MyChem.info chemical entity type. Covers 695K+ natural product structures with InChIKey, SMILES, InChI, molecular formula, and 20+ computed molecular descriptors (MW, alogp, TPSA, QED, Lipinski). Uses standard chemical identifiers. Structured tabular data. Actively maintained with monthly releases."
+    },
+    "novelty": {
+      "score": 4,
+      "justification": "Natural product chemical space is largely distinct from DrugBank/ChEMBL (synthetic drugs) and PubChem (general compounds). Unique annotations not in BioThings: NPLikeness scores, NP Classifier pathway/superclass/class annotations, organism/species provenance with ontology mapping (EMBL-EBI OLS4, Global Names Finder), collection provenance from 63+ specialized NP databases, Murcko frameworks, annotation confidence stars (1-5). Some overlap with PubChem for well-known NPs and ChEBI NP subset, but COCONUT's NP-specific annotation layer is novel."
+    },
+    "openness": {
+      "pass": true,
+      "score": 5,
+      "justification": "CC0 1.0 license (public domain dedication). Direct bulk CSV download from canonical S3 endpoint without login or API key. No paywall or click-through gate. License confirmed on download page: 'Creative Commons CC0 license, allowing for free use, modification, and distribution without any restrictions.'"
+    }
+  },
+  "evidence": {
+    "scope": "Natural product chemical structures with identifiers (InChIKey, SMILES, InChI, COCONUT_ID), molecular properties (MW, exact_MW, alogp, TPSA, QED, NP-likeness, FractionCSP3, Lipinski HBA/HBD, rotatable bonds, aromatic rings, formal charge, sugar flags), chemical classification (ClassyFire class/subclass/superclass/direct_parent), NP classifier annotations (pathway, superclass, class, is_glycoside), organism/species sources, collection provenance from 63+ databases, CAS numbers, DOIs, synonyms, IUPAC names, Murcko frameworks",
+    "overlap": "Some overlap with PubChem for well-known natural products. ChEBI NP subset partially covers common NPs. No existing BioThings source provides NPLikeness scores, NP Classifier pathway annotations, or organism/collection provenance at this scale.",
+    "entity_types": [
+      "chemical",
+      "natural_product"
+    ],
+    "identifiers_found": [
+      "InChIKey",
+      "SMILES",
+      "InChI",
+      "COCONUT_ID",
+      "CAS",
+      "IUPAC_name",
+      "molecular_formula"
+    ],
+    "record_count": 738827
+  },
+  "license": {
+    "name": "CC0 1.0",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "restrictions": []
+  },
+  "urls": {
+    "homepage": "https://coconut.naturalproducts.net",
+    "download": [
+      "https://coconut.s3.uni-jena.de/prod/downloads/2026-05/coconut_csv-05-2026.zip"
+    ],
+    "download_page": "https://coconut.naturalproducts.net/download",
+    "api": "https://coconut.naturalproducts.net/api-documentation",
+    "paper_doi": "10.1093/nar/gkae1063",
+    "pmid": "39588778",
+    "pmc": "PMC11701633"
+  },
+  "api_info": {
+    "exists": true,
+    "base_url": "https://coconut.naturalproducts.net/api",
+    "auth_required": false,
+    "rate_limits": "unknown",
+    "pagination": "unknown",
+    "record_coverage": "full"
+  },
+  "target_api": "MyChem.info",
+  "risks": [
+    "Download URL contains dated path (2026-05); will need updating on each new monthly release",
+    "Lite CSV (4 columns) vs full CSV (44 columns) — must use full CSV; version.py must detect current release from download page",
+    "Large dataset (738K rows) requires streaming parser"
+  ],
+  "next_actions": [
+    "Proceed to site inspection",
+    "Proceed to plugin generation"
+  ],
+  "evaluated_at": "2026-05-14"
+}
