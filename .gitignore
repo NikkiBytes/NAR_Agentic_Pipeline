@@ -13,6 +13,10 @@ __pycache__/
 *.rar
 *.zip
 
+# Raw source data dumps (regeneratable, keep out of history)
+agent_outputs/**/all.txt
+agent_outputs/**/*.rar
+
 # OS/editor cruft
 .DS_Store
 image (2).png
