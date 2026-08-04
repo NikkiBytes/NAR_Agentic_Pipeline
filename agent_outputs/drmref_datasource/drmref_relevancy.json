@@ -1,0 +1,64 @@
+{
+    "name": "DRMref",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "Covers gene (Ensembl gene ID, Entrez gene ID, UniProt, gene symbol), chemical/drug (42 FDA-approved chemotherapy/targeted-therapy/immunotherapy agents), and disease (13 major cancer types, 26 subtypes) entities, linked through drug-resistance-related differentially expressed gene (DEG) associations classified into 6 mechanism categories. Structured, tabular, and actively curated (published NAR 2024, single-cell datasets through 2023)."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "No existing BioThings API, pending.api KP, or core MyGene/MyChem/MyDisease/MyVariant source provides single-cell-derived drug-resistance DEG associations, resistance-mechanism gene classifications, cell-type-specific resistance signatures, or resistance-associated miRNA/TF regulatory annotations. Checked against references/existing-biothings-plugins.json and references/pending-api-datasources.json — no overlapping source found (closest neighbors, BioThings TTD and Multiomics Drug Response KP, cover therapeutic targets and general drug response, not scRNA-seq-derived resistance mechanism/DEG data). Verified against the real sampled schema (see inspection), not just paper claims."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "All summary/result files are served as flat TXT/CSV directly from the datasource's own domain (ccsm.uth.edu) with no login, API key, or click-through gate — confirmed via curl (gene_summary.txt returns HTTP 200, 41.6MB, accept-ranges: bytes). License is CC BY-NC 4.0 (Oxford NAR open-access license), which per the evaluation checklist PASSes for BioThings' academic/non-profit use context (Scripps Research Su Lab), scored 3/5 for the NC restriction."
+        }
+    },
+    "evidence": {
+        "scope": "Single-cell RNA-seq-derived reference atlas of drug resistance mechanisms in human cancer: differentially expressed genes (DEGs) between resistant vs. sensitive cell populations, cell-cell interaction changes, resistance-mechanism gene classifications (6 categories), pathway enrichment (Hallmark/KEGG/GO_BP), miRNA and transcription-factor regulators of resistance genes, and drug-target overlap with DEGs, across 42 scRNA-seq datasets / 30 studies / 382 samples / 13 major + 26 minor cancer types / 35 treatment regimens / 42 drugs / ~1.67M cells / 16 cell types.",
+        "overlap": "No direct overlap found with existing MyGene/MyChem/MyDisease/MyVariant sources or deployed/pending Translator KPs. Loose conceptual adjacency to BioThings TTD (therapeutic targets) and Multiomics Drug Response KP (drug response), but neither provides scRNA-seq-derived resistance DEGs, mechanism classifications, or resistance-specific miRNA/TF regulators.",
+        "entity_types": ["gene", "chemical/drug", "disease (cancer type/subtype)", "cell_type", "pathway", "microRNA", "transcription_factor"],
+        "identifiers_found": ["Ensembl gene ID", "NCBI Entrez Gene ID", "UniProt (Swiss-Prot)", "Gene symbol", "PubMed ID", "GEO/SRA accession (RawData_ID)"],
+        "record_count": 41638514
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only per publisher (Oxford University Press); commercial reuse requires contacting journals.permissions@oup.com. Site footer separately states 'Copyright 2022-Present - The University of Texas Health Science Center at Houston' with no additional restriction text found."]
+    },
+    "urls": {
+        "homepage": "https://ccsm.uth.edu/DRMref/",
+        "download": [
+            "https://ccsm.uth.edu/DRMref/table_summary/gene_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/CCI_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/CCI_GeneInDEG_df.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/Existed_drug_mechanism_gene_file.csv",
+            "https://ccsm.uth.edu/DRMref/table_summary/enrichment_existed6Mecha_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/existed6Mecha_GeneInDEG_df.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/enrichment_pathway_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/miRNA_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/tf_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/DEGisTF_df.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/DEGisDrugTarget_df.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/RawDataID_pubmed_of_datasets_included_in_DRMref.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/sample_and_preprocessing_information.zip"
+        ],
+        "paper_doi": "10.1093/nar/gkad1087",
+        "pmid": "37986230",
+        "pmc": "PMC10767840"
+    },
+    "api_info": {
+        "exists": false
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "CC BY-NC license restricts commercial reuse; downstream commercial consumers of a BioThings/Translator API could be seen as consuming NC-licensed data commercially — flagged per checklist guidance, not a hard blocker for this non-profit academic use.",
+        "Data is result/summary-level (post-analysis DEG tables per dataset/cell-type/drug/cancer combination) rather than raw counts — provenance traces back to 30 distinct source studies (each with its own PMID/GEO accession) that should be checked individually for any redistribution restriction.",
+        "No public API; only static flat-file downloads are available from the summary tables directory, so any future refresh depends on the maintainers re-publishing updated summary files (last-modified Oct 2023).",
+        "The homepage 'Download' page and paper text do not enumerate a single canonical bulk archive — 12+ separate summary files must be combined to reconstruct full coverage; some association records (e.g., per-sample raw scRNA-seq expression matrices) are not bundled and remain on original GEO/SRA accessions."
+    ],
+    "next_actions": ["Proceed to Phase 3 deep inspection (see drmref_inspection.json)", "Proceed to plugin generation using bulk_download of table_summary/*.txt and *.csv files"],
+    "evaluated_at": "2026-07-09"
+}
