@@ -141,7 +141,7 @@ Validated against production plugins in pending.api and mydisease.info.
 |-------|----------|------|-------|
 | `parser` | yes | string | `"module:function"` — e.g. `"parser:load_data"` |
 | `on_duplicates` | yes | string | `"error"` or `"ignore"` — see below |
-| `mapping` | no | string | `"mapping:get_customized_mapping"` — only for production with `mapping.py` |
+| `mapping` | yes | string | `"mapping:get_customized_mapping"` — always required; the plugin generator always produces `mapping.py` by inferring the Elasticsearch mapping from representative post-parser documents |
 | `parser_kwargs` | no | object | Dict passed as kwargs to parser function — used with shared parsers |
 
 **`on_duplicates` decision:**

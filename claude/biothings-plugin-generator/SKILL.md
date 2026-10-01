@@ -25,7 +25,8 @@ description: >-
 ├── manifest.json         # Required — defines data URLs, parser reference, metadata
 ├── parser.py             # Required — parses data, yields documents
 ├── version.py            # Required — returns the datasource's current release string
-└── design_rationale.md   # Required — explains file selection and parser design decisions
+├── mapping.py            # Required — Elasticsearch mapping inferred from generated documents
+└── README.md             # Required — design rationale: file selection and parser design decisions
 ```
 
 ## Instructions
@@ -65,7 +66,7 @@ Apply the rule in this order:
 ### 1b-gate. Mandatory URL Verification (do NOT skip)
 Before writing `manifest.json`, every candidate `data_url` MUST pass this verification.
 
-**Canonical source preference (MUST follow):** If any candidate `data_url` points to a third-party mirror (Zenodo, Figshare, Dryad, GitHub releases, S3 archive), STOP and exhaust the steps below before accepting it. Mirrors often host stale snapshots or subset files. Only use a mirror URL after confirming the canonical site has no directly fetchable bulk download. Flag any mirror usage in `design_rationale.md` with the reason and the steps attempted.
+**Canonical source preference (MUST follow):** If any candidate `data_url` points to a third-party mirror (Zenodo, Figshare, Dryad, GitHub releases, S3 archive), STOP and exhaust the steps below before accepting it. Mirrors often host stale snapshots or subset files. Only use a mirror URL after confirming the canonical site has no directly fetchable bulk download. Flag any mirror usage in `README.md` with the reason and the steps attempted.
 
 **Step 1 — Attempt to resolve a direct file URL from the canonical site.**
 Fetch the download page HTML and extract `href` attributes pointing to data files (`.csv`, `.tsv`, `.json`, `.xlsx`, `.zip`, `.gz`, `.sdf`), then construct absolute URLs.
@@ -135,7 +136,8 @@ Always use version `"1.0"`, always include `__metadata__`, and always wire `vers
     },
     "uploader": {
         "parser": "parser:load_data",
-        "on_duplicates": "error"
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
     }
 }
 ```
@@ -145,7 +147,7 @@ Pull `doi`, `pmid`, and `pmc` from the datasource's relevancy report (`urls.pape
 **Do not trust the relevancy report's citation blindly — re-verify it before writing the manifest.** A prior citation can be wrong even when it was recorded earlier in the pipeline (NAR DOIs within the same volume/issue are sequential and superficially similar, e.g. `gkad818` vs. `gkad824`, so a bad DOI is easy to miss on a first pass). Before writing `manifest.json`:
 
 1. Fetch the carried-forward `doi` (Europe PMC: `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:<doi>&format=json`, or Crossref: `https://api.crossref.org/works/<doi>`).
-2. Confirm the returned title contains the datasource's name or a close paraphrase of its description. If it doesn't match, the citation is wrong — re-search by title/description and use the corrected `doi`/`pmid`/`pmc` from that lookup (and flag the correction in `design_rationale.md` so the upstream relevancy report can be fixed too).
+2. Confirm the returned title contains the datasource's name or a close paraphrase of its description. If it doesn't match, the citation is wrong — re-search by title/description and use the corrected `doi`/`pmid`/`pmc` from that lookup (and flag the correction in `README.md` so the upstream relevancy report can be fixed too).
 3. Never re-type a DOI/PMID from memory as a "confirmation" — the verification step must be an actual tool call, not a recollection check.
 
 See [references/manifest-schema.md](references/manifest-schema.md) for the complete field reference and validated examples.
@@ -219,6 +221,47 @@ Rules for parser.py:
 - Replace NaN with None: `df = df.astype(object).where(pd.notnull(df), None)` — the plain `df.where(pd.notnull(df), None)` (no `astype(object)`) silently fails on pandas >= 2.x's default `"str"` dtype columns, leaving raw `float('nan')` in place. Since `nan` is truthy in Python, `if not value:` guards won't catch it either, and it will later crash strict-JSON serializers (`orjson`) used by `biothings-cli`.
 - Extract rows with `df.to_dict(orient="records")`, not `df.iterrows()`. In pandas >= 2.x, `iterrows()` reconstructs each row as its own `Series` and re-infers a dtype across that row's columns — this can re-convert an already-`None` cell back into `float('nan')` even after the `astype(object)` fix above. `to_dict(orient="records")` does not have this problem.
 
+### 3b. Generate mapping.py (Elasticsearch Mapping) — Required
+
+Mapping generation is a required part of plugin generation, not an optional post-processing step. The mapping must describe the **post-parser BioThings documents**, not the raw source schema — generate it only after the parser can actually produce output, and derive it from real documents rather than guessing from the source format.
+
+**Workflow:**
+
+1. Run the parser against representative source data (a local script calling `load_data()` directly, or the biothings-cli `dump` → `upload` steps in §7) and collect a representative sample of yielded documents.
+2. Recursively infer the mapping from that sample, following BioThings' `inspect --mode mapping` behavior as the conceptual model — inspect actual documents, infer field types/structure, then generate and validate the mapping:
+   - `string` → `keyword` by default; use `text` only for free-text fields meant for full-text search (descriptions, abstracts), adding a `.raw` keyword subfield if both exact-match and search are needed
+   - `int` / `numpy.int64` → `integer` (widen to `long` if any observed value exceeds 32-bit range)
+   - `float` → `float`
+   - `bool` → `boolean`
+   - date-like strings/`datetime` → `date`
+   - `dict` → `object` with recursively inferred `properties`
+   - `list` → infer solely from the element values, never from the list itself — Elasticsearch has no array type; a list field just takes its elements' mapping. If elements are dicts, recurse into `properties`.
+   - `None`/missing → skip; never infer a type from null alone, and never let an all-null field silently default to `text`
+3. Detect field-type conflicts across the sample (e.g. a field that's sometimes numeric, sometimes string; sometimes a scalar, sometimes an object). Where values are safely reconcilable, choose the mapping that fits every observed value (e.g. widen to `keyword` if not all values are numeric). Where they are genuinely incompatible, do NOT silently emit a mapping — flag the field for review in `README.md` under a "Mapping Conflicts" subsection and pick the more common/expected shape.
+4. Write `mapping.py` with a single `get_customized_mapping(cls)` function returning the inferred `properties`, nested under the datasource's top-level key to match the parser's document structure:
+
+   ```python
+   def get_customized_mapping(cls):
+       return {
+           "<datasource_name>": {
+               "properties": {
+                   "field_a": {"type": "keyword"},
+                   "field_b": {"type": "integer"},
+                   "sub_object": {
+                       "properties": {
+                           "field_c": {"type": "text"}
+                       }
+                   }
+               }
+           }
+       }
+   ```
+
+5. Wire it into `manifest.json` by adding `"mapping": "mapping:get_customized_mapping"` to the `uploader` block — see [references/manifest-schema.md](references/manifest-schema.md).
+6. Validate the mapping before considering the plugin complete: every mapped field must be compatible with the representative documents, nested objects and array-of-element mappings must be structurally correct, and the result must be loadable by Elasticsearch/BioThings without mapping conflicts. Do this via `inspect --mode mapping` in §7 step 6.
+
+See [references/mapping-generation.md](references/mapping-generation.md) for the full type-inference table, conflict-resolution examples, and validation checklist.
+
 ### 4. Choose _id Strategy Based on Target API
 - **MyChem.info**: InChIKey (e.g., `KTUFNOKKBVMGRW-UHFFFAOYSA-N`)
 - **MyGene.info**: NCBI Gene ID (Entrez) or Ensembl Gene ID
@@ -233,6 +276,7 @@ Rules for parser.py:
 - Cross-references under `xrefs` sub-key
 - For association data, use `subject` / `object` / `relation` structure
 - For merged multi-row records, use `associatedWith` list pattern
+- Whatever the shape, every relationship implied by the document structure (explicit `subject`/`object`/`relation` triples, nested joins, `associatedWith` lists, xrefs to other entity types, etc.) must be enumerable later in the **Associations / Relationships Represented** section of `README.md` (§6a).
 
 ### 6. Save Output Files
 ```
@@ -240,13 +284,14 @@ agent_outputs/<datasource_name>_datasource/<datasource_name>_plugin/
 ├── manifest.json
 ├── parser.py
 ├── version.py
-└── design_rationale.md
+├── mapping.py
+└── README.md
 ```
 
 After saving, **update [references/built-plugins-index.md](references/built-plugins-index.md)** by appending a new entry.
 
-### 6a. Generate design_rationale.md (Required)
-Always generate `design_rationale.md`. Required sections:
+### 6a. Generate README.md (Required)
+Always generate `README.md` in the plugin folder — it is the plugin's design-rationale document. Required sections:
 1. **Quick Stats** — top-of-file summary box with key numbers at a glance:
    - Source rows / Documents yielded / Rows skipped (with reason breakdown)
    - Deduplication count
@@ -260,6 +305,14 @@ Always generate `design_rationale.md`. Required sections:
    - `xrefs.chembl`: 88.6%
    - `xrefs.zinc`: 69.5%
 6. **Test Results Summary** — key metrics from biothings-cli test run
+7. **Mapping Overview** — the inferred `mapping.py` structure at a glance (top-level fields and their ES types), plus a **Mapping Conflicts** subsection listing any fields flagged during §3b step 3 (heterogeneous or incompatible types) and how each was resolved
+8. **Associations / Relationships Represented** — the final, ground-truth list of every relationship that actually made it into the shipped API, as a table with columns:
+   - **Subject** (entity/field it comes from, plus Biolink category if known, e.g. `ChemicalEntity`)
+   - **Predicate** (the relation — use the exact `relation` value for explicit `subject`/`object`/`relation` triples; for implicit relationships derived from nested/joined fields or `xrefs`, name the relationship in plain terms and map it to a Biolink predicate if one clearly applies, e.g. `biolink:related_to`, otherwise write "no Biolink predicate mapping")
+   - **Object** (entity/field it points to, plus Biolink category if known)
+   - **Source field(s)** (the exact JSON path(s) in the output document this relationship is derived from, e.g. `experiments[].cell_id`)
+   - **Cardinality** (one-to-one / one-to-many / many-to-many) and approximate count if easily available from the `inspect` sample
+   This section must cover *every* datasource this plugin merges, not just the primary one, and must reflect only relationships that survived into the final parser output — do not list relationships that were considered and dropped (mention drops, if any, in §2 instead). If the plugin has no cross-entity relationships at all (a flat single-entity record), state that explicitly rather than omitting the section.
 
 ### 6b. Optional: parser_report.json (Opt-In)
 Generate only when the user opts in via trigger phrases like "initialize run", "with parser report", "include parser report". See the full schema in the original pipeline documentation.
@@ -267,7 +320,7 @@ Generate only when the user opts in via trigger phrases like "initialize run", "
 ### 7. Validate with biothings-cli
 **Required step.** After writing the plugin files, exercise the plugin end-to-end with biothings-cli.
 
-Run these five commands **in order**: `validate` → `dump` → `upload` → `list` → `inspect`.
+Run these six commands **in order**: `validate` → `dump` → `upload` → `list` → `inspect` → `inspect --mode mapping`.
 
 For the complete step-by-step validation workflow including prerequisites, git setup, hub state cleanup, pass criteria, and failure handling, see [references/cli-validation-workflow.json](references/cli-validation-workflow.json).
 
@@ -275,6 +328,7 @@ For the complete step-by-step validation workflow including prerequisites, git s
 - Exit-0 with zero documents on `upload` = FAILURE (silent failure mode)
 - Always use `-s <plugin_name>` flag with `inspect`
 - Use `--limit 1000` for large datasets (>100K docs) during initial verification
+- Step 6 (`inspect --mode mapping`) validates the `mapping.py` generated in §3b against the actual uploaded documents — a mismatch (missing field, incompatible type) here means the mapping must be regenerated, not patched by hand
 - On any failure, stop and surface the error before continuing
 
 ## Decision Rules
@@ -287,6 +341,8 @@ For the complete step-by-step validation workflow including prerequisites, git s
 - Include `__metadata__` with license info
 - Multi-file `data_url` list → parser must glob `data_folder` and deduplicate by `_id`
 - Always run the §7 biothings-cli workflow end-to-end before declaring a plugin "complete"
+- Always generate `mapping.py` from post-parser documents (§3b) and wire `uploader.mapping` — required for every plugin, not just production Hub deployments
+- Never infer a mapping type from a null-only field; never let heterogeneous/incompatible fields silently produce an invalid mapping — flag them instead
 
 ## Reference Repositories
 - **pending.api**: https://github.com/biothings/pending.api/tree/master/plugins

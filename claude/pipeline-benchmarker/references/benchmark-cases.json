@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "Ground truth benchmark cases for the BioThings plugin agent pipeline (relevancy-analysis → site-inspection → plugin-generator).",
-  "last_updated": "2026-05-11",
+  "last_updated": "2026-08-13",
   "scoring": {
     "relevancy_max": 8,
     "site_inspection_max": 6,
@@ -270,7 +270,7 @@
           "novel_fields": ["np_likeness", "np_classifier_pathway", "np_classifier_class", "organisms", "collections", "annotation_level"]
         },
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -409,7 +409,7 @@
       "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend"],
       "ground_truth": {
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -439,7 +439,7 @@
       "tags": ["core", "plugin_only", "pending_api", "cc0", "recommend"],
       "ground_truth": {
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -469,7 +469,7 @@
       "tags": ["core", "plugin_only", "myChem", "cc_by_nc_4", "recommend"],
       "ground_truth": {
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -499,7 +499,7 @@
       "tags": ["core", "plugin_only", "pending_api", "academic_only", "recommend"],
       "ground_truth": {
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -529,7 +529,7 @@
       "tags": ["core", "plugin_only", "pending_api", "open_access", "recommend"],
       "ground_truth": {
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -559,7 +559,7 @@
       "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend"],
       "ground_truth": {
         "plugin": {
-          "required_files": ["manifest.json", "parser.py", "version.py", "design_rationale.md"],
+          "required_files": ["manifest.json", "parser.py", "version.py", "README.md"],
           "validate_pass": true,
           "dump_pass": true,
           "upload_pass": true,
@@ -609,6 +609,378 @@
       },
       "blocked_reason": "Available bulk download is the 2023 mtADENet dataset (~461K associations), not the full 2026 PersADE (4M claimed). Personalization data (the key novel feature) is not available in bulk download. Plugin stage blocked until full 2026 export is available.",
       "robustness_tag": "data_not_available"
+    },
+    {
+      "id": "lncrnadisease",
+      "name": "LncRNADisease v3.0",
+      "url": "http://www.rnanut.net/lncrnadisease/",
+      "test_prompt": "Evaluate LncRNADisease v3.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 20000,
+          "id_format": "Database_ID accession (e.g. LDA0000001)",
+          "biothings_namespace": "lncrnadisease",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Two-file join: website_simple_data.csv (stable Database_ID) + website_alldata.tsv (evidence-level fields). 22,786 documents in reference run. mapping.py required per §3b of the generator skill.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as bulk CSV/TSV file downloads"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/lncrnadisease_datasource/lncrnadisease_relevancy.json",
+        "site_inspection": "agent_outputs/lncrnadisease_datasource/lncrnadisease_inspection.json",
+        "plugin_dir": "agent_outputs/lncrnadisease_datasource/lncrnadisease_plugin"
+      }
+    },
+    {
+      "id": "hmdd",
+      "name": "HMDD v4.0 (Human microRNA Disease Database)",
+      "url": "http://www.cuilab.cn/hmdd",
+      "test_prompt": "Evaluate HMDD v4.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 30000,
+          "id_format": "slugified composite {mirna}_{disease}",
+          "biothings_namespace": "hmdd",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Single bulk file alldata_v4.txt (53,553 evidence rows), aggregated to 31,533 miRNA-disease pair documents with nested evidence list. Disease field is free text (no DOID/MONDO xref).",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as a single bulk TSV file download"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/hmdd_datasource/hmdd_relevancy.json",
+        "site_inspection": "agent_outputs/hmdd_datasource/hmdd_inspection.json",
+        "plugin_dir": "agent_outputs/hmdd_datasource/hmdd_plugin"
+      }
+    },
+    {
+      "id": "tarbase",
+      "name": "TarBase v9.0",
+      "url": "https://dianalab.e-ce.uth.gr/tarbasev9",
+      "test_prompt": "Evaluate TarBase v9.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "dumper.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 1800000,
+          "id_format": "composite {gene_id}_{mirna_id} (e.g. ENSG00000100697_MIMAT0000062)",
+          "biothings_namespace": "tarbase",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Custom dumper.py required — bulk endpoint is a reverse-engineered internal SPA route (POST, not GET), not a documented/stable API. 1,839,985 documents from 1,847,088 source rows (7,103 duplicate pairs deduped) — by far the largest plugin in this batch.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented/stable per-record REST API; bulk endpoint is an internal SPA route reverse-engineered from JS, could change without notice"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/tarbase_datasource/tarbase_relevancy.json",
+        "site_inspection": "agent_outputs/tarbase_datasource/tarbase_inspection.json",
+        "plugin_dir": "agent_outputs/tarbase_datasource/tarbase_plugin"
+      }
+    },
+    {
+      "id": "ttd_targets",
+      "name": "Therapeutic Target Database (TTD) 2024 — target-centric",
+      "url": "https://ttd.idrblab.cn/",
+      "test_prompt": "Evaluate the target-centric slice of TTD (2024 Database Issue, DOI 10.1093/nar/gkad751) for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 4000,
+          "id_format": "TTD Target ID (e.g. T47101)",
+          "biothings_namespace": "ttd",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "IMPORTANT: id is 'ttd_targets', distinct from the pre-existing 'ttd' benchmark case above (a different, relevancy-only NEEDS_REVIEW evaluation of a 2026 TTD update). This case covers P1-01 (target identity) + P1-06 (target-disease indications) — 4,298 documents. A separate, unrelated drug-centric TTD plugin (v10.1.01, DOI gkaf1154) was previously documented in built-plugins-index.md at the same 'ttd' output path but its files are no longer present on disk; this plugin was renamed to ttd_targets_plugin/ to avoid the collision.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "TTD's download page is a Vue.js SPA with no static HTML download links; file URLs were recovered from the compiled JS bundle, not a documented API"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/ttd_targets_datasource/ttd_targets_relevancy.json",
+        "site_inspection": "agent_outputs/ttd_targets_datasource/ttd_targets_inspection.json",
+        "plugin_dir": "agent_outputs/ttd_targets_datasource/ttd_targets_plugin"
+      }
+    },
+    {
+      "id": "intede",
+      "name": "INTEDE 2.0 (Integrated Enzyme Drug-metabolism)",
+      "url": "https://idrblab.org/intede/",
+      "test_prompt": "Evaluate INTEDE 2.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 800,
+          "id_format": "DME___ID",
+          "biothings_namespace": "intede",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "5-file join: DME cross-matching, xenobiotic/drug modulation, microbiome, host-protein, DNA-methylation interactions. 921 documents. Bulk files are internally dated 2020.08.15 (legacy INTEDE 1.0-era data) — the 2024 paper's headline 'metabolic roadmap' content is JS-search-only, not bulk-downloadable (documented paper-vs-reality mismatch, not a blocker).",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as bulk TXT file downloads"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/intede_datasource/intede_relevancy.json",
+        "site_inspection": "agent_outputs/intede_datasource/intede_inspection.json",
+        "plugin_dir": "agent_outputs/intede_datasource/intede_plugin"
+      }
+    },
+    {
+      "id": "withdrawn",
+      "name": "Withdrawn 2.0",
+      "url": "https://bioinformatics.charite.de/withdrawn_3/",
+      "test_prompt": "Evaluate Withdrawn 2.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "myChem", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 600,
+          "id_format": "InChIKey (e.g. ACGUYXCXAPNIKK-UHFFFAOYSA-N)",
+          "biothings_namespace": "withdrawn",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Single bulk CSV (withdrawns.csv). 636 documents from 647 source rows (11 skipped for missing/whitespace InChIKey). No explicit site-level license page found; assumed CC BY-NC 4.0 from parent NAR article.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as a single bulk CSV file download"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/withdrawn_datasource/withdrawn_relevancy.json",
+        "site_inspection": "agent_outputs/withdrawn_datasource/withdrawn_inspection.json",
+        "plugin_dir": "agent_outputs/withdrawn_datasource/withdrawn_plugin"
+      }
+    },
+    {
+      "id": "ravar",
+      "name": "RAVAR (Rare Variant-trait Association Repository)",
+      "url": "https://ngdc.cncb.ac.cn/ravar/",
+      "test_prompt": "Evaluate RAVAR for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_4", "recommend", "nar_2024_batch", "multi_uploader"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 18000,
+          "id_format": "Ensembl Gene ID (gene_associations uploader) / dbSNP rsID (variant_associations uploader)",
+          "biothings_namespace": "ravar",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Two-uploader plugin (gene_associations: 12,850 docs from gene_fulltable.txt 76,186 rows; variant_associations: 6,470 docs from snp_fulltable.txt 18,861 rows), since RAVAR reports associations at two granularities with different natural IDs. 19,320 total documents across both uploaders.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data recovered from the SPA's underlying /api/download/list bulk-file endpoint on the canonical domain"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/ravar_datasource/ravar_relevancy.json",
+        "site_inspection": "agent_outputs/ravar_datasource/ravar_inspection.json",
+        "plugin_dir": "agent_outputs/ravar_datasource/ravar_plugin"
+      }
+    },
+    {
+      "id": "pancanqtl",
+      "name": "PancanQTLv2.0 (Pan-Cancer eQTL Atlas)",
+      "url": "http://www.hanlaboratory.com/PancanQTLv2/",
+      "test_prompt": "Evaluate PancanQTLv2.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 20000,
+          "id_format": "composite module-prefixed _id (no shared key across the 4 relation-type modules)",
+          "biothings_namespace": "pancanqtl",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "124 per-cancer-type files across 4 modules (Fine-mapping/eQTL-GWAS/Drug-eQTL/Immune-eQTL x 33 TCGA cancer types + Fine-mapping). Reference run validated against representative smaller files only (25,462 docs), NOT the full ~84.6M row scale — full-scale ingestion untested. One documented type conflict (position: int vs. combined 'chr:pos' string across modules) resolved to keyword.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as bulk per-cancer-type TSV/gzip file downloads"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/pancanqtl_datasource/pancanqtl_relevancy.json",
+        "site_inspection": "agent_outputs/pancanqtl_datasource/pancanqtl_inspection.json",
+        "plugin_dir": "agent_outputs/pancanqtl_datasource/pancanqtl_plugin"
+      }
+    },
+    {
+      "id": "disignatlas",
+      "name": "DiSignAtlas (Disease Signature Atlas)",
+      "url": "http://www.inbirg.com/disignatlas/",
+      "test_prompt": "Evaluate DiSignAtlas for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 10000,
+          "id_format": "dsaid (DSA##### accession)",
+          "biothings_namespace": "disignatlas",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Two-file join: dataset-info CSV (100% coverage) + DEG GMT file (81.8% coverage). 10,306 documents, one per curated disease-vs-control transcriptomic comparison. Site (inbirg.com) only reachable over HTTP (port 443 refuses connections) — manifest deliberately uses http:// URLs.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as bulk CSV/GMT file downloads"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/disignatlas_datasource/disignatlas_relevancy.json",
+        "site_inspection": "agent_outputs/disignatlas_datasource/disignatlas_inspection.json",
+        "plugin_dir": "agent_outputs/disignatlas_datasource/disignatlas_plugin"
+      }
+    },
+    {
+      "id": "hervd",
+      "name": "HervD Atlas (Human Endogenous Retrovirus-Disease Atlas)",
+      "url": "https://ngdc.cncb.ac.cn/hervd/",
+      "test_prompt": "Evaluate HervD Atlas for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "recommend", "nar_2024_batch", "custom_dumper"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "dumper.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 20000,
+          "id_format": "HervID/HERVID",
+          "biothings_namespace": "hervd",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Custom dumper.py wrapping two undocumented POST JSON endpoints (herv_term, herv_element) discovered via browse-page JS — the 4 static download files contain entity metadata only, no association linkage. 21,790 documents (21,049 HERV-Term + 741 HERV-Element), 58,731 embedded HERV-disease links. Site data license is CC BY 3.0 China Mainland (NGDC footer), distinct from the article's CC BY-NC text license.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; the two POST JSON bulk endpoints used are undocumented and were discovered via browse-page JS, not a stable public API"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/hervd_datasource/hervd_relevancy.json",
+        "site_inspection": "agent_outputs/hervd_datasource/hervd_inspection.json",
+        "plugin_dir": "agent_outputs/hervd_datasource/hervd_plugin"
+      }
+    },
+    {
+      "id": "circrnadisease",
+      "name": "circRNADisease v2.0",
+      "url": "http://www.rnanut.net/circRNADisease/",
+      "test_prompt": "Evaluate circRNADisease v2.0 for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "cc_by_nc_4", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 13000,
+          "id_format": "composite {circrna_label}_{mondo_id} (e.g. hsa_circ_0007158_MONDO:0004986)",
+          "biothings_namespace": "circrnadisease",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Single bulk TSV (circRNADisease_V3_circrna_details.txt — live site now serves expanded 'v3.0' data vs. the v2.0 paper title, documented mismatch). 13,076 documents from 15,423 rows (79 skipped for missing label/MONDO ID).",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No documented per-record REST API; data available only as a single bulk TSV file download"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/circrnadisease_datasource/circrnadisease_relevancy.json",
+        "site_inspection": "agent_outputs/circrnadisease_datasource/circrnadisease_inspection.json",
+        "plugin_dir": "agent_outputs/circrnadisease_datasource/circrnadisease_plugin"
+      }
+    },
+    {
+      "id": "slkb",
+      "name": "SLKB (Synthetic Lethality Knowledge Base)",
+      "url": "https://slkb.osubmi.org/",
+      "test_prompt": "Evaluate SLKB for BioThings ingestion",
+      "stages": ["plugin"],
+      "tags": ["core", "plugin_only", "pending_api", "gpl_3", "recommend", "nar_2024_batch"],
+      "ground_truth": {
+        "plugin": {
+          "required_files": ["manifest.json", "parser.py", "version.py", "mapping.py", "README.md"],
+          "validate_pass": true,
+          "dump_pass": true,
+          "upload_pass": true,
+          "min_documents": 270000,
+          "id_format": "composite {study_origin_pmid}_{cell_line_origin}_{gene_pair_id}",
+          "biothings_namespace": "slkb",
+          "on_duplicates": "error",
+          "mapping_validation_pass": true,
+          "notes": "Canonical bulk source is a Figshare sqlite3 deposit (DOI 10.6084/m9.figshare.22902839.v1, 943MB) cited in the paper's Data Availability statement — the live Shiny site only offers ad hoc query-scoped exports. 280,483 documents joined across 7 scoring-method tables. License GPL 3.0+ (copyleft) — flagged for legal review before redistribution, unlike the more common CC BY sources in this batch.",
+          "api_spot_check": {
+            "type": "not_available",
+            "reason": "No per-record REST API; canonical bulk source is a third-party Figshare sqlite3 archive, not a live API"
+          }
+        }
+      },
+      "source_artifacts": {
+        "relevancy": "agent_outputs/slkb_datasource/slkb_relevancy.json",
+        "site_inspection": "agent_outputs/slkb_datasource/slkb_inspection.json",
+        "plugin_dir": "agent_outputs/slkb_datasource/slkb_plugin"
+      }
     }
   ]
 }

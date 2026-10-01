@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "description": "biothings-cli end-to-end validation workflow for generated plugins. Run all 5 steps in order after writing plugin files.",
+    "description": "biothings-cli end-to-end validation workflow for generated plugins. Run all 6 steps in order after writing plugin files.",
     "source": "Hardened from SIGNOR v1.0 silent-failure and MetaNetX 1.2M-doc builds"
   },
   "prerequisites": {
@@ -14,7 +14,7 @@
     "reason": "biothings-cli calls git rev-list and git remote internally; fails without a proper repo",
     "commands": [
       "git init",
-      "git add manifest.json parser.py version.py README.md",
+      "git add manifest.json parser.py version.py mapping.py README.md",
       "git commit -m \"Initial plugin files\" --allow-empty",
       "git remote add origin /dev/null 2>/dev/null || true"
     ],
@@ -91,6 +91,17 @@
       },
       "common_failures": ["None not cleaned by dict_sweep", "_id stored as int", "nested single-key dicts (should be flattened by unlist)"],
       "on_failure": "Record field-level stats in cli_validation.steps[].errors[]; surface as parser fix-up task"
+    },
+    {
+      "order": 6,
+      "id": "inspect_mapping",
+      "command": "biothings-cli dataplugin inspect -s <plugin_name> --mode mapping",
+      "command_large": "biothings-cli dataplugin inspect -s <plugin_name> --mode mapping --limit 1000",
+      "purpose": "Infer an Elasticsearch mapping from the sampled documents and diff it against the generated mapping.py (uploader.mapping / get_customized_mapping)",
+      "catches": ["field present in documents but missing from mapping.py", "type mismatch between inferred and hand-written mapping", "object/array structures collapsed incorrectly", "mapping that would fail to load into Elasticsearch"],
+      "pass_criterion": "No reported mapping conflicts; every field in the sampled documents is covered by a compatible type in mapping.py; nested object and array-of-element structures match",
+      "common_failures": ["mapping.py written from source schema instead of post-parser documents", "list field mapped as an array type instead of its element type", "heterogeneous field silently mapped instead of flagged"],
+      "on_failure": "Record the mapping diff in cli_validation.steps[].errors[]; regenerate mapping.py per §3b rather than hand-patching individual fields"
     }
   ],
   "rerun_cleanup": {
@@ -104,7 +115,7 @@
       "failed": "Exit non-zero, OR exit 0 but pass criterion failed (e.g. zero docs on upload)",
       "skipped": "Not run (earlier step failed)"
     },
-    "rollup_rule": "smoke_test.status = passed only when all 5 steps pass",
+    "rollup_rule": "smoke_test.status = passed only when all 6 steps pass",
     "discrepancy_severity": {
       "critical": "Silent failures (zero docs, missing collection)",
       "warning": "Loud failures (HTTP error, validation error)"

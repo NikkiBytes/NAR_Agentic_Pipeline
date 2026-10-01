@@ -21,7 +21,7 @@ This folder contains the Claude/Cline implementation of the NAR BioThings agenti
 |--------|-------|--------------|
 | `nar-biothings-scanner/` | Upstream discovery | Scans a NAR Database Issue to produce a ranked list of 10–20 ingestible candidates |
 | `datasource-evaluation/` | Stage 1 | Combined relevancy analysis + site inspection in one pass. Scores relevance (0–5), novelty (0–5), openness (PASS/FAIL); verifies downloads, samples schema, classifies fields. Outputs both `_relevancy.json` (verdict) and `_inspection.json` (status) |
-| `biothings-plugin-generator/` | Stage 2 | Generates `manifest.json`, `parser.py`, `version.py`, and `design_rationale.md`. Validates with `biothings-cli`. Tracks design decisions and open work in its own `BACKLOG.md` |
+| `biothings-plugin-generator/` | Stage 2 | Generates `manifest.json`, `parser.py`, `version.py`, and `README.md`. Validates with `biothings-cli`. Tracks design decisions and open work in its own `BACKLOG.md` |
 | `pipeline-benchmarker/` | Evaluation | Runs all pipeline stages against curated ground-truth cases and scores accuracy. Writes results to `benchmark_outputs/` |
 
 ## References
@@ -76,7 +76,7 @@ agent_outputs/
         ├── manifest.json
         ├── parser.py
         ├── version.py
-        └── design_rationale.md
+        └── README.md
 ```
 
 Benchmark runs (from `pipeline-benchmarker/`) go to `benchmark_outputs/` in this directory instead — kept separate from pipeline outputs and gitignored.

@@ -66,8 +66,8 @@ For each case with `"site_inspection"` in `stages`:
 ### Stage 3 — Plugin Evaluation
 For each case with `"plugin"` in `stages`:
 1. Invoke `biothings-plugin-generator` using the case name and prior site inspection output
-2. **File inventory**: Check which files were generated (`manifest.json`, `parser.py`, `version.py`, `design_rationale.md`). Record present/missing — do not score.
-3. **CLI pipeline**: Run `biothings-cli` validation suite in order: `validate` → `dump` → `upload` → `list` → `inspect --limit 1000`
+2. **File inventory**: Check which files were generated (`manifest.json`, `parser.py`, `version.py`, `mapping.py`, `README.md`). Record present/missing — do not score.
+3. **CLI pipeline**: Run `biothings-cli` validation suite in order: `validate` → `dump` → `upload` → `list` → `inspect --limit 1000` → `inspect --mode mapping --limit 1000` (per [cli-validation-workflow.json](../biothings-plugin-generator/references/cli-validation-workflow.json) step 6 in the generator skill)
 4. **Document count**: Record the exact document count from `upload`. Compare against ground truth `min_documents`. Calculate `count_ratio = actual / expected`.
 5. **_id format analysis**: Sample 20 `_id` values from inspected output. Check each against the expected format (e.g. InChIKey regex, SIGNOR ID pattern). Record the match rate and any malformed IDs.
 6. **Field coverage audit**: From the `inspect` output, extract all top-level and nested fields under the datasource namespace. Compare against ground truth `novel_fields` from the `site_inspection` stage. For each expected field, record: present/absent, non-null percentage (from the `--limit 1000` sample).
@@ -76,12 +76,20 @@ For each case with `"plugin"` in `stages`:
    - `on_duplicates` matches ground truth expectation
    - `__metadata__.license` matches ground truth license
    - `version.py` is wired via `release: "version:get_release"`
+   - `uploader.mapping` is wired via `"mapping:get_customized_mapping"`
+7b. **Mapping validation**: Diff the mapping inferred by `inspect --mode mapping` against the plugin's own `mapping.py` (`get_customized_mapping`):
+   - **Missing fields**: any field present in the `inspect --mode mapping` output but absent from `mapping.py`'s `properties`
+   - **Type mismatches**: any field where the ES type inferred by `inspect --mode mapping` disagrees with the type declared in `mapping.py` (e.g. `mapping.py` says `keyword`, inspected documents are numeric)
+   - **Structural mismatches**: nested `object`/`properties` collapsed to a flat field (or vice versa), or a list-of-scalars field mapped as an array type instead of the element type
+   - **Load check**: confirm `inspect --mode mapping` completes without reporting a conflict that would fail to load into Elasticsearch
+   - Record `pass`/`fail` plus the list of diffs (field path, expected type, inspected type) — see [mapping-generation.md](../biothings-plugin-generator/references/mapping-generation.md) validation checklist in the generator skill for what "compatible" means per field kind
 8. **Parser output snapshot**: Save a dedicated `<case_id>_parser_output.json` to `benchmark_outputs/<run_id>/` containing:
    - `total_documents`: exact count from upload
    - `field_tree`: the complete nested field structure from `inspect`, showing every key path and its type (e.g. `ecbd.bioactivity_results[].activity_type: str`)
    - `sample_documents`: 5 full documents from the parser (first 2, middle 1, last 2) — **no truncation, no `"..."`** — every field and value exactly as yielded by `load_data()`. Each document must show the complete `_id` and the full nested structure under the datasource namespace.
    - `id_samples`: the 20 sampled `_id` values used for format analysis
    - `field_stats`: for each field path, the count and percentage of documents where it is non-null (from the `--limit 1000` inspect sample)
+   - `mapping_diffs`: the list of diffs recorded in step 7b (empty if the mapping is fully compatible)
    This file is the primary artifact for understanding what the parser actually produces.
 9. **Sample document review**: From the 5 snapshot documents, flag any fields with missing expected values, unexpected types (e.g. string where int expected), or empty nested objects. Record these as discrepancies.
 10. **Compile session report** with all findings above — see Output Format below
@@ -201,25 +209,27 @@ Note: score points are exclusive (max 2 per dimension, not both 2 and 1).
 Plugin evaluation produces a detailed session report instead of a numeric score. Each criterion is assessed and reported narratively:
 
 **File inventory**
-- Record which required files are present/missing: `manifest.json`, `parser.py`, `version.py`, `design_rationale.md`
+- Record which required files are present/missing: `manifest.json`, `parser.py`, `version.py`, `mapping.py`, `README.md`
 
 **CLI pipeline results**
 - `validate`: pass/fail + any warnings or errors (full output)
 - `dump`: pass/fail + file sizes downloaded, time elapsed
 - `upload`: pass/fail + exact document count + comparison to ground truth `min_documents`
 - `inspect`: field tree from `--limit 1000`, used for field coverage audit
+- `inspect --mode mapping`: pass/fail + diff count against `mapping.py`, used for mapping validation
 
 **Data quality checks**
 - `_id format`: sample 20 IDs, report match rate against expected pattern, list any malformed IDs
 - `field coverage`: for each ground truth `novel_field`, report present/absent + non-null percentage
-- `manifest accuracy`: verify `data_url` resolves to data, `on_duplicates` matches, license matches, `version.py` is wired
-- `parser output snapshot`: 5 full documents saved to `<case_id>_parser_output.json` with field tree and stats — the definitive reference for what the parser produces
+- `manifest accuracy`: verify `data_url` resolves to data, `on_duplicates` matches, license matches, `version.py` is wired, `uploader.mapping` is wired
+- `mapping validation`: diff `inspect --mode mapping` output against `mapping.py`; report missing fields, type mismatches, and structural mismatches (see step 7b)
+- `parser output snapshot`: 5 full documents saved to `<case_id>_parser_output.json` with field tree, stats, and mapping diffs — the definitive reference for what the parser produces
 
 **Overall assessment**
 - `status`: one of `PASS`, `PARTIAL`, or `FAIL`
-  - `PASS` — all CLI steps succeed, document count ≥ `min_documents`, _id format match ≥ 90%, all novel fields present
-  - `PARTIAL` — CLI steps succeed but with gaps (document count below threshold, missing fields, _id issues)
-  - `FAIL` — any CLI step fails, or zero documents uploaded
+  - `PASS` — all CLI steps succeed (including `inspect --mode mapping`), document count ≥ `min_documents`, _id format match ≥ 90%, all novel fields present, no mapping diffs
+  - `PARTIAL` — CLI steps succeed but with gaps (document count below threshold, missing fields, _id issues, non-critical mapping diffs like a missing sparse field)
+  - `FAIL` — any CLI step fails, zero documents uploaded, or a mapping type/structural conflict that would fail to load into Elasticsearch
 
 ## Output Format
 
@@ -264,13 +274,15 @@ Save to `benchmark_outputs/benchmark_run_<YYYYMMDD_HHMMSS>.json`:
         "manifest.json": true,
         "parser.py": true,
         "version.py": true,
-        "design_rationale.md": true
+        "mapping.py": true,
+        "README.md": true
       },
       "cli_results": {
         "validate": { "pass": true, "output_summary": "No errors or warnings" },
         "dump": { "pass": true, "files_downloaded": 3, "total_size_mb": 12.4, "elapsed_seconds": 18 },
         "upload": { "pass": true, "documents_yielded": 4831, "expected_min": 500, "count_ratio": 9.66 },
-        "inspect": { "pass": true, "fields_found": 14, "sample_limit": 1000 }
+        "inspect": { "pass": true, "fields_found": 14, "sample_limit": 1000 },
+        "inspect_mapping": { "pass": true, "fields_checked": 14, "diffs_found": 0 }
       },
       "id_format": {
         "expected_pattern": "InChIKey",
@@ -287,7 +299,12 @@ Save to `benchmark_outputs/benchmark_run_<YYYYMMDD_HHMMSS>.json`:
         "data_url_resolves": true,
         "on_duplicates_match": true,
         "license_match": true,
-        "version_wired": true
+        "version_wired": true,
+        "mapping_wired": true
+      },
+      "mapping_validation": {
+        "pass": true,
+        "diffs": []
       },
       "parser_output_file": "benchmark_outputs/benchmark_run_20260511_060000/ecbd_parser_output.json",
       "sample_documents": [
@@ -411,14 +428,15 @@ Stage: plugin  |  Cases: 3  |  PASS: 2  |  PARTIAL: 1  |  FAIL: 0
 
 ── ecbd ──────────────────────────────────────────────────────
 Status: PASS
-Files: manifest.json ✓  parser.py ✓  version.py ✓  design_rationale.md ✓
-CLI:   validate ✓ → dump ✓ (3 files, 12.4 MB) → upload ✓ (4831 docs, expected ≥500) → inspect ✓
+Files: manifest.json ✓  parser.py ✓  version.py ✓  mapping.py ✓  README.md ✓
+CLI:   validate ✓ → dump ✓ (3 files, 12.4 MB) → upload ✓ (4831 docs, expected ≥500) → inspect ✓ → inspect --mode mapping ✓
 IDs:   20/20 valid InChIKeys (100%)
 Field coverage:
   bioactivity_results    ✓  98.2% non-null
   bioprofiling           ✓  74.1% non-null
   screening_qc_metadata  ✓  100.0% non-null
-Manifest: data_url OK | on_duplicates OK | license OK | version.py wired
+Manifest: data_url OK | on_duplicates OK | license OK | version.py wired | mapping.py wired
+Mapping: 14/14 fields match inspected types, 0 diffs
 Parser output → ecbd_parser_output.json (5 docs, 18 field paths)
   Sample: {_id: "AQTQHPDCURKLKT-PNYVAJAMSA-N", ecbd: {name, smiles, bioactivity_results[], bioprofiling{}, screening_qc_metadata{}, xrefs{}}}
 Findings:
@@ -432,15 +450,17 @@ Status: PASS
 
 ── rnacentral ────────────────────────────────────────────────
 Status: PARTIAL
-Files: manifest.json ✓  parser.py ✓  version.py ✓  design_rationale.md ✗
-CLI:   validate ✓ → dump ✓ (4 files, 89.2 MB) → upload ✓ (1203 docs, expected ≥1000) → inspect ✓
+Files: manifest.json ✓  parser.py ✓  version.py ✓  mapping.py ✓  README.md ✗
+CLI:   validate ✓ → dump ✓ (4 files, 89.2 MB) → upload ✓ (1203 docs, expected ≥1000) → inspect ✓ → inspect --mode mapping ✓
 IDs:   18/20 valid URS IDs (90%)
 Field coverage:
   rna_type               ✓  100.0% non-null
   rfam_family            ✓  42.3% non-null
   database_xrefs         ✓  97.8% non-null
   disease_associations   ✗  not found in output
-Manifest: data_url OK | on_duplicates OK | license OK | version.py wired
+Manifest: data_url OK | on_duplicates OK | license OK | version.py wired | mapping.py wired
+Mapping: 10/11 fields match inspected types, 1 diff
+  ⚠ disease_associations: expected in mapping.py, absent from inspected documents (matches missing field above)
 Parser output → rnacentral_parser_output.json (5 docs, 11 field paths)
   Sample: {_id: "URS0000000A8C", rnacentral: {rna_type, rfam_family, database_xrefs[], ...}}
   ⚠ disease_associations absent from field tree
@@ -450,7 +470,7 @@ Findings:
   • disease_associations field missing from parser output
 Discrepancies:
   • Missing field: disease_associations (expected from site_inspection ground truth)
-  • design_rationale.md not generated
+  • README.md not generated
 ```
 
 ```
@@ -463,6 +483,7 @@ REGRESSIONS vs prior run: ttd (was NEEDS_REVIEW, now RECOMMEND_INGEST)
 - A RECOMMEND_INGEST prediction for a `blocked` or `no_license` case = critical failure
 - A RECOMMEND_INGEST prediction for a `do_not_ingest` case = critical failure (skipped a level)
 - `upload` with 0 documents = FAIL regardless of exit code
+- `inspect --mode mapping` reporting a type/structural conflict that would fail to load into Elasticsearch = FAIL; a missing/sparse field with no other conflicts = PARTIAL, not FAIL
 - If a skill errors or produces no parseable output: relevancy/site_inspection score = 0; plugin status = FAIL with error details recorded
 - Compare against the previous benchmark run and flag any verdict changes as regressions or improvements
 - Plugin stage never produces a numeric score — use `PASS` / `PARTIAL` / `FAIL` status with detailed findings

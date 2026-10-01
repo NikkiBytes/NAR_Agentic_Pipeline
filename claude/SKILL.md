@@ -46,7 +46,7 @@ Note: The `DO_NOT_INGEST` relevancy verdict is handled internally by the evaluat
 ### Stage 2: Plugin Generation
 **Skill**: `biothings-plugin-generator/SKILL.md`
 **Action**: Read and follow all instructions in `biothings-plugin-generator/SKILL.md`. Use the inspection JSON from Stage 1 to populate download URLs, schema fields, primary key, and target API — do not re-prompt the user for information already captured.
-**Output**: `agent_outputs/<name>_datasource/<name>_plugin/` containing `manifest.json`, `parser.py`, `version.py`, `design_rationale.md`
+**Output**: `agent_outputs/<name>_datasource/<name>_plugin/` containing `manifest.json`, `parser.py`, `version.py`, `README.md`
 
 This stage includes the full `biothings-cli` validation workflow (validate → dump → upload → list → inspect) as defined in the plugin generator skill.
 
@@ -72,7 +72,7 @@ User Input (URL or name)
 ┌─────────────────────────┐
 │  Stage 2: Plugin Gen    │──→ <name>_plugin/
 │  (biothings-plugin-     │    Contains: manifest.json, parser.py,
-│   generator/SKILL.md)   │    version.py, design_rationale.md
+│   generator/SKILL.md)   │    version.py, README.md
 └─────────────────────────┘
 ```
 
