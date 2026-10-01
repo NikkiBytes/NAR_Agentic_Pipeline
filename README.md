@@ -17,7 +17,7 @@ Stage 1 — Datasource Evaluation (relevancy + site inspection, single pass)
         │  Status:  VERIFIED / PARTIALLY_VERIFIED / BLOCKED
         ▼
 Stage 2 — Plugin Generation
-           Output: manifest.json, parser.py, version.py, design_rationale.md
+           Output: manifest.json, parser.py, version.py, README.md
 ```
 
 Each stage produces structured JSON outputs. Stages are gated — a `DO_NOT_INGEST` verdict or `BLOCKED` status stops the pipeline before wasting effort on the next stage.
@@ -49,7 +49,7 @@ All skills live under `claude/`:
 |-------|---------|
 | `nar-biothings-scanner` | Scan a NAR Database Issue to discover 10–20 ingestible candidates |
 | `datasource-evaluation` | Score a datasource for relevance, novelty, and openness; verify download URLs and sample the data schema — combined relevancy + inspection in one pass |
-| `biothings-plugin-generator` | Generate `manifest.json`, `parser.py`, `version.py`, and `design_rationale.md` |
+| `biothings-plugin-generator` | Generate `manifest.json`, `parser.py`, `version.py`, and `README.md` |
 | `pipeline-benchmarker` | Evaluate pipeline accuracy against curated ground-truth cases |
 
 ## Skills in Detail
@@ -77,7 +77,7 @@ Takes the inspection JSON's `plugin_inputs` and generates the actual ingestion c
   - `manifest.json` — data URLs, parser reference, license/publication metadata
   - `parser.py` — generator function that yields `_id`-keyed documents
   - `version.py` — fetches the datasource's current release string
-  - `design_rationale.md` — why these files/fields were chosen, sample output docs, field coverage %, CLI test results
+  - `README.md` — why these files/fields were chosen, sample output docs, field coverage %, CLI test results
 - Also runs `biothings-cli validate → dump → upload → list → inspect` and updates `references/built-plugins-index.md`.
 
 ### `pipeline-benchmarker` — QA, run on demand
@@ -106,7 +106,7 @@ agent_outputs/
 │       ├── manifest.json
 │       ├── parser.py
 │       ├── version.py
-│       └── design_rationale.md
+│       └── README.md
 ```
 
 ## Quickstart
