@@ -62,7 +62,7 @@ Scans a NAR Database Issue (2025+) editorial and its cited papers to find 10–2
 
 ### `datasource-evaluation` — Stage 1 (gated)
 
-Given one datasource (name/URL), answers five questions in one pass: is it relevant, novel, open, actually downloadable, and what's in the files. Verifies DOI/PMID/PMC via a live lookup — never from memory, since NAR DOIs within the same issue are easy to misremember.
+Given one datasource (name/URL), answers five questions in one pass: **is it relevant, novel, open, actually downloadable, and what's in the files.** Verifies `DOI/PMID/PMC` via a live lookup — never from memory, (*NAR DOIs within the same issue are easy to misremember.*)
 
 - **Outputs** (to `agent_outputs/<name>_datasource/`):
   - `<name>_relevancy.json` — verdict (`RECOMMEND_INGEST` / `NEEDS_REVIEW` / `DO_NOT_INGEST`), scores, license, URLs
@@ -109,16 +109,109 @@ agent_outputs/
 │       └── README.md
 ```
 
+## Getting Started
+
+### Prerequisites
+
+- Python ≥ 3.10
+- `git` and `curl` (used by the skills and by `biothings-cli`)
+- An agent host: [Claude Code](https://claude.com/claude-code) or the [Cline](https://github.com/clinebot/cline) VS Code extension
+- [uv](https://docs.astral.sh/uv/) — only needed for the optional MCP servers in `.mcp.optional.json`
+
+### Install
+
+```bash
+git clone https://github.com/<org>/NAR_Agentic_Pipeline.git
+cd NAR_Agentic_Pipeline
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+biothings-cli --help    # should list the `dataplugin` command, not a traceback
+```
+
+> **biothings must be ≥ 1.1.0.** `biothings` 1.0.x crashes on startup with
+> `AttributeError: module 'typer' has no attribute 'rich_utils'` when `typer` ≥ 0.17 is installed
+> (fixed upstream in [biothings.api#426](https://github.com/biothings/biothings.api/pull/426)).
+> If you're stuck on 1.0.x, `pip install "typer<0.17"` also works.
+
+### Connect the BioThings MCP server
+
+`.mcp.json` registers the `biothings-core` SmartAPI MCP server, which the agent uses to query MyGene/MyChem/etc. With the venv active, `smartapi-mcp` is on your `PATH`; launch your agent from that same shell so it can find it. Confirm with:
+
+```bash
+claude mcp list
+```
+
+More servers (all BioThings APIs, facade modes, test set) are defined in `.mcp.optional.json` — copy an entry into `.mcp.json`, or add one ad hoc, e.g.:
+
+```bash
+claude mcp add biothings-all uvx -- smartapi-mcp --api_set biothings_all --facade auto --server_name "BioThings All"
+```
+
+### Optional: NCBI API key
+
+Stage 1 verifies DOIs/PMIDs through NCBI E-utilities, which are rate-limited to 3 requests/s without a key. This is usually fine for single datasources; for scanner or benchmark runs, get a key ([NCBI account settings](https://www.ncbi.nlm.nih.gov/account/settings/)) and tell the agent to append `&api_key=<your-key>` to E-utilities calls (see [`nar-url-resolution.md`](claude/datasource-evaluation/references/nar-url-resolution.md)).
+
+### First run
+
+Launch the agent from the repo root (so `.mcp.json` is picked up and outputs land in `agent_outputs/`). `agent_outputs/` and `pipeline_state.json` are created on the first run.
+
+- **Cline**: `claude/.clinerules` points the agent at `claude/CLAUDE.md` automatically.
+- **Claude Code**: rules in `claude/CLAUDE.md` aren't loaded at startup from the repo root, so reference them in your first prompt:
+  `Read claude/CLAUDE.md, then run the full BioThings pipeline for SIGNOR`
+
 ## Quickstart
 
 **Run the full pipeline for a datasource:**
-> The `.clinerules` file in `claude/` ensures the agent reads `CLAUDE.md` on startup. Then ask: `Run the full BioThings pipeline for <URL or datasource name>`
+> See [First run](#first-run) for how the agent picks up `claude/CLAUDE.md`. Then ask: `Run the full BioThings pipeline for <URL or datasource name>`
 
 **Run a single stage:**
 > Ask the agent to invoke the individual stage skill directly (e.g., `Evaluate SIGNOR for BioThings ingestion`).
 
 **Discover new candidates from a NAR issue:**
 > Ask the agent to run `nar-biothings-scanner` on NAR 2025 or 2026.
+
+**Pipeline flags** (append to the request): `--skip-plugin` (stop after evaluation), `--force` (continue past `NEEDS_REVIEW`), `--with-reports` (also write `.md` reports), `--with-parser-report` (include `parser_report.json`).
+
+## Testing a Generated Plugin Manually
+
+Stage 2 runs this automatically, but to re-check a plugin yourself:
+
+```bash
+cd agent_outputs/<name>_datasource/<name>_plugin
+
+# biothings-cli calls git internally — a local-only repo with a dummy remote is enough
+git init && git add . && git commit -m "Initial plugin files"
+git remote add origin /dev/null
+
+biothings-cli dataplugin validate    # lint manifest.json
+biothings-cli dataplugin dump        # run version.py, download data_url files
+biothings-cli dataplugin upload      # run parser.load_data() into local SQLite
+biothings-cli dataplugin list        # confirm the collection exists
+biothings-cli dataplugin inspect -s <name>   # field types + stats
+```
+
+**An `upload` that exits 0 but yields zero documents is a failure.** Check the doc count in `list`/`inspect`.
+
+The full step-by-step spec (pass criteria, common failures) is in [`cli-validation-workflow.json`](claude/biothings-plugin-generator/references/cli-validation-workflow.json).
+
+## Troubleshooting
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `AttributeError: module 'typer' has no attribute 'rich_utils'` | `biothings` 1.0.x with `typer` ≥ 0.17. `pip install -U "biothings[cli]>=1.1.0"` |
+| `Incorrect plugin name '<x>' (doesn't match regex ...)` | Plugin directory name must be ≥ 2 chars of letters/digits/underscores — no hyphens |
+| `dump` fails with `SSLCertVerificationError` | Source site has a self-signed/expired cert. Pre-download with `curl -k` into `.biothings_hub/archive/<name>/<release>/`; production needs a custom `dumper.py` |
+| `dump` gets HTTP 403 | Site blocks non-browser clients. Confirm with `curl -A "Mozilla/5.0" <url>`; production needs a custom `dumper.py` that sets a `User-Agent` |
+| `upload` hangs, or reports a stale "canceled" status on rerun | Clear hub state: `rm -f .biothings_hub/data_src_database* .biothings_hub/biothings_hubdb` (keep `archive/`) |
+| `inspect` returns nothing for a multi-source plugin | Pass `-s <sub-source-name>`, or query `.biothings_hub/data_src_database` (SQLite) directly |
+| Agent can't see BioThings tools | `smartapi-mcp` not on `PATH` of the shell that launched the agent — activate the venv first, then `claude mcp list` |
+
+## Contributing
+
+- **Editing a skill**: after changing any `SKILL.md` or its references, run `pipeline-benchmarker` (ask: `Run the pipeline benchmark`) and compare against the previous run in `claude/benchmark_outputs/` to catch regressions.
+- **Adding a skill**: create `claude/<skill-name>/SKILL.md` (with `name`/`description` frontmatter) plus a `references/` folder, then add it to the skills tables here and in `claude/README.md`, and to `claude/CLAUDE.md` if the orchestrator should call it.
+- **Adding benchmark cases**: append to `claude/pipeline-benchmarker/references/benchmark-cases.json` (the file the benchmarker loads) following the existing schema.
 
 ## Candidates Tracked
 
