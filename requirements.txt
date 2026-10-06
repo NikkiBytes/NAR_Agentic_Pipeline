@@ -1,0 +1,8 @@
+# biothings-cli for validating generated plugins.
+# >=1.1.0 required: 1.0.x crashes on typer>=0.17 (biothings/biothings.api#421, fixed in #426).
+biothings[cli]>=1.1.0
+
+# Generated parsers run inside this env during `biothings-cli dataplugin upload`.
+# pandas/openpyxl are used for .xlsx sources (see biothings-plugin-generator/SKILL.md).
+pandas
+openpyxl
