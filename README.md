@@ -116,7 +116,6 @@ agent_outputs/
 - Python ≥ 3.10
 - `git` and `curl` (used by the skills and by `biothings-cli`)
 - An agent host: [Claude Code](https://claude.com/claude-code) or the [Cline](https://github.com/clinebot/cline) VS Code extension
-- [uv](https://docs.astral.sh/uv/) — only needed for the optional MCP servers in `.mcp.optional.json`
 
 ### Install
 
@@ -134,27 +133,13 @@ biothings-cli --help    # should list the `dataplugin` command, not a traceback
 > (fixed upstream in [biothings.api#426](https://github.com/biothings/biothings.api/pull/426)).
 > If you're stuck on 1.0.x, `pip install "typer<0.17"` also works.
 
-### Connect the BioThings MCP server
-
-`.mcp.json` registers the `biothings-core` SmartAPI MCP server, which the agent uses to query MyGene/MyChem/etc. With the venv active, `smartapi-mcp` is on your `PATH`; launch your agent from that same shell so it can find it. Confirm with:
-
-```bash
-claude mcp list
-```
-
-More servers (all BioThings APIs, facade modes, test set) are defined in `.mcp.optional.json` — copy an entry into `.mcp.json`, or add one ad hoc, e.g.:
-
-```bash
-claude mcp add biothings-all uvx -- smartapi-mcp --api_set biothings_all --facade auto --server_name "BioThings All"
-```
-
 ### Optional: NCBI API key
 
 Stage 1 verifies DOIs/PMIDs through NCBI E-utilities, which are rate-limited to 3 requests/s without a key. This is usually fine for single datasources; for scanner or benchmark runs, get a key ([NCBI account settings](https://www.ncbi.nlm.nih.gov/account/settings/)) and tell the agent to append `&api_key=<your-key>` to E-utilities calls (see [`nar-url-resolution.md`](claude/datasource-evaluation/references/nar-url-resolution.md)).
 
 ### First run
 
-Launch the agent from the repo root (so `.mcp.json` is picked up and outputs land in `agent_outputs/`). `agent_outputs/` and `pipeline_state.json` are created on the first run.
+Launch the agent from the repo root (so outputs land in `agent_outputs/`). `agent_outputs/` and `pipeline_state.json` are created on the first run.
 
 - **Cline**: `claude/.clinerules` points the agent at `claude/CLAUDE.md` automatically.
 - **Claude Code**: rules in `claude/CLAUDE.md` aren't loaded at startup from the repo root, so reference them in your first prompt:
@@ -195,17 +180,6 @@ biothings-cli dataplugin inspect -s <name>   # field types + stats
 
 The full step-by-step spec (pass criteria, common failures) is in [`cli-validation-workflow.json`](claude/biothings-plugin-generator/references/cli-validation-workflow.json).
 
-## Troubleshooting
-
-| Symptom | Cause / fix |
-|---------|-------------|
-| `AttributeError: module 'typer' has no attribute 'rich_utils'` | `biothings` 1.0.x with `typer` ≥ 0.17. `pip install -U "biothings[cli]>=1.1.0"` |
-| `Incorrect plugin name '<x>' (doesn't match regex ...)` | Plugin directory name must be ≥ 2 chars of letters/digits/underscores — no hyphens |
-| `dump` fails with `SSLCertVerificationError` | Source site has a self-signed/expired cert. Pre-download with `curl -k` into `.biothings_hub/archive/<name>/<release>/`; production needs a custom `dumper.py` |
-| `dump` gets HTTP 403 | Site blocks non-browser clients. Confirm with `curl -A "Mozilla/5.0" <url>`; production needs a custom `dumper.py` that sets a `User-Agent` |
-| `upload` hangs, or reports a stale "canceled" status on rerun | Clear hub state: `rm -f .biothings_hub/data_src_database* .biothings_hub/biothings_hubdb` (keep `archive/`) |
-| `inspect` returns nothing for a multi-source plugin | Pass `-s <sub-source-name>`, or query `.biothings_hub/data_src_database` (SQLite) directly |
-| Agent can't see BioThings tools | `smartapi-mcp` not on `PATH` of the shell that launched the agent — activate the venv first, then `claude mcp list` |
 
 ## Contributing
 
