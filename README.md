@@ -52,46 +52,6 @@ All skills live under `claude/`:
 | `biothings-plugin-generator` | Generate `manifest.json`, `parser.py`, `version.py`, and `README.md` |
 | `pipeline-benchmarker` | Evaluate pipeline accuracy against curated ground-truth cases |
 
-## Skills in Detail
-
-### `nar-biothings-scanner` — discovery (optional, upstream)
-
-Scans a NAR Database Issue (2025+) editorial and its cited papers to find 10–20 candidate datasources worth ingesting into BioThings. Filters against known BioThings sources and pending.api plugins to avoid duplicates, scores each candidate on relevance/novelty/openness, and ranks them.
-
-- **Output**: `agent_outputs/NAR_BioThings_Ingestion_Report_<YEAR>.md` — markdown report with per-candidate metadata (URL, DOI, identifiers, data format, BioThings fit) plus an ingestion strategy section. Feeds candidate names into Stage 1.
-
-### `datasource-evaluation` — Stage 1 (gated)
-
-Given one datasource (name/URL), answers five questions in one pass: **is it relevant, novel, open, actually downloadable, and what's in the files.** Verifies `DOI/PMID/PMC` via a live lookup — never from memory, (*NAR DOIs within the same issue are easy to misremember.*)
-
-- **Outputs** (to `agent_outputs/<name>_datasource/`):
-  - `<name>_relevancy.json` — verdict (`RECOMMEND_INGEST` / `NEEDS_REVIEW` / `DO_NOT_INGEST`), scores, license, URLs
-  - `<name>_inspection.json` — status (`VERIFIED` / `PARTIALLY_VERIFIED` / `BLOCKED`), download files, schema/fields classified NOVEL vs REDUNDANT, recommended `_id` strategy, and a `plugin_inputs` block consumed directly by Stage 2
-- **Gate**: a `DO_NOT_INGEST` verdict stops the pipeline here — no Stage 2 run.
-
-### `biothings-plugin-generator` — Stage 2
-
-Takes the inspection JSON's `plugin_inputs` and generates the actual ingestion code. Verifies every candidate download URL actually returns data (not HTML) before writing anything, and re-verifies the DOI rather than trusting what Stage 1 recorded.
-
-- **Outputs** (to `agent_outputs/<name>_datasource/<name>_plugin/`):
-  - `manifest.json` — data URLs, parser reference, license/publication metadata
-  - `parser.py` — generator function that yields `_id`-keyed documents
-  - `version.py` — fetches the datasource's current release string
-  - `README.md` — why these files/fields were chosen, sample output docs, field coverage %, CLI test results
-- Also runs `biothings-cli validate → dump → upload → list → inspect` and updates `references/built-plugins-index.md`.
-
-### `pipeline-benchmarker` — QA, run on demand
-
-Not part of the normal per-datasource flow — used after editing a skill, or periodically, to catch regressions. Re-runs the pipeline fresh (never reuses cached `agent_outputs/`) against curated ground-truth cases in `references/benchmark-cases.json`.
-
-- **Outputs** (to `benchmark_outputs/<run_id>/`):
-  - `benchmark_run_<timestamp>.json` — verdict/score accuracy per case
-  - `<case_id>_relevancy.md`, `<case_id>_site_inspection.md` — raw skill outputs per case
-  - `<case_id>_parser_output.json` — 5 full sample documents, field tree, `_id` samples, field non-null stats
-  - Prints a tabular summary (relevancy/inspection) and a per-session narrative report (plugin stage: PASS / PARTIAL / FAIL)
-
-All stages read and update `agent_outputs/pipeline_state.json`, which tracks each datasource's current stage, verdict, and status.
-
 ## Outputs
 
 All pipeline outputs live under `agent_outputs/`:
@@ -180,6 +140,46 @@ biothings-cli dataplugin inspect -s <name>   # field types + stats
 
 The full step-by-step spec (pass criteria, common failures) is in [`cli-validation-workflow.json`](claude/biothings-plugin-generator/references/cli-validation-workflow.json).
 
+
+## Skills in Detail
+
+### `nar-biothings-scanner` — discovery (optional, upstream)
+
+Scans a NAR Database Issue (2025+) editorial and its cited papers to find 10–20 candidate datasources worth ingesting into BioThings. Filters against known BioThings sources and pending.api plugins to avoid duplicates, scores each candidate on relevance/novelty/openness, and ranks them.
+
+- **Output**: `agent_outputs/NAR_BioThings_Ingestion_Report_<YEAR>.md` — markdown report with per-candidate metadata (URL, DOI, identifiers, data format, BioThings fit) plus an ingestion strategy section. Feeds candidate names into Stage 1.
+
+### `datasource-evaluation` — Stage 1 (gated)
+
+Given one datasource (name/URL), answers five questions in one pass: **is it relevant, novel, open, actually downloadable, and what's in the files.** Verifies `DOI/PMID/PMC` via a live lookup — never from memory, (*NAR DOIs within the same issue are easy to misremember.*)
+
+- **Outputs** (to `agent_outputs/<name>_datasource/`):
+  - `<name>_relevancy.json` — verdict (`RECOMMEND_INGEST` / `NEEDS_REVIEW` / `DO_NOT_INGEST`), scores, license, URLs
+  - `<name>_inspection.json` — status (`VERIFIED` / `PARTIALLY_VERIFIED` / `BLOCKED`), download files, schema/fields classified NOVEL vs REDUNDANT, recommended `_id` strategy, and a `plugin_inputs` block consumed directly by Stage 2
+- **Gate**: a `DO_NOT_INGEST` verdict stops the pipeline here — no Stage 2 run.
+
+### `biothings-plugin-generator` — Stage 2
+
+Takes the inspection JSON's `plugin_inputs` and generates the actual ingestion code. Verifies every candidate download URL actually returns data (not HTML) before writing anything, and re-verifies the DOI rather than trusting what Stage 1 recorded.
+
+- **Outputs** (to `agent_outputs/<name>_datasource/<name>_plugin/`):
+  - `manifest.json` — data URLs, parser reference, license/publication metadata
+  - `parser.py` — generator function that yields `_id`-keyed documents
+  - `version.py` — fetches the datasource's current release string
+  - `README.md` — why these files/fields were chosen, sample output docs, field coverage %, CLI test results
+- Also runs `biothings-cli validate → dump → upload → list → inspect` and updates `references/built-plugins-index.md`.
+
+### `pipeline-benchmarker` — QA, run on demand
+
+Not part of the normal per-datasource flow — used after editing a skill, or periodically, to catch regressions. Re-runs the pipeline fresh (never reuses cached `agent_outputs/`) against curated ground-truth cases in `references/benchmark-cases.json`.
+
+- **Outputs** (to `benchmark_outputs/<run_id>/`):
+  - `benchmark_run_<timestamp>.json` — verdict/score accuracy per case
+  - `<case_id>_relevancy.md`, `<case_id>_site_inspection.md` — raw skill outputs per case
+  - `<case_id>_parser_output.json` — 5 full sample documents, field tree, `_id` samples, field non-null stats
+  - Prints a tabular summary (relevancy/inspection) and a per-session narrative report (plugin stage: PASS / PARTIAL / FAIL)
+
+All stages read and update `agent_outputs/pipeline_state.json`, which tracks each datasource's current stage, verdict, and status.
 
 ## Contributing
 
