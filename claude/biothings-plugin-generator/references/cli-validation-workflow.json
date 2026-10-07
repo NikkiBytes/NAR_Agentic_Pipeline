@@ -4,7 +4,7 @@
     "source": "Hardened from SIGNOR v1.0 silent-failure and MetaNetX 1.2M-doc builds"
   },
   "prerequisites": {
-    "install": "pip install \"biothings[cli]\"",
+    "install": "pip install \"biothings[cli]>=1.1.0\"",
     "version_check": "biothings-cli --version",
     "working_dir": "cd agent_outputs/<datasource_name>_datasource/<datasource_name>_plugin/",
     "note": "CLI uses local SQLite data_src_database + .biothings_hub/archive/ — no external services needed"

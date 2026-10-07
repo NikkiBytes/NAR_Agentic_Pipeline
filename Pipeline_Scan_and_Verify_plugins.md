@@ -49,7 +49,7 @@ For candidates with RECOMMEND_INGEST or NEEDS_REVIEW: verify download URLs, samp
 
 ### Stage 3: Plugin Generation
 
-For VERIFIED candidates: generate manifest.json, parser.py, version.py, design_rationale.md. Validate with biothings-cli.
+For VERIFIED candidates: generate manifest.json, parser.py, version.py, README.md. Validate with biothings-cli.
 
 ## Execution Order
 
