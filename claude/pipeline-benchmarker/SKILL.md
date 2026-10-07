@@ -20,7 +20,7 @@ description: >-
 - To compare model versions: run with model A, then model B, diff the results
 
 ## How It Works
-1. Load `references/benchmark-cases.json` — 9 curated cases with expert ground truth
+1. Load `references/benchmark-cases.json` — 30 curated cases with expert ground truth (all tagged `core`). By stage: 10 `relevancy`, 4 `site_inspection`, 22 `plugin`. `molbic` and `persade` have `"stages": []` — they document known blockers (`blocked_reason`) and are skipped with a note, never run
 2. For each selected case, invoke the relevant pipeline skill(s) fresh (do NOT use cached outputs from `agent_outputs/`)
 3. Parse the structured fields from each skill's output
 4. For relevancy/site_inspection: score against ground truth using rubrics below
@@ -30,15 +30,16 @@ description: >-
 
 ## Test Case Selection
 
-Default (no args): run all cases tagged `"core"` for the `relevancy` stage only (fastest).
+Default (no args): run all cases tagged `"core"` for the `relevancy` stage only (fastest — the 10 cases that have a `relevancy` stage).
 
 Override with:
 - `pipeline-benchmarker all` — all cases, all stages they support
-- `pipeline-benchmarker relevancy` — relevancy stage only, all core cases
-- `pipeline-benchmarker plugins` — only cases with a `plugin` stage (ecbd, signor, rnacentral)
+- `pipeline-benchmarker relevancy` — relevancy stage only, all core cases (same as default)
+- `pipeline-benchmarker plugins` — only cases with a `plugin` stage (22 cases: the 4 `full_pipeline` cases ecbd, signor, coconut, rnacentral, plus the 18 `plugin_only` cases). Slow — downloads real data and runs `biothings-cli` for each
 - `pipeline-benchmarker ecbd signor` — specific case IDs only
 - `pipeline-benchmarker --stage site_inspection` — only site_inspection stage for eligible cases
-- `pipeline-benchmarker robustness` — only cases tagged `blocked` or `no_license` (tests hard-stop detection)
+- `pipeline-benchmarker robustness` — only cases tagged `blocked` or `no_license` (tests hard-stop detection). Runnable: gofcards (`blocked`), circtarget (`no_license`); molbic and persade are listed as skipped (no stages)
+- `pipeline-benchmarker nar_2024_batch` — any tag selects matching cases, e.g. the 12 NAR 2024 plugin cases
 
 ## Stage Execution
 
@@ -495,8 +496,8 @@ REGRESSIONS vs prior run: ttd (was NEEDS_REVIEW, now RECOMMEND_INGEST)
 4. Recommended: include at least one case per verdict class and one case per failure mode
 
 ## Example Invocations
-- `pipeline-benchmarker` — quick relevancy-only run on all 9 core cases
+- `pipeline-benchmarker` — quick relevancy-only run on the 10 core cases with a relevancy stage
 - `pipeline-benchmarker all` — full pipeline run (takes longer; downloads real data)
-- `pipeline-benchmarker robustness` — only gofcards + circtarget; tests hard-stop detection
+- `pipeline-benchmarker robustness` — gofcards + circtarget (molbic, persade skipped — no stages); tests hard-stop detection
 - `pipeline-benchmarker ecbd signor --stage plugin` — re-run plugin stage only for two known-good cases
 https://coconut.naturalproducts.net/api-documentation

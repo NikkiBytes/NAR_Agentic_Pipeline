@@ -17,10 +17,21 @@ Stage 1 — Datasource Evaluation (relevancy + site inspection, single pass)
         │  Status:  VERIFIED / PARTIALLY_VERIFIED / BLOCKED
         ▼
 Stage 2 — Plugin Generation
-           Output: manifest.json, parser.py, version.py, README.md
+        │  Output: manifest.json, parser.py, version.py, README.md
+        ▼
+Testing — biothings-cli validate → dump → upload → list → inspect
+           (run automatically at the end of Stage 2; zero documents = failure)
+
+pipeline-benchmarker (on demand) — re-runs the stages against curated
+                                   ground-truth cases to catch regressions
 ```
 
 Each stage produces structured JSON outputs. Stages are gated — a `DO_NOT_INGEST` verdict or `BLOCKED` status stops the pipeline before wasting effort on the next stage.
+
+Testing happens at two levels:
+
+- **Per plugin**: every generated plugin is loaded end-to-end with `biothings-cli` and its document count, `_id`s, and fields are checked (see [Testing a Generated Plugin Manually](#testing-a-generated-plugin-manually)).
+- **Pipeline-wide**: `pipeline-benchmarker` scores the skills against 30 known-answer cases — checking verdicts, scores, document counts, and field coverage (28 are runnable; 2 just record known blockers) — run it after editing a skill (see [Example Prompts](#example-prompts)).
 
 ## Repository Structure
 
@@ -117,6 +128,54 @@ Launch the agent from the repo root (so outputs land in `agent_outputs/`). `agen
 > Ask the agent to run `nar-biothings-scanner` on NAR 2025 or 2026.
 
 **Pipeline flags** (append to the request): `--skip-plugin` (stop after evaluation), `--force` (continue past `NEEDS_REVIEW`), `--with-reports` (also write `.md` reports), `--with-parser-report` (include `parser_report.json`).
+
+## Example Prompts
+
+Paste these into Claude Code (or Cline) from the repo root. In Claude Code, start the session's first prompt with `Read claude/CLAUDE.md, then ...` (see [First run](#first-run)).
+
+### Full pipeline
+
+```text
+Run the full BioThings pipeline for https://bioinformatics.charite.de/withdrawn_3/
+Run the full BioThings pipeline for CircTarget --skip-plugin
+Run the full BioThings pipeline for HMDD --force --with-reports
+```
+
+### Single stages
+
+```text
+Evaluate SIGNOR for BioThings ingestion
+Generate a BioThings plugin for withdrawn using agent_outputs/withdrawn_datasource/withdrawn_inspection.json
+```
+
+### Discovery
+
+```text
+Run nar-biothings-scanner on the NAR 2026 Database Issue
+```
+
+### Testing a plugin
+
+```text
+Run the biothings-cli validation workflow on agent_outputs/withdrawn_datasource/withdrawn_plugin and report the document count
+Re-test the circtarget plugin with biothings-cli and check the _id format and field coverage
+```
+
+### Benchmarking
+
+Uses `pipeline-benchmarker`; results go to `claude/benchmark_outputs/<run_id>/`.
+
+```text
+Run the pipeline benchmark                          # default: core cases, relevancy stage only (fastest)
+Run the pipeline benchmark on all cases and stages  # slowest — includes plugin builds
+Run the pipeline benchmark for plugins              # only cases with a plugin stage
+Run the pipeline benchmark for ecbd and signor      # specific case IDs
+Run the pipeline benchmark robustness cases         # blocked / no-license hard-stop detection
+Run the pipeline benchmark with --stage site_inspection
+Compare this benchmark run against the previous one in claude/benchmark_outputs/
+```
+
+Case IDs are listed in [`benchmark-cases.json`](claude/pipeline-benchmarker/references/benchmark-cases.json).
 
 ## Testing a Generated Plugin Manually
 
