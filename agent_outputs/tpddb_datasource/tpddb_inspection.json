@@ -1,0 +1,177 @@
+{
+    "name": "tpddb",
+    "status": "VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/PROTAC_main_table.txt",
+            "filename": "PROTAC_main_table.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 21431,
+            "columns": ["TPD ID", "TPD NAME", "PubChem synonyms", "SMILES", "Fomula", "Target Symbol", "Target ID", "Ligase", "Source"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/MG_main_table.txt",
+            "filename": "MG_main_table.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 6006,
+            "columns": ["TPD ID", "TPD NAME", "PubChem synonyms", "SMILES", "Subtype", "Fomula", "Target Symbol", "Target ID", "Ligase", "Source"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/LYTAC_main_table.txt",
+            "filename": "LYTAC_main_table.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 325,
+            "columns": ["TPD ID", "TPD NAME", "PubChem synonyms", "SMILES", "Fomula", "Lytac_target", "Target adapter name", "Target adapter type", "Target adapter", "Linker type", "Lytac_Linker", "Lysosome-targeting receptors", "LTR adapter name", "LTR adapter type", "LTR adapter", "Target Symbol", "Target ID", "Source"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/ATTEC_main_table.txt",
+            "filename": "ATTEC_main_table.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 171,
+            "columns": ["TPD ID", "TPD NAME", "PubChem synonyms", "SMILES", "Fomula", "Target Symbol", "Target ID", "Source"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/AUTAC_main_table.txt",
+            "filename": "AUTAC_main_table.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 24,
+            "columns": ["TPD ID", "TPD NAME", "PubChem synonyms", "SMILES", "Fomula", "Target Symbol", "Target ID", "Source"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/AUTOTAC_main_table.txt",
+            "filename": "AUTOTAC_main_table.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 30,
+            "columns": ["TPD ID", "TPD NAME", "PubChem synonyms", "SMILES", "Fomula", "Target Symbol", "Target ID", "Source"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/PROTAC_activity.txt",
+            "filename": "PROTAC_activity.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 23323,
+            "columns": ["TPD ID", "Activity Type", "Target Symbols", "Target IDs", "Cell Line", "Activity"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/MG_activity.txt",
+            "filename": "MG_activity.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 2783,
+            "columns": ["TPD ID", "Activity Type", "Target Symbols", "Target IDs", "Cell Line", "Activity"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/Lysosome-based_TPD_activity.txt",
+            "filename": "Lysosome-based_TPD_activity.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "rows_approx": 537,
+            "columns": ["TPD ID", "Activity Type", "Target Symbols", "Target IDs", "Cell Line", "Activity"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/TPD_Related_Diseases.txt",
+            "filename": "TPD_Related_Diseases.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "columns": ["TPD_ID", "Disease_Names", "ICD-11", "Source", "OrphaID/Cellosaurus verified NCIt code"]
+        },
+        {
+            "url": "https://tpddb.idrblab.net/sites/files/tpd_download/TPD_PDB.txt",
+            "filename": "TPD_PDB.txt",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "text/plain",
+            "columns": ["TPD_ID", "Complex_PDB_ID"]
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "TPD ID", "type": "string", "sample": "TPD-P58QBR", "classification": "IDENTIFIER"},
+            {"name": "TPD NAME", "type": "string", "sample": "Nvp-dky709", "classification": "NOVEL"},
+            {"name": "PubChem synonyms", "type": "string", "sample": "NVP-DKY709; CHEMBL5077506; HY-144998", "classification": "NOVEL"},
+            {"name": "SMILES", "type": "string", "sample": "O=C1CCC(N2Cc3cc(C4CCN(Cc5ccccc5)CC4)ccc3C2=O)C(=O)N1", "classification": "NOVEL"},
+            {"name": "Fomula", "type": "string", "sample": "C25H27N3O3", "classification": "REDUNDANT"},
+            {"name": "Subtype", "type": "string", "sample": "Degrader", "classification": "NOVEL"},
+            {"name": "Target Symbol", "type": "string", "sample": "IKZF2", "classification": "NOVEL"},
+            {"name": "Target ID", "type": "string", "sample": "Q9UKS7", "classification": "NOVEL"},
+            {"name": "Ligase", "type": "string", "sample": "CRBN", "classification": "NOVEL"},
+            {"name": "Source", "type": "string", "sample": "10.1016/j.chembiol.2023.02.005", "classification": "NOVEL"},
+            {"name": "Activity Type", "type": "string", "sample": "IC50", "classification": "NOVEL"},
+            {"name": "Activity", "type": "string", "sample": "4nM", "classification": "NOVEL"},
+            {"name": "Cell Line", "type": "string", "sample": "CWR22RV1", "classification": "NOVEL"},
+            {"name": "Disease_Names", "type": "string", "sample": "Kennedy disease", "classification": "NOVEL"},
+            {"name": "ICD-11", "type": "string", "sample": "8B61.4", "classification": "NOVEL"},
+            {"name": "Complex_PDB_ID", "type": "string", "sample": "6SIP", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "TPD ID",
+            "type": "custom",
+            "sample": "TPD-P58QBR",
+            "note": "No InChIKey in bulk download. TPD ID is the stable join key. InChIKey must be computed from SMILES via RDKit for MyChem.info primary key — or use TPD ID as _id targeting pending.api instead."
+        },
+        "identifiers": [
+            {"type": "TPD proprietary ID", "field": "TPD ID", "sample": "TPD-P58QBR"},
+            {"type": "SMILES", "field": "SMILES", "sample": "O=C1CCC(N2Cc3...)C(=O)N1"},
+            {"type": "UniProtKB", "field": "Target ID", "sample": "Q9UKS7"},
+            {"type": "ICD-11", "field": "ICD-11", "sample": "8B61.4"},
+            {"type": "PDB", "field": "Complex_PDB_ID", "sample": "6SIP"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0",
+        "observed_site": "CC BY-NC 4.0",
+        "match": true,
+        "restrictions": ["Non-commercial use only"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://tpddb.idrblab.net/sites/files/tpd_download/PROTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/MG_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/LYTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/ATTEC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/AUTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/AUTOTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/PROTAC_activity.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/MG_activity.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/Lysosome-based_TPD_activity.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/TPD_Related_Diseases.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/TPD_PDB.txt"
+        ],
+        "primary_key_field": "TPD ID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["tpd_type", "smiles", "target_symbol", "target_uniprot", "ligase", "activities", "diseases", "pdb_ids", "source_doi"],
+        "redundant_fields": ["formula"],
+        "notes": "InChIKey absent from bulk files. Using TPD ID as primary key targeting pending.api. MyChem.info would require RDKit InChIKey computation from SMILES — feasible but adds runtime dependency. pending.api with TPD ID is simpler and avoids RDKit dep."
+    },
+    "paper_vs_reality": [
+        {"claim": "28,655 total TPDs", "observed": "~28,012 in 6 main tables (PROTAC 21430 + MG 6005 + LYTAC 324 + ATTEC 170 + AUTAC 23 + AUTOTAC 29)", "match": false, "note": "Minor discrepancy — some records may have been removed/updated since paper submission"},
+        {"claim": "27,796 activity measurements", "observed": "~26,643 in 3 activity files (PROTAC 23322 + MG 2782 + Lysosome 537)", "match": false, "note": "Close match; rounding may differ"},
+        {"claim": "580 target proteins", "observed": "Target ID column contains UniProtKB IDs", "match": true},
+        {"claim": "98,680 disease associations", "observed": "TPD_Related_Diseases.txt has multi-row format (one row per disease per compound)", "match": true},
+        {"claim": "SMILES for all structures", "observed": "SMILES present in all main tables", "match": true}
+    ],
+    "risks": [
+        "InChIKey absent from bulk files — RDKit needed for MyChem.info primary key",
+        "Activity values heterogeneous (numeric with units, qualitative, range)",
+        "Multi-target delimiter inconsistency: semicolons in Target Symbol, slash in Target ID",
+        "LYTAC file has sparse '.' placeholder values"
+    ]
+}

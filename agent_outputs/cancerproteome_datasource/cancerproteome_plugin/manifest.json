@@ -1,0 +1,31 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "CancerProteome",
+        "description": "Manually curated, re-analyzed mass-spectrometry proteomic and PTM data across 21 cancer types (7,406 samples, 102 datasets), covering canonical protein and ribo-seq-supported microprotein differential expression (tumor vs. control), PTM site-level differential expression, and protein expression vs. drug IC50 sensitivity correlations (DepMap/GDSC).",
+        "license": "CC BY-NC 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/",
+        "publication": {
+            "doi": "10.1093/nar/gkad824",
+            "pmid": "37823596",
+            "pmc": "PMC10767844"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/cancer_names.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/microprotein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_protein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_microprotein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_durg_inf.txt"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error"
+    }
+}

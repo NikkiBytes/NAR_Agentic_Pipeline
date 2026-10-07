@@ -1,0 +1,135 @@
+{
+    "name": "ttd",
+    "status": "VERIFIED",
+    "inspection_date": "2026-05-28",
+    "download_files": [
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-01-TTD_target_download.txt",
+            "filename": "P1-01-TTD_target_download.txt",
+            "format": "TXT (key-value row format: ENTITY_ID FIELD_NAME VALUE)",
+            "access": "public",
+            "size_mb": 8.3,
+            "description": "Target data: UniProt ID, gene name, target type, synonyms, function, PDB, EC number, drug-target mapping"
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-02-TTD_drug_download.txt",
+            "filename": "P1-02-TTD_drug_download.txt",
+            "format": "TXT (key-value row format)",
+            "access": "public",
+            "size_mb": 11.9,
+            "description": "Drug data: trade name, company, therapeutic class, drug type, InChI, InChIKey, SMILES, clinical status"
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-03-TTD_crossmatching.txt",
+            "filename": "P1-03-TTD_crossmatching.txt",
+            "format": "TXT (key-value row format)",
+            "access": "public",
+            "size_mb": 5.7,
+            "description": "Cross-reference IDs: PubChem CID, PubChem SID, CAS number, ChEBI ID, ATC code"
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-04-Drug_synonyms.txt",
+            "filename": "P1-04-Drug_synonyms.txt",
+            "format": "TXT (key-value row format)",
+            "access": "public",
+            "size_mb": 11.4,
+            "description": "Drug synonyms and alternative names"
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-05-Drug_disease.txt",
+            "filename": "P1-05-Drug_disease.txt",
+            "format": "TXT (key-value row format, with ICD-11 codes)",
+            "access": "public",
+            "size_mb": 2.6,
+            "description": "Drug-disease mapping: drug ID, drug name, indication, disease entry, ICD-11 code, clinical status"
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-06-Target_disease.txt",
+            "filename": "P1-06-Target_disease.txt",
+            "format": "TXT (key-value row format)",
+            "access": "public",
+            "size_mb": 0.85,
+            "description": "Target-disease mapping: target ID, target name, clinical status, disease entry, ICD-11 code"
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-08-Biomarker_disease.txt",
+            "filename": "P1-08-Biomarker_disease.txt",
+            "format": "TSV (tab-separated, standard header row)",
+            "access": "public",
+            "size_mb": 0.22,
+            "description": "Biomarker-disease associations: biomarker ID, name, disease name, ICD-11, ICD-10, ICD-9"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "TARGETID", "type": "string", "sample": "T47101", "classification": "IDENTIFIER"},
+            {"name": "UNIPROID", "type": "string", "sample": "FGFR1_HUMAN", "classification": "IDENTIFIER"},
+            {"name": "TARGNAME", "type": "string", "sample": "Fibroblast growth factor receptor 1 (FGFR1)", "classification": "NOVEL"},
+            {"name": "GENENAME", "type": "string", "sample": "FGFR1", "classification": "IDENTIFIER"},
+            {"name": "TARGTYPE", "type": "string", "sample": "Successful", "classification": "NOVEL"},
+            {"name": "SYNONYMS", "type": "string", "sample": "c-fgr; bFGF-R-1; CD331", "classification": "REDUNDANT"},
+            {"name": "FUNCTION", "type": "string", "sample": "Required for normal mesoderm patterning...", "classification": "REDUNDANT"},
+            {"name": "DRUGINFO", "type": "string", "sample": "TTD Drug ID | Drug Name | Highest Clinical Status", "classification": "NOVEL"},
+            {"name": "DRUG__ID", "type": "string", "sample": "D00UZR", "classification": "IDENTIFIER"},
+            {"name": "TRADNAME", "type": "string", "sample": "Ibrance", "classification": "NOVEL"},
+            {"name": "THERCLAS", "type": "string", "sample": "Antineoplastic", "classification": "NOVEL"},
+            {"name": "DRUGTYPE", "type": "string", "sample": "Small molecular", "classification": "NOVEL"},
+            {"name": "DRUGINCH", "type": "string", "sample": "InChI=1S/...", "classification": "IDENTIFIER"},
+            {"name": "DRUGINKE", "type": "string", "sample": "CMSMOCZEQQCZIY-UHFFFAOYSA-N", "classification": "IDENTIFIER"},
+            {"name": "DRUGSMIL", "type": "string", "sample": "CC1=C(C(=O)...", "classification": "REDUNDANT"},
+            {"name": "HIGHSTAT", "type": "string", "sample": "Approved", "classification": "NOVEL"},
+            {"name": "PUBCHCID", "type": "string", "sample": "6238", "classification": "IDENTIFIER"},
+            {"name": "CHEBI_ID", "type": "string", "sample": "CHEBI:17252", "classification": "IDENTIFIER"},
+            {"name": "CASNUMBE", "type": "string", "sample": "CAS 68-96-2", "classification": "IDENTIFIER"},
+            {"name": "SUPDRATC", "type": "string", "sample": "G03DA03", "classification": "NOVEL"},
+            {"name": "INDICATI", "type": "string", "sample": "Alagille syndrome | ICD-11: 5C58.1 | Approved", "classification": "NOVEL"},
+            {"name": "BiomarkerID", "type": "string", "sample": "BM003549", "classification": "IDENTIFIER"}
+        ],
+        "primary_key": {
+            "field": "DRUG__ID (for drug records) or TARGETID (for target records)",
+            "type": "custom TTD ID",
+            "sample": "D00UZR / T47101"
+        },
+        "identifiers": [
+            {"type": "InChIKey", "field": "DRUGINKE", "sample": "CMSMOCZEQQCZIY-UHFFFAOYSA-N"},
+            {"type": "PubChem CID", "field": "PUBCHCID", "sample": "6238"},
+            {"type": "UniProt", "field": "UNIPROID", "sample": "FGFR1_HUMAN"},
+            {"type": "ChEBI", "field": "CHEBI_ID", "sample": "CHEBI:17252"},
+            {"type": "ICD-11", "field": "INDICATI", "sample": "ICD-11: 5C58.1"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0",
+        "observed_site": "Free access, citation requested; CC BY-NC confirmed from NAR publication",
+        "match": true,
+        "restrictions": ["Non-commercial use only"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://ttd.idrblab.cn/files/download/P1-01-TTD_target_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-02-TTD_drug_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-03-TTD_crossmatching.txt",
+            "https://ttd.idrblab.cn/files/download/P1-05-Drug_disease.txt",
+            "https://ttd.idrblab.cn/files/download/P1-06-Target_disease.txt"
+        ],
+        "primary_key_field": "DRUG__ID (with UniProt fallback for target-centric records)",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["TARGTYPE (Successful/Clinical/Preclinical/Literature)", "HIGHSTAT (clinical status)", "INDICATI (drug-disease + ICD-11)", "TRADNAME", "THERCLAS", "SUPDRATC (ATC code)", "DRUGINFO (target→drug mapping)"],
+        "redundant_fields": ["SYNONYMS", "FUNCTION", "DRUGSMIL (SMILES already in MyChem)", "DRUGINCH (InChI already in MyChem)"]
+    },
+    "paper_vs_reality": [
+        {"claim": "3,798 targets and 40,398 drugs", "observed": "P1-01 (8.3 MB) and P1-02 (11.9 MB) match expected scale", "match": true},
+        {"claim": "ICD-11 disease codes throughout", "observed": "Confirmed in P1-05 and P1-06 headers and data", "match": true},
+        {"claim": "Target perturbation profiles (10,506)", "observed": "NOT in bulk download files — web interface only", "match": false},
+        {"claim": "FDA label data (44,649 labels)", "observed": "NOT in bulk download files — web interface only", "match": false},
+        {"claim": "Free access without login", "observed": "Confirmed — all files downloaded without authentication", "match": true},
+        {"claim": "New database domain ttd.idrblab.cn", "observed": "Confirmed — db.idrblab.net redirects to ttd.idrblab.cn", "match": true}
+    ],
+    "risks": [
+        "Key-value row format (not CSV) requires a custom aggregation parser — rows must be grouped by entity ID",
+        "The 2026-paper-specific new data (perturbation, FDA labels, cytotoxicity) is not yet in bulk download",
+        "Existing BioThings TTD plugin at https://biothings.transltr.io/ttd (v8.1.01) needs to be updated or replaced",
+        "P1-07-Drug-TargetMapping.txt returned 404 — verify if this file has been renamed"
+    ]
+}

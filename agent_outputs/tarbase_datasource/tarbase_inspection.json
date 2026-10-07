@@ -1,0 +1,73 @@
+{
+    "name": "tarbase",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://dianalab.e-ce.uth.gr/tarbasev9/api/get_all_interactions/",
+            "filename": "tarbase_all_interactions.csv",
+            "format": "CSV",
+            "access": "public",
+            "size_mb": 110.0,
+            "notes": "POST endpoint (not a static GET file); requires a JSON body (an empty object {} returns the unfiltered full dataset). Verified live during this session: HTTP 200, content-type text/csv, 1,847,088 data rows, no auth, no login wall."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "gene_name", "type": "string", "sample": "DICER1", "classification": "IDENTIFIER"},
+            {"name": "gene_id", "type": "string", "sample": "ENSG00000100697", "classification": "IDENTIFIER"},
+            {"name": "mirna_name", "type": "string", "sample": "hsa-let-7a-5p", "classification": "IDENTIFIER"},
+            {"name": "mirna_id", "type": "string", "sample": "MIMAT0000062", "classification": "IDENTIFIER"},
+            {"name": "experiments", "type": "integer", "sample": "63", "classification": "NOVEL"},
+            {"name": "publications", "type": "integer", "sample": "34", "classification": "NOVEL"},
+            {"name": "cell_lines", "type": "integer", "sample": "33", "classification": "NOVEL"},
+            {"name": "micro_tscore", "type": "float", "sample": "0.84", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "gene_id + mirna_id (composite)",
+            "type": "custom",
+            "sample": "ENSG00000100697_MIMAT0000062"
+        },
+        "identifiers": [
+            {"type": "Ensembl Gene ID", "field": "gene_id", "sample": "ENSG00000100697"},
+            {"type": "miRBase mature accession (MIMAT)", "field": "mirna_id", "sample": "MIMAT0000062"},
+            {"type": "gene_symbol", "field": "gene_name", "sample": "DICER1"},
+            {"type": "mirna_name", "field": "mirna_name", "sample": "hsa-let-7a-5p"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "No explicit license page found on the SPA; PMC article states CC BY 4.0 and Crossref license metadata independently confirms CC BY 4.0",
+        "match": true,
+        "restrictions": []
+    },
+    "plugin_inputs": {
+        "data_url": ["https://dianalab.e-ce.uth.gr/tarbasev9/api/get_all_interactions/"],
+        "primary_key_field": "gene_id_mirna_id composite",
+        "target_api": "pending.api",
+        "ingestion_path": "api_crawl",
+        "novel_fields": ["experiments", "publications", "cell_lines", "micro_tscore", "mirna_id", "mirna_name"],
+        "redundant_fields": ["gene_name (available via MyGene.info from gene_id, kept for convenience/readability)"]
+    },
+    "api_crawl_details": {
+        "base_url": "https://dianalab.e-ce.uth.gr/tarbasev9/api/",
+        "endpoints": ["get_all_interactions/ (POST, JSON body {} = unfiltered, single response = full dataset as CSV blob)"],
+        "pagination": "none required — single POST with empty filter body returns all 1,847,088 rows in one response",
+        "total_records": 1847088,
+        "rate_limits": "not documented; no throttling observed for a single ~115MB request in this session",
+        "auth": "none",
+        "response_shape": "text/csv blob (not JSON) with header row: gene_name,gene_id,mirna_name,mirna_id,experiments,publications,cell_lines,micro_tscore",
+        "sample_curl": "curl -sS -A 'Mozilla/5.0' -X POST 'https://dianalab.e-ce.uth.gr/tarbasev9/api/get_all_interactions/' -H 'Content-Type: application/json' -d '{}' -o tarbase_all_interactions.csv"
+    },
+    "paper_vs_reality": [
+        {"claim": "~6 million total entries", "observed": "1,847,088 rows in the aggregated pair-level export", "match": false},
+        {"claim": "~2 million unique miRNA-gene pairs", "observed": "1,839,985 unique (gene_id, mirna_id) pairs", "match": true},
+        {"claim": "24 species represented", "observed": "confirmed — export includes hsa (human), ssc (pig, e.g. Sus scrofa Ensembl IDs ENSSSCG...), and other species prefixes", "match": true},
+        {"claim": "37 experimental protocols, 103+ tissues, 57 cell-types, publication/sample-level metadata", "observed": "NOT present in the pair-level aggregate export (only summary counts: experiments/publications/cell_lines); full per-experiment detail would require crawling get_interactions/ or get_interaction_site/ per pair, not attempted", "match": false}
+    ],
+    "risks": [
+        "The paper's ~6M 'total entries' figure refers to per-experiment/per-sample interaction records; the bulk export used here is a coarser, pair-level aggregation (~1.85M rows) that matches the paper's ~2M unique-pairs figure but loses per-experiment granularity (tissue, cell-type, method, PMID, genomic coordinates).",
+        "get_all_interactions/ is an internal SPA API route discovered by reading the compiled JS bundle (https://dianalab.e-ce.uth.gr/tarbasev9/static/js/main.c6e27c3d.js), not a documented/published bulk-download endpoint — no stability guarantee across future site releases.",
+        "7,103 duplicate (gene_id, mirna_id) pairs in the raw export (different gene_name synonyms mapping to the same Ensembl ID) require dedup in the parser."
+    ]
+}

@@ -1,0 +1,219 @@
+{
+    "name": "circtarget",
+    "status": "VERIFIED",
+    "inspection_date": "2026-05-15",
+    "download_files": [
+        {
+            "url": "https://circtarget.cn/static/download/all.rar",
+            "filename": "all.rar",
+            "extracted_filename": "all.txt",
+            "format": "CSV (comma-delimited, .txt extension, inside RAR archive)",
+            "access": "public",
+            "size_mb": 1.0,
+            "extracted_size_mb": 12.7,
+            "row_count": 132517,
+            "last_modified": "2025-10-13",
+            "notes": "Requires unrar to extract. RAR3 format. Single file all.txt inside. Directly accessible, no login required."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {
+                "name": "circRNA ID",
+                "type": "string",
+                "sample": "hsa_circ_0000001",
+                "sample2": "hsa-ABCB7_0017",
+                "classification": "IDENTIFIER",
+                "notes": "Two circRNA ID namespaces present: circBase format (hsa_circ_XXXXXXX, mmu_circ_XXXXXXX) and CircTarget host-gene format (hsa-GENENAME_XXXX, mmu-GENENAME_XXXX)"
+            },
+            {
+                "name": "Ensembl ID",
+                "type": "string",
+                "sample": "ENSG00000204256",
+                "sample_mouse": "ENSMUSG00000030516",
+                "classification": "IDENTIFIER",
+                "notes": "Human (ENSG) and mouse (ENSMUSG) Ensembl gene IDs; links to MyGene.info"
+            },
+            {
+                "name": "Gene name",
+                "type": "string",
+                "sample": "BRD2",
+                "classification": "IDENTIFIER"
+            },
+            {
+                "name": "Gene type",
+                "type": "string",
+                "sample": "protein coding",
+                "classification": "NOVEL",
+                "value_counts": {
+                    "protein coding": 108152,
+                    "protein_coding": 11592,
+                    "lincRNA": 3822,
+                    "antisense": 2678,
+                    "pseudogene": 2156
+                },
+                "notes": "Minor inconsistency: 'protein coding' vs 'protein_coding' — normalization needed in parser"
+            },
+            {
+                "name": "Chimeric read count",
+                "type": "integer",
+                "sample": "24",
+                "classification": "NOVEL",
+                "notes": "Experimental evidence strength; number of chimeric reads supporting the interaction"
+            },
+            {
+                "name": "P-value",
+                "type": "float",
+                "sample": "3.00E-05",
+                "classification": "NOVEL",
+                "notes": "Monte Carlo simulation p-value; some stored as '0' for p < detection threshold; scientific notation used"
+            },
+            {
+                "name": "Cell line/Tissue",
+                "type": "string",
+                "sample": "HepG2",
+                "classification": "NOVEL",
+                "value_counts": {
+                    "hNPC": 65183,
+                    "IMR90": 25190,
+                    "Hippocampus": 17959,
+                    "HEK293T": 9701,
+                    "Neuron": 3575,
+                    "GM12878": 2911,
+                    "A549": 1677,
+                    "HeLa": 1440,
+                    "K562": 1359,
+                    "HepG2": 1050,
+                    "H1-hESC": 1187,
+                    "HT29": 501,
+                    "Mouse Hippocampus": 1539,
+                    "mESC": 7,
+                    "GM12892": 83
+                }
+            },
+            {
+                "name": "Species",
+                "type": "string",
+                "sample": "Human",
+                "classification": "NOVEL",
+                "value_counts": {"Human": 130971, "Mouse": 1546}
+            },
+            {
+                "name": "Interaction type",
+                "type": "string",
+                "sample": "BSJ supported",
+                "classification": "NOVEL",
+                "value_counts": {
+                    "BSJ supported": 9935,
+                    "nonBSJ supported": 122582
+                }
+            },
+            {
+                "name": "Detected method",
+                "type": "string",
+                "sample": "RIC-seq",
+                "classification": "NOVEL",
+                "value_counts": {
+                    "RIC-seq": 119388,
+                    "KARR-seq": 12965,
+                    "SPLASH": 87,
+                    "LIGR-seq": 54,
+                    "PARIS": 23
+                }
+            }
+        ],
+        "primary_key": {
+            "field": "circRNA ID",
+            "type": "custom",
+            "strategy": "One BioThings document per circRNA, with interactions nested as an array. Parser groups all rows by circRNA ID and outputs one doc per circRNA containing all its target interactions.",
+            "sample": "hsa_circ_0000001",
+            "unique_values": 6651
+        },
+        "identifiers": [
+            {
+                "type": "circBase ID",
+                "field": "circRNA ID",
+                "sample": "hsa_circ_0000001",
+                "notes": "Primary identifier for circRNA-centric documents"
+            },
+            {
+                "type": "Ensembl Gene ID",
+                "field": "Ensembl ID",
+                "sample": "ENSG00000204256",
+                "notes": "Links each interaction target to MyGene.info records"
+            },
+            {
+                "type": "HGNC gene symbol",
+                "field": "Gene name",
+                "sample": "BRD2"
+            }
+        ]
+    },
+    "license": {
+        "stated_paper": "Unspecified (implied open — 'freely accessible')",
+        "observed_site": "No license page found",
+        "match": true,
+        "restrictions": ["No explicit license; recommended to contact authors for commercial use; research use consistent with NAR database paper norms"]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://circtarget.cn/static/download/all.rar"],
+        "primary_key_field": "circRNA ID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "document_structure": "one_doc_per_circrna",
+        "expected_doc_count": 6651,
+        "total_interaction_records": 132517,
+        "novel_fields": [
+            "Gene type",
+            "Chimeric read count",
+            "P-value",
+            "Cell line/Tissue",
+            "Species",
+            "Interaction type",
+            "Detected method"
+        ],
+        "redundant_fields": [],
+        "parser_notes": [
+            "Normalize 'Gene type' values: 'protein coding' and 'protein_coding' → 'protein_coding'",
+            "P-value field: some values stored as scientific notation ('3.00E-05'); parse as float",
+            "P-value of '0' means p < Monte Carlo detection threshold — store as 0.0",
+            "Two circRNA ID formats present: circBase (hsa_circ_XXXXXXX) and host-gene format (hsa-GENENAME_XXXX) — both used as _id as-is",
+            "RAR decompression required before parsing — use rarfile or subprocess unrar in dumper",
+            "Group rows by circRNA ID to build nested interaction arrays per document"
+        ]
+    },
+    "paper_vs_reality": [
+        {
+            "claim": "132,517 high-confidence circRNA-target RNA interactions",
+            "observed": "132,517 data rows in all.txt (exact match)",
+            "match": true
+        },
+        {
+            "claim": "6,651 circRNAs",
+            "observed": "6,651 unique circRNA IDs in file (exact match)",
+            "match": true
+        },
+        {
+            "claim": "17,320 target RNAs",
+            "observed": "17,349 unique Ensembl IDs (minor discrepancy of +29, likely due to counting method or mouse/human split)",
+            "match": "APPROXIMATE"
+        },
+        {
+            "claim": "No public API",
+            "observed": "Confirmed: /api/ returns 404; web interface only",
+            "match": true
+        },
+        {
+            "claim": "13 cell lines and hippocampal tissues",
+            "observed": "15 distinct cell line/tissue values including GM12892 and mESC not explicitly listed as primary; core 13 confirmed",
+            "match": true
+        }
+    ],
+    "risks": [
+        "RAR format requires unrar binary or rarfile Python module in the execution environment",
+        "No explicit license — open use implied but not formally declared",
+        "Data is hg19-aligned (implied from methods); BioThings pipelines expect coordinate annotation if genomic fields are added",
+        "Two circRNA ID namespaces may complicate cross-referencing with circBase or circAtlas externally",
+        "File last modified 2025-10-13 — no documented update schedule; plugin should version-pin the download"
+    ]
+}

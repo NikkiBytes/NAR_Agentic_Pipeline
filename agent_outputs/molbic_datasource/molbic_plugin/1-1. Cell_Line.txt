@@ -1,0 +1,5 @@
+Cell Line	Cellosaurus accession	Tissue	Disease	Organ	Species
+K562	CVCL_0004	Lymphoid tissue	Chronic myelogenous leukemia	Blood	Homo sapiens
+A549	CVCL_0023	Lung alveolar epithelium	Non-small cell lung carcinoma	Lung	Homo sapiens
+HCT116	CVCL_0291	Colon epithelium	Colorectal carcinoma	Colon	Homo sapiens
+MCF7	CVCL_0031	Breast epithelium	Breast adenocarcinoma	Breast	Homo sapiens

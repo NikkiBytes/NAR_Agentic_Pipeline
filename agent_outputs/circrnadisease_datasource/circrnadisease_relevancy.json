@@ -1,0 +1,57 @@
+{
+    "name": "circrnadisease",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "circRNADisease v2.0 (now serving expanded v3.0 data live) is a manually curated resource of experimentally-supported circRNA-disease associations: circRNA identity (circBase ID/name/synonym/host gene), disease (mapped to MONDO ontology IDs), expression direction (up/down-regulated), detection method (RT-qPCR, RNA-seq, Northern blot, microarray, etc.), a continuous confidence score, PMID provenance, and free-text mechanistic description. This is a direct fit for pending.api as a circRNA↔disease association edge resource. Docked one point (not 5) because circRNA is not a first-class entity type in any current BioThings core API (MyGene/MyDisease/MyVariant/MyChem), so ingestion requires a custom association schema rather than slotting into an existing entity type."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API or pending.api plugin covers circRNA-disease associations (grepped references/existing-biothings-plugins.json and references/pending-api-datasources.json for 'circ' — no hits). The only other circRNA plugin in this pipeline's history, `circtarget`, covers circRNA-target RNA interactions (a different relation type entirely, verified by inspecting agent_outputs/circtarget_datasource/circtarget_relevancy.json). MyDisease.info has MONDO disease terms but no circRNA cross-references. This dataset is the first curated circRNA-disease evidence resource available to the pipeline: 15,423 curated evidence rows (9,659 unique PMIDs) spanning 656 MONDO disease terms and ~4,970 distinct circBase-style circRNA IDs (plus additional rows identified only by circ_rna_name where a formal circBase ID was not yet assigned), each with a per-record confidence score not found anywhere else in BioThings."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Live TXT/XLSX bulk downloads at cgga.org.cn/circRNADisease/download/ return HTTP 200 with correct content-types (text/plain, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet) with no login, API key, or click-through gate. The NAR publication states the article (and by extension the described dataset) is distributed under a Creative Commons Attribution-NonCommercial License (CC BY-NC), which permits non-commercial reuse and redistribution with attribution but restricts commercial use. Score capped at 3 (not 5) for the NC restriction; no separate site-level license/terms page could be found (about.jsp / license pages 404), so the license basis is the paper's stated CC BY-NC rather than a site-published one."
+        }
+    },
+    "evidence": {
+        "scope": "Manually curated, experimentally-supported circRNA-disease associations. Each row links one PMID-sourced observation to a circRNA (circBase ID/synonym/host gene/species), a disease (free-text label + MONDO ontology ID/name), an expression direction, a detection method, a mechanistic free-text description, and a continuous confidence score (0.069-0.908 observed range).",
+        "overlap": "No direct overlap with existing BioThings sources. MyDisease.info already carries MONDO terms as an entity but has no circRNA cross-reference field. The evidentiary/mechanistic layer (detection method, expression direction, confidence score, mechanistic description) is entirely new to BioThings.",
+        "entity_types": ["circRNA", "disease"],
+        "identifiers_found": ["circBase ID (hsa_circ_XXXXXXX naming convention)", "MONDO ID", "PMID"],
+        "record_count": 15423
+    },
+    "license": {
+        "name": "CC BY-NC (paper-stated; no separate site license page found)",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only per the NAR publication's stated license"]
+    },
+    "urls": {
+        "homepage": "https://cgga.org.cn/circRNADisease/",
+        "download": [
+            "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circrna_details.txt",
+            "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circrna_details.xlsx",
+            "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circ2mut.txt.zip",
+            "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circ2cnv.zip"
+        ],
+        "api": "No public API found; checked homepage, help.jsp, and common /api paths",
+        "paper_doi": "10.1093/nar/gkad949",
+        "pmid": "37897359",
+        "pmc": "PMC10767896"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "n/a"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Site now serves 'circRNADisease v3.0' data live (15,423 assoc. rows / 656 MONDO terms per the download page text) rather than the v2.0 figures reported in the 2024 NAR paper (6,998 assoc. / 330 diseases / 4,246 circRNAs) — the underlying database has grown since publication; the live bulk files are the most current and complete data available and were used for inspection.",
+        "circrna_id field is empty in ~37% of rows (5,733/15,423); circ_rna_name is used as the fallback circRNA label in most of those cases (4,052 rows), so _id construction must fall back across multiple columns.",
+        "No separate license/terms page found on the live site (about.jsp, license.jsp return 404) — license basis relies solely on the paper's CC BY-NC statement.",
+        "No public API — bulk-download-only ingestion path."
+    ],
+    "next_actions": ["Proceed to plugin generation using the bulk TXT download as the primary source"],
+    "evaluated_at": "2026-08-13"
+}

@@ -1,0 +1,30 @@
+{
+    "version": "1.0",
+    "requires": [],
+    "__metadata__": {
+        "name": "MolBiC",
+        "description": "Cell-based molecular bioactivity database linking 321,086 compounds to 550,093 quantitative bioactivity measurements (IC50/EC50/Ki) against 2,666 protein targets across 988 cell lines.",
+        "license": "CC BY-NC 4.0 (assumed consistent with other idrblab databases)",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "https://molbic.idrblab.net/",
+        "publication": {
+            "doi": "10.1093/nar/gkae868",
+            "pmid": "39373530",
+            "pmc": "PMC11701571"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "https://molbic.idrblab.net/sites/files/full_data/1-3.%20Compound.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/2-1.%20CMBs_All.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/1-1.%20Cell_Line.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/5-2.%20Proteins_with_Uniprot_IDs.txt"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error"
+    }
+}

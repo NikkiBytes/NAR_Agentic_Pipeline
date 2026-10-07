@@ -1,0 +1,54 @@
+{
+    "name": "SORC",
+    "identification_note": "Ambiguous input 'SORC' resolved via web search to 'SORC: an integrated spatial omics resource in cancer', published in the 2024 Nucleic Acids Research Database Issue (Nucleic Acids Res. 2024, 52(D1):D1429-D1437, doi:10.1093/nar/gkad820, PMID/PMC10768140). High confidence match: it is the only biomedical database literally named 'SORC' found in NAR database-issue search results for 2024-2026, and its acronym expansion (Spatial Omics Resource of Cancer) is an exact match to the query term.",
+    "verdict": "NEEDS_REVIEW",
+    "scores": {
+        "relevance": {
+            "score": 3,
+            "justification": "SORC is biomedical-adjacent and cancer/gene-centric (spatially variable genes, cell-type composition, ligand-receptor communication per cancer type) but its records are experimental/analytical spatial-transcriptomics datasets keyed by cancer-type/tissue-slice IDs rather than gene, chemical, disease, or variant records with standard identifiers -- a weaker structural fit for BioThings' entity-annotation model than a typical MyGene/MyChem/MyDisease source."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "No existing BioThings API or pending.api entry covers spatial transcriptomics / tumor microenvironment spot-level data (checked references/existing-biothings-plugins.json and references/pending-api-datasources.json -- no spatial or single-cell spatial overlap found). Spatially variable gene calls, cell-type deconvolution proportions, and immune-tumor cell co-occurrence/communication scores are not represented in MyGene.info, MyChem.info, MyDisease.info, or MyVariant.info."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Site (http://bio-bigdata.hrbmu.edu.cn/SORC) requires no login/registration to browse; the NAR article is Open Access under CC BY-NC, which the checklist treats as PASS (3/5) given BioThings' academic/non-profit status. However, live verification of the actual per-dataset download files failed: repeated curl requests to the site's own downloadCopy.jsp endpoint (with and without a session cookie/referrer) returned HTTP 404 with a server-side path-construction error (requested resource resolved to '/SORC/download<filename>', dropping the loc/filename query parameters), so bulk file retrieval could not be confirmed working at evaluation time. This is flagged as a risk rather than a hard license blocker."
+        }
+    },
+    "evidence": {
+        "scope": "Cell-type-annotated, spatially resolved transcriptomic and matched single-cell RNA-seq data across 82 datasets / 269 tissue slices / 722,899 spots spanning 17 cancer types, with spatially variable gene (SVG) calls, immune-tumor cell co-occurrence, functional enrichment (GO/KEGG/immune signatures), and ligand-receptor cell-cell communication results.",
+        "overlap": "No direct overlap with core BioThings sources; conceptually adjacent to gene-level GO/KEGG annotations already in MyGene.info, but at the level of per-spot spatial spot enrichment scores rather than static gene annotation.",
+        "entity_types": ["gene", "cell type", "cancer/tissue sample"],
+        "identifiers_found": ["gene_symbol (within SVG/deconvolution result files, format unconfirmed)", "custom datasetID (e.g. 'luad01')", "GEO sample accessions embedded in scRNA-seq filenames, e.g. 'SC_GSM5699784.txt'"],
+        "record_count": 82
+    },
+    "license": {
+        "name": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the NAR article's Open Access statement",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial reuse only (per article license); no separate/explicit license statement found on the database website itself"]
+    },
+    "urls": {
+        "homepage": "http://bio-bigdata.hrbmu.edu.cn/SORC",
+        "download": ["http://bio-bigdata.hrbmu.edu.cn/SORC/Download.jsp"],
+        "paper_doi": "10.1093/nar/gkad820",
+        "pmc": "PMC10768140"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "No public REST/GraphQL API documented; site is a browsable web portal with a downloadCopy.jsp file-serving endpoint (found not to be functioning correctly at evaluation time)"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Actual data-file download endpoint (downloadCopy.jsp) returned HTTP 404 on every tested request pattern (query-param order variants, with/without session cookie, with/without Referer header) -- appears to be a genuine server-side bug in the site's URL construction, not a login/paywall gate",
+        "No license statement found on the database website itself; only the journal article's CC BY-NC license was confirmed",
+        "Data are analytical/derived results (deconvolution proportions, GSVA scores, SVG calls) rather than raw entity annotations, which may complicate mapping to a single clean BioThings _id/primary-key scheme",
+        "Primary identifiers are custom dataset/slice IDs, not standard BioThings-mappable identifiers at the top level (gene symbols appear only inside individual result files, whose exact schema is unverified)"
+    ],
+    "next_actions": [
+        "Contact SORC maintainers (Yongsheng Li / Juan Xu, Harbin Medical University) to confirm the correct download URL construction and current license terms for the database content itself",
+        "Proceed to Phase 3 deep inspection using available manifest data (download_dataset.txt / download_slice.txt) while flagging download files as unverified"
+    ],
+    "evaluated_at": "2026-07-09"
+}

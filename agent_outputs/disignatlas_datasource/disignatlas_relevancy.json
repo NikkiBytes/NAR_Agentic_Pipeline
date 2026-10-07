@@ -1,0 +1,55 @@
+{
+    "name": "disignatlas",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Covers disease and gene entities directly: 10,306 curated bulk/single-cell transcriptomic disease-vs-control comparisons across human and mouse, each annotated with a disease name, DisGeNET/UMLS CUI disease ID, disease-ontology definition (DO/EFO/MONDO/MeSH/OMIM/ORDO/NCI text), tissue, organism, and (via the DEG file) a ranked list of Entrez Gene IDs differentially expressed in that disease context. This is squarely a disease<->gene association resource, a core BioThings entity/relation type."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "Existing BioThings sources (MyDisease.info aggregates MONDO/DO/HPO/OMIM ontology terms; MyGene.info aggregates gene annotation) do not carry per-dataset differential-expression disease signatures. DiSignAtlas's contribution is the curated set of 10,306 reprocessed GEO/ArrayExpress/TCGA comparisons (bulk + scRNA/snRNA-seq) each yielding a disease-specific ranked DEG signature with harmonized disease-ontology definitions -- this is not redundant with any BioThings API's existing disease or gene records, and is not present in disease-signature-style resources already tracked (see existing-biothings-plugins.json / pending-api-datasources.json, neither of which lists a disease-transcriptomic-signature source)."
+        },
+        "openness": {
+            "pass": true,
+            "score": 5,
+            "justification": "Homepage states 'freely available online ... no login requirement'. Paper: 'Open Access article distributed under the terms of the Creative Commons Attribution License (CC BY 4.0)'. Bulk CSV and GMT download files fetched directly via curl with no authentication, no click-through wall, no API key."
+        }
+    },
+    "evidence": {
+        "scope": "Curated disease-transcriptome-signature atlas: per-dataset differential gene expression analysis results (disease vs. control) reprocessed from GEO/ArrayExpress/TCGA bulk and single-cell/single-nucleus RNA-seq and microarray experiments, in human and mouse, annotated with harmonized disease identifiers/definitions.",
+        "overlap": "MyDisease.info already aggregates MONDO/DO/HPO/OMIM/UMLS-linked disease terms and definitions; MyGene.info already aggregates NCBI Gene annotation. Neither carries per-dataset differential-expression disease signatures (ranked DEG gene lists per disease-vs-control comparison), which is DiSignAtlas's novel contribution.",
+        "entity_types": ["disease", "gene"],
+        "identifiers_found": ["DisGeNET/UMLS CUI (diseaseid, e.g. C0002395)", "NCBI Gene ID (Entrez, in DEG gene list columns)", "GEO/ArrayExpress/TCGA accession"],
+        "record_count": 10306
+    },
+    "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "restrictions": []
+    },
+    "urls": {
+        "homepage": "http://www.inbirg.com/disignatlas/",
+        "download": [
+            "http://www.inbirg.com/disignatlas/download/dis_info_datasets",
+            "http://www.inbirg.com/disignatlas/download/dis_info_degs",
+            "http://www.inbirg.com/disignatlas/download/readme"
+        ],
+        "paper_doi": "10.1093/nar/gkad961",
+        "pmid": "37930831",
+        "pmc": "PMC10767933"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "No public REST/GraphQL API found on the homepage, download page, or in the paper; site is a Django-templated web app with only browse/search/download pages."
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Homepage/download pages are only reachable over HTTP -- HTTPS (port 443) refuses connection at www.inbirg.com; not a login/paywall issue, just no TLS listener, so plain-HTTP data_url must be used in the manifest.",
+        "The bulk DEG file (Disease_information_DEGs.gmt) covers only 8,466 of the 10,306 datasets (some datasets have no DEG list published in the bulk export) -- documents for the remaining ~1,840 datasets will lack a `degs` field.",
+        "deg_count in the CSV is a constant 1000 for every row and the GMT gene-list column count is also fixed at 1000 -- this appears to be a fixed top-N cutoff rather than the true number of significant DEGs per dataset; treated as 'top DEGs reported', not literal total DEG count.",
+        "The 10.1 GB per-dataset ZIP (full differential expression analysis results with fold-change/p-value per gene) was not ingested -- too large for bulk parsing at this stage; only the summary CSV + top-1000-DEG GMT are used."
+    ],
+    "next_actions": ["Proceed to plugin generation using dis_info_datasets (CSV) + dis_info_degs (GMT) as the bulk data_url pair"],
+    "evaluated_at": "2026-08-13"
+}

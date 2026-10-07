@@ -1,0 +1,228 @@
+{
+    "name": "gto",
+    "status": "VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "name": "GTO_clinic_data.xlsx",
+            "url": "http://www.inbirg.com/gto/download/clinical_data_download",
+            "format": "Excel (.xlsx)",
+            "size_bytes": 2070153,
+            "rows": 6333,
+            "columns": 46,
+            "description": "Full clinical detail data: one row per cohort/group within each trial",
+            "accessible": true,
+            "requires_auth": false,
+            "content_disposition": "attachment; filename=GTO_clinic_data.xlsx"
+        },
+        {
+            "name": "GTO_clinic_basic.xlsx",
+            "url": "http://www.inbirg.com/gto/download/clinical_basic_download",
+            "format": "Excel (.xlsx)",
+            "size_bytes": 597004,
+            "rows": 4014,
+            "columns": 14,
+            "description": "Basic clinical data: one row per trial (deduplicated summary)",
+            "accessible": true,
+            "requires_auth": false,
+            "content_disposition": "attachment; filename=GTO_clinic_basic.xlsx"
+        },
+        {
+            "name": "GTO_Omics_data.xlsx",
+            "url": "http://www.inbirg.com/gto/download/omics_data_datasets",
+            "format": "Excel (.xlsx)",
+            "size_bytes": 75691,
+            "rows": 345,
+            "columns": 22,
+            "description": "Transcriptomic dataset registry: one row per GEO dataset, linked to clinical trials",
+            "accessible": true,
+            "requires_auth": false,
+            "content_disposition": "attachment; filename=GTO_Omics_data.xlsx"
+        },
+        {
+            "name": "GTO_indication.xlsx",
+            "url": "http://www.inbirg.com/gto/download/indication",
+            "format": "Excel (.xlsx)",
+            "size_bytes": 845635,
+            "rows": 6061,
+            "columns": 18,
+            "description": "Disease/indication cross-reference: trial IDs linked to DOID, MONDO, MeSH, DisGeNET, HPO, UMLS identifiers",
+            "accessible": true,
+            "requires_auth": false,
+            "content_disposition": "attachment; filename=GTO_indication.xlsx"
+        },
+        {
+            "name": "README.txt",
+            "url": "http://www.inbirg.com/gto/download/readme",
+            "format": "text/plain",
+            "size_bytes": 10065,
+            "description": "Field definitions and usage terms for all download files",
+            "accessible": true,
+            "requires_auth": false
+        },
+        {
+            "name": "Differential_Expression_Results.zip",
+            "url": "http://www.inbirg.com/gto/download/gen_gtd_degs",
+            "format": "ZIP (CSV files per dataset)",
+            "size_approx": "319 MB",
+            "description": "Per-dataset DEG analysis results for all 345 omics datasets",
+            "accessible": "assumed_yes",
+            "requires_auth": false,
+            "note": "Not sampled due to size; endpoint exists per download page"
+        },
+        {
+            "name": "Gene_Expression_Profiles.zip",
+            "url": "http://www.inbirg.com/gto/download/exp_download",
+            "format": "ZIP (CSV + Rds files per dataset)",
+            "size_approx": "40.5 GB",
+            "description": "Full expression count matrices and Seurat objects for all datasets",
+            "accessible": "assumed_yes",
+            "requires_auth": false,
+            "note": "Not sampled due to size; not recommended for BioThings ingestion"
+        }
+    ],
+    "schema": {
+        "clinical_basic": {
+            "primary_key": "GTOID",
+            "fields": {
+                "GTOID": {"type": "string", "role": "IDENTIFIER", "example": "GTC0001", "notes": "GTO-specific unique trial ID"},
+                "Trial_ID": {"type": "string", "role": "IDENTIFIER", "example": "NCT00001234", "notes": "ClinicalTrials.gov or other registry ID"},
+                "Year": {"type": "integer", "role": "NOVEL", "example": 1999, "notes": "Year first submitted"},
+                "Phase": {"type": "string", "role": "NOVEL", "example": "Phase1", "notes": "Clinical trial phase"},
+                "Status": {"type": "string", "role": "NOVEL", "example": "Completed", "notes": "Recruitment status"},
+                "Title": {"type": "string", "role": "NOVEL", "example": "...", "notes": "Trial title"},
+                "Major_Therapy_Category": {"type": "string", "role": "NOVEL", "example": "DNA therapy", "notes": "High-level therapy class"},
+                "Therapy_Type": {"type": "string", "role": "NOVEL", "example": "Gene transfer", "notes": "Specific therapy type (22 categories)"},
+                "Treatment": {"type": "string", "role": "NOVEL", "example": "GBA1 RTV CD34+ cells", "notes": "Gene therapy product"},
+                "Altered_Gene": {"type": "string", "role": "IDENTIFIER", "example": "GBA1", "notes": "HGNC gene symbol; key crosswalk field to MyGene.info"},
+                "Vector": {"type": "string", "role": "NOVEL", "example": "retrovirus", "notes": "Delivery vector"},
+                "Disease_group": {"type": "string", "role": "REDUNDANT", "example": "genetic disease", "notes": "High-level disease class"},
+                "Disease": {"type": "string", "role": "IDENTIFIER", "example": "Gaucher's Disease", "notes": "Disease name; crosswalk via indication file to MONDO/DOID"},
+                "ex_in_vivo": {"type": "string", "role": "NOVEL", "example": "ex vivo", "notes": "Delivery context"}
+            }
+        },
+        "clinical_detail_additional_fields": [
+            "Country", "link", "Location_Approved", "Co_Treatment",
+            "Target/Therapeutic_Gene", "Generation", "Construct", "Vector_Type",
+            "Transgene/Inserted Gene", "Regulatory_Element", "Viral_Genome_Modification",
+            "Vector_Production_Method", "Additional_Feature", "Administration", "Dose",
+            "Remark", "HLA", "Donor_Type", "Pts", "Age", "Activation",
+            "Lymph_depletion", "Adverse_Reactions", "CR", "PR", "SD", "Outcome",
+            "Company-Sponsor/Collab", "Other_IDs", "References", "Ref_Link", "GTDID"
+        ],
+        "indication_fields": {
+            "study_ID": {"role": "IDENTIFIER", "notes": "GTC ID (joins to clinical files)"},
+            "trial_ID": {"role": "IDENTIFIER"},
+            "disease": {"role": "IDENTIFIER"},
+            "doid": {"role": "IDENTIFIER", "example": "DOID:1926", "notes": "Disease Ontology ID"},
+            "disease_ID": {"role": "IDENTIFIER", "example": "C0017205", "notes": "UMLS CUI"},
+            "xref": {"role": "IDENTIFIER", "notes": "Cross-refs: DO, MESH, NCI, GARD, MONDO, ORDO, SNOMEDCT, UMLS"},
+            "synonyms": {"role": "REDUNDANT"},
+            "definition": {"role": "REDUNDANT"},
+            "disgenet_disease_name": {"role": "REDUNDANT"},
+            "disease_type": {"role": "NOVEL"},
+            "diseaseclassmsh": {"role": "REDUNDANT"},
+            "diseaseclassnamemsh": {"role": "REDUNDANT"},
+            "hpoclassid": {"role": "IDENTIFIER"},
+            "hpoclassname": {"role": "REDUNDANT"},
+            "doclassid": {"role": "IDENTIFIER"},
+            "doclassname": {"role": "REDUNDANT"},
+            "umlssemantictypeid": {"role": "IDENTIFIER"},
+            "umlssemantictypename": {"role": "REDUNDANT"}
+        },
+        "omics_fields": {
+            "GTDID": {"role": "IDENTIFIER", "notes": "GTO omics dataset ID"},
+            "Accession": {"role": "IDENTIFIER", "notes": "GEO accession (GSE ID); primary crosswalk to GEO"},
+            "Control": {"role": "NOVEL", "notes": "Semicolon-separated control GSM IDs"},
+            "Case": {"role": "NOVEL", "notes": "Semicolon-separated case GSM IDs"},
+            "Disease_group": {"role": "REDUNDANT"},
+            "Disease": {"role": "IDENTIFIER"},
+            "Altered_Gene": {"role": "IDENTIFIER", "notes": "HGNC gene symbol"},
+            "Target/Therapeutic_Gene": {"role": "IDENTIFIER"},
+            "Treatment": {"role": "NOVEL"},
+            "Major_Therapy_Category": {"role": "NOVEL"},
+            "Therapy_Type": {"role": "NOVEL"},
+            "RNA_Information": {"role": "NOVEL"},
+            "Ex/In_Vivo": {"role": "NOVEL"},
+            "Vector": {"role": "NOVEL"},
+            "Organism": {"role": "NOVEL"},
+            "Tissue_Celltype": {"role": "NOVEL"},
+            "Remark": {"role": "NOVEL"},
+            "Strategy": {"role": "NOVEL", "notes": "RNA-seq, Microarray, scRNA-Seq"},
+            "Library_Type": {"role": "NOVEL"},
+            "Platform": {"role": "IDENTIFIER", "notes": "GPL platform ID"},
+            "Reference": {"role": "IDENTIFIER", "notes": "PMID"},
+            "Clinical_Trial": {"role": "IDENTIFIER", "notes": "NCT ID"}
+        }
+    },
+    "license": {
+        "type": "academic_use_only",
+        "formal_spdx": null,
+        "open_access": true,
+        "login_required": false,
+        "source": "README.txt + homepage",
+        "homepage_quote": "This website is open and free for all users with no login required.",
+        "readme_quote": "Please note that these datasets are provided for academic and research purposes only.",
+        "contact": "panjianbo@cqmu.edu.cn"
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "http://www.inbirg.com/gto/download/clinical_data_download",
+            "http://www.inbirg.com/gto/download/clinical_basic_download",
+            "http://www.inbirg.com/gto/download/indication",
+            "http://www.inbirg.com/gto/download/omics_data_datasets"
+        ],
+        "primary_key_field": "GTOID",
+        "primary_key_notes": "GTOID (e.g. GTC0001) is the unique clinical trial record identifier. For a gene-centric BioThings plugin, Altered_Gene (HGNC symbol) could serve as the key if records are grouped by gene. Recommend using GTOID for direct record-level ingestion, with gene and disease as indexed fields.",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "file_format": "Excel (.xlsx)",
+        "recommended_files": [
+            "GTO_clinic_data.xlsx (primary: 6333 trial records, full detail)",
+            "GTO_indication.xlsx (disease cross-references: DOID/MONDO IDs for normalization)"
+        ],
+        "novel_fields": [
+            "Phase",
+            "Status",
+            "Major_Therapy_Category",
+            "Therapy_Type",
+            "Treatment",
+            "Vector",
+            "Vector_Type",
+            "Construct",
+            "Generation",
+            "Ex/In_Vivo",
+            "Donor_Type",
+            "Administration",
+            "Dose",
+            "Lymph_depletion",
+            "Adverse_Reactions",
+            "CR",
+            "PR",
+            "SD",
+            "Outcome",
+            "Company-Sponsor/Collab",
+            "Activation",
+            "Strategy (RNA-seq/Microarray/scRNA-Seq)",
+            "Tissue_Celltype",
+            "Organism"
+        ],
+        "redundant_fields": [
+            "Disease_group (high-level grouping, less precise than MONDO)",
+            "synonyms (in indication file)",
+            "definition (in indication file)",
+            "disgenet_disease_name",
+            "diseaseclassnamemsh",
+            "umlssemantictypename"
+        ],
+        "identifier_crosswalk_fields": [
+            "Altered_Gene -> MyGene.info (HGNC symbol)",
+            "Trial_ID -> ClinicalTrials.gov (NCT ID)",
+            "doid -> MyDisease.info (Disease Ontology ID)",
+            "MONDO ID (in xref) -> MyDisease.info",
+            "Accession -> GEO (GSE accession)",
+            "Reference -> PubMed (PMID)"
+        ],
+        "ingestion_notes": "Excel files download without auth. openpyxl can parse them. clinical_data_download has 6333 rows x 46 cols (primary record). indication file joins on study_ID=GTOID and provides DOID/MONDO for disease normalization. Recommend joining clinical + indication at ingest time to produce enriched records. Large expression profile ZIPs (40+ GB) should NOT be ingested — reference by GEO accession only."
+    }
+}

@@ -1,0 +1,92 @@
+{
+    "name": "open_genes",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {
+            "url": "https://open-genes.com/download",
+            "filename": "unknown (page is a JS-rendered SPA; exact bulk file names/URLs not resolvable via WebFetch)",
+            "format": "MySQL dump (SQL) and TSV, per paper/GitHub docs",
+            "access": "public (per paper); not independently confirmed live due to JS rendering",
+            "size_mb": null
+        },
+        {
+            "url": "https://open-genes.com/api/gene/search",
+            "filename": "N/A (REST API endpoint)",
+            "format": "JSON",
+            "access": "public, no auth required (verified live via curl)"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "id", "type": "integer", "sample": "1", "classification": "IDENTIFIER"},
+            {"name": "symbol", "type": "string", "sample": "GHR", "classification": "IDENTIFIER"},
+            {"name": "name", "type": "string", "sample": "growth hormone receptor", "classification": "REDUNDANT"},
+            {"name": "ncbiId", "type": "integer", "sample": "2690", "classification": "IDENTIFIER"},
+            {"name": "uniprot", "type": "string", "sample": "GHR_HUMAN", "classification": "IDENTIFIER"},
+            {"name": "ensembl", "type": "string", "sample": "ENSG00000112964", "classification": "IDENTIFIER"},
+            {"name": "aliases", "type": "array[string]", "sample": "[\"GHBP\", \"GHIP\"]", "classification": "REDUNDANT"},
+            {"name": "chromosome", "type": "string", "sample": "5", "classification": "REDUNDANT"},
+            {"name": "confidenceLevel", "type": "object", "sample": "{\"id\":1,\"name\":\"highest\"}", "classification": "NOVEL"},
+            {"name": "origin", "type": "object", "sample": "{\"phylum\":\"Euteleostomi\",\"age\":\"420\"}", "classification": "NOVEL"},
+            {"name": "familyOrigin", "type": "object", "sample": "{\"phylum\":\"Vertebrata\",\"age\":\"490\"}", "classification": "NOVEL"},
+            {"name": "diseaseCategories", "type": "array[object]", "sample": "{\"icdCode\":\"E70-E90\",\"icdCategoryName\":\"Metabolic disorders\"}", "classification": "NOVEL"},
+            {"name": "diseases", "type": "array[object]", "sample": "{\"icdCode\":\"E78.0\",\"name\":\"Hypercholesterolemia, familial\"}", "classification": "NOVEL"},
+            {"name": "commentCause", "type": "array[object]", "sample": "{\"name\":\"Changes in gene activity extend mammalian lifespan\"}", "classification": "NOVEL"},
+            {"name": "proteinClasses", "type": "array[object]", "sample": "{\"name\":\"FDA approved drug targets\"}", "classification": "NOVEL"},
+            {"name": "agingMechanisms", "type": "array[object]", "sample": "{\"name\":\"INS/IGF-1 pathway dysregulation\"}", "classification": "NOVEL"},
+            {"name": "functionalClusters", "type": "array[object]", "sample": "{\"name\":\"mitochondrial function\"}", "classification": "NOVEL"},
+            {"name": "location", "type": "object", "sample": "{\"transcripts\":[{\"accVersion\":\"NM_000163.5\",\"exons\":[...]}]}", "classification": "REDUNDANT"},
+            {"name": "expressionChange", "type": "integer", "sample": "0", "classification": "NOVEL"},
+            {"name": "methylationCorrelation", "type": "nullable", "sample": "null", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "ncbiId",
+            "type": "Entrez Gene",
+            "sample": "2690"
+        },
+        "identifiers": [
+            {"type": "Entrez Gene", "field": "ncbiId", "sample": "2690"},
+            {"type": "Ensembl gene", "field": "ensembl", "sample": "ENSG00000112964"},
+            {"type": "UniProt (entry name)", "field": "uniprot", "sample": "GHR_HUMAN"},
+            {"type": "gene_symbol", "field": "symbol", "sample": "GHR"},
+            {"type": "ICD-10/11", "field": "diseases[].icdCode", "sample": "E78.0"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC-BY (data license per PMC10768108)",
+        "observed_site": "not independently confirmed (JS-rendered site; no license text returned via WebFetch)",
+        "match": null,
+        "restrictions": ["Code separately licensed MPL-2.0 on GitHub (open-genes/open-genes-api), distinct from data license."]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://open-genes.com/api/gene/search"],
+        "primary_key_field": "ncbiId",
+        "target_api": "pending.api",
+        "ingestion_path": "api_crawl",
+        "novel_fields": ["confidenceLevel", "origin", "familyOrigin", "diseaseCategories", "diseases", "commentCause", "proteinClasses", "agingMechanisms", "functionalClusters", "expressionChange", "methylationCorrelation"],
+        "redundant_fields": ["name", "aliases", "chromosome", "location"]
+    },
+    "api_crawl_details": {
+        "base_url": "https://open-genes.com/api",
+        "endpoints": ["/gene/search (paginated list of full gene records with nested lifespan/disease/mechanism data)"],
+        "pagination": "page/pageSize query params; pageSize=20 default, pagesTotal=121 observed for objTotal=2405",
+        "total_records": 2405,
+        "rate_limits": "unknown — not documented; single test call succeeded with no throttling observed",
+        "auth": "none",
+        "response_shape": "{\"options\": {\"objTotal\": N, \"pagination\": {...}}, \"items\": [...]}",
+        "sample_curl": "curl -s 'https://open-genes.com/api/gene/search?increaseLifespan=1&limit=1'",
+        "estimated_crawl_time": "121 pages / ~20 records per page; at ~1-2s per request, roughly 2-4 minutes for a full crawl"
+    },
+    "paper_vs_reality": [
+        {"claim": "2,402 genes (paper, PMC10768108)", "observed": "2,405 (live API objTotal)", "match": "approximately — minor drift consistent with ongoing curation since publication"},
+        {"claim": "MySQL dump / TSV download available", "observed": "download page is JS-rendered; could not directly confirm file URLs via WebFetch, but GitHub docs reference open_genes_sql_dump.zip", "match": "unconfirmed"},
+        {"claim": "REST API via FastAPI/Swagger", "observed": "confirmed live — /api/gene/search returns full structured JSON with no auth", "match": true},
+        {"claim": "Identifiers: HGNC symbol, Entrez, UniProt, Ensembl, ICD-10/11", "observed": "all confirmed present in live JSON response (ncbiId, uniprot, ensembl, symbol, diseases[].icdCode)", "match": true}
+    ],
+    "risks": [
+        "Bulk download page (open-genes.com/download) is JS-rendered; exact file URLs and their access gating were not directly verified — recommend the plugin dumper primarily target the confirmed-working REST API rather than the unverified bulk dump link.",
+        "Data license (CC-BY) taken from the paper only; not re-confirmed on the live site — recommend a quick manual browser check before redistribution.",
+        "Rate limits unknown; a full 121-page crawl was not executed in this evaluation, only a single-page smoke test."
+    ]
+}

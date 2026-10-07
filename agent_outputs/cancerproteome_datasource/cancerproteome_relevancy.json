@@ -1,0 +1,68 @@
+{
+    "name": "cancerproteome",
+    "identification": {
+        "resolved_title": "CancerProteome: a resource to functionally decipher the proteome landscape in cancer",
+        "journal": "Nucleic Acids Research, 2024, 52(D1):D1155-D1163",
+        "doi": "10.1093/nar/gkad818",
+        "pmid": "37823596",
+        "pmc": "PMC10767844",
+        "confidence": "high",
+        "reasoning": "Exact name match found via web search: a database literally named 'CancerProteome' published in the NAR Database Issue, hosted at Harbin Medical University (bio-bigdata.hrbmu.edu.cn/CancerProteome). No other database uses this exact name; distinguished from CPTAC (a consortium/data-generating program, not this curated re-analysis resource) and from CanProVar (a different, older proteogenomic variation database)."
+    },
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "Covers core BioThings entity types (protein/gene, drug, cancer/disease) with quantitative relations: differential protein & PTM expression in tumor vs. control per cancer type, and protein-drug sensitivity correlations (413 drugs from DepMap/GDSC). Structured, tabular, gene-symbol + UniProt-identified. Not full 5 because disease field uses free-text TCGA-style cancer abbreviations rather than MONDO/DOID identifiers."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API (mygene.info, mychem.info, myvariant.info, mydisease.info) or pending.api resource ingests quantitative proteome or PTM-level differential expression data, or protein-level drug-sensitivity correlations. This is protein-abundance/PTM data (distinct from gene expression, variant, or gene-annotation data already covered) plus 4,111 novel microproteins from ribo-seq ORFs not represented anywhere in BioThings."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "CC BY-NC license (per paper); all six download files (cancer_names.txt, protein_inf.txt, microprotein_inf.txt, PTM_protein_inf.txt, PTM_microprotein_inf.txt, protein_durg_inf.txt) fetched successfully via HTTPS with no login/registration/API key. Site returns 403 to default curl user-agent (basic bot filtering) but 200 with a standard browser User-Agent header — not an access gate. Per evaluation-checklist.md, CC-BY-NC is PASS (3/5) for BioThings' academic/non-profit use context."
+        }
+    },
+    "evidence": {
+        "scope": "Manually curated, re-analyzed mass-spectrometry proteomic and PTM data across 21 cancer types (7406 samples, 102 datasets from CPTAC/PDC, PRIDE, MassIVE.quant, PeptideAtlas, jPOST, Panorama, iProX): 31,120 proteins, 4,111 microproteins, 84,257 PTM sites, plus 413 drug-protein sensitivity correlations (DepMap/GDSC) and clinical survival analysis modules.",
+        "overlap": "No direct overlap with existing BioThings sources; UniProt/gene-symbol identifiers used for cross-referencing overlap with mygene.info/UniProt gene-protein mapping (context only, not the novel content). COSMIC/OncoKB gene lists are referenced within the resource but are already in myvariant.info (COSMIC) — those are supporting annotations, not the core novel data.",
+        "entity_types": ["protein", "gene", "chemical/drug", "disease(cancer type)"],
+        "identifiers_found": ["UniProt accession (embedded in protein field, e.g. P07686)", "gene symbol (geneName)", "TCGA-style cancer abbreviation (cancer field, mapped via cancer_names.txt)", "PDC study accession (source field, e.g. PDC000400)"],
+        "record_count": 31120
+    },
+    "license": {
+        "name": "CC BY-NC",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["non-commercial re-use only, per paper text"]
+    },
+    "urls": {
+        "homepage": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/",
+        "download": [
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/cancer_names.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/microprotein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_protein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_microprotein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_durg_inf.txt"
+        ],
+        "paper_doi": "10.1093/nar/gkad824",
+        "pmid": "37823596",
+        "pmc": "PMC10767844"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "no public REST/GraphQL API documented; web interface (Browse/Search) plus static Download page only"
+    },
+    "target_api": "pending.api (new API recommended: biothings.transltr.io/cancerproteome or similar)",
+    "risks": [
+        "License is CC BY-NC — non-commercial restriction should be confirmed acceptable per BioThings' academic/non-profit use, but flagged for downstream commercial API consumers per evaluation-checklist.md guidance",
+        "Disease field uses free-text TCGA-style abbreviations, not MONDO/DOID — will need a mapping table (cancer_names.txt provides Abbreviated.name -> Uniform.name, still requires manual MONDO crosswalk)",
+        "Site blocks default non-browser HTTP clients (403) unless a standard User-Agent header is sent — plugin dumper must set a browser-like User-Agent",
+        "No explicit terms-of-use or license text is displayed on the live site itself; license text is stated only in the published paper (potential paper-vs-site mismatch)",
+        "No API or versioned bulk archive; only a single static download snapshot per file with no visible update/versioning history observed on site"
+    ],
+    "next_actions": ["Proceed to Phase 3 inspection (completed in this pass)", "Proceed to plugin generation using bulk_download ingestion path"],
+    "evaluated_at": "2026-07-09"
+}

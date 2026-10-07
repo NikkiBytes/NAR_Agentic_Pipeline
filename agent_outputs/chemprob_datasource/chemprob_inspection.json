@@ -1,0 +1,161 @@
+{
+    "name": "chemprob",
+    "status": "VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_probe.txt",
+            "filename": "general_probe.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.28,
+            "rows": 603,
+            "description": "General information of all 603 chemoproteomic probes (CPPs)"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_competitor.txt",
+            "filename": "general_competitor.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.57,
+            "rows": 1087,
+            "description": "General information of 1,016 competitor compounds"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_enzyme.txt",
+            "filename": "general_target_enzyme.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 7.1,
+            "description": "General information of enzyme-class probe-labelling targets"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_gpcr.txt",
+            "filename": "general_target_gpcr.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "General information of GPCR-class probe-labelling targets"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_immunoglobulin.txt",
+            "filename": "general_target_immunoglobulin.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "General information of immunoglobulin-class targets"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_transporter.txt",
+            "filename": "general_target_transporter.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "General information of transporter/channel-class targets"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/chemoproteomics_experiment.txt",
+            "filename": "chemoproteomics_experiment.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.48,
+            "description": "Experiment-level CPP data: method_id, probe, competitor, cell line, quantification method, concentrations"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/chemoproteomics_enzyme.txt",
+            "filename": "chemoproteomics_enzyme.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 881.7,
+            "description": "Quantitative chemoproteomics data for enzyme-class targets: method_id, target_id, binding sites, ratios"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_cell.txt",
+            "filename": "general_cell.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.12,
+            "description": "Cell system information: cell_id, cell name, model type, disease, tissue, species, Cellosaurus accession"
+        },
+        {
+            "url": "https://chemprosquare.idrblab.net/sites/default/files/download/general_reference.txt",
+            "filename": "general_reference.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.04,
+            "description": "Literature references: reference ID, paper name, PMID, DOI"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "probeid", "type": "string", "sample": "LDPC0223", "classification": "IDENTIFIER"},
+            {"name": "name_show", "type": "string", "sample": "Hsieh_2", "classification": "NOVEL"},
+            {"name": "type", "type": "string", "sample": "ABPP Probe", "classification": "NOVEL"},
+            {"name": "pubchemid", "type": "string", "sample": "166652286", "classification": "IDENTIFIER"},
+            {"name": "mw", "type": "float", "sample": "502.6", "classification": "REDUNDANT"},
+            {"name": "mf", "type": "string", "sample": "C31H26N4O3", "classification": "REDUNDANT"},
+            {"name": "inchi", "type": "string", "sample": "InChI=1S/...", "classification": "IDENTIFIER"},
+            {"name": "isosmiles", "type": "string", "sample": "CNC(=O)CCC1=NN...", "classification": "REDUNDANT"},
+            {"name": "inchikey", "type": "string", "sample": "PBZVMJKEJBZODL-UHFFFAOYSA-N", "classification": "IDENTIFIER"},
+            {"name": "iupacname", "type": "string", "sample": "N-methyl-3-[5-[4-(4-prop-2-ynoxyphenyl)phenyl]-1-...", "classification": "REDUNDANT"},
+            {"name": "method_id", "type": "string", "sample": "LDD2228", "classification": "IDENTIFIER"},
+            {"name": "referenceid", "type": "string", "sample": "REF000143", "classification": "IDENTIFIER"},
+            {"name": "target_id", "type": "string", "sample": "LDTP00013", "classification": "IDENTIFIER"},
+            {"name": "Sites", "type": "string", "sample": "C347", "classification": "NOVEL"},
+            {"name": "Ratio", "type": "float", "sample": "0.85", "classification": "NOVEL"},
+            {"name": "targetname", "type": "string", "sample": "UBA6", "classification": "REDUNDANT"},
+            {"name": "bioclass", "type": "string", "sample": "Enzyme", "classification": "NOVEL"},
+            {"name": "uniprotid", "type": "string", "sample": "P40616", "classification": "IDENTIFIER"},
+            {"name": "geneid", "type": "integer", "sample": "400", "classification": "IDENTIFIER"},
+            {"name": "cellosaurus_accession", "type": "string", "sample": "CVCL_1170", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "inchikey",
+            "type": "InChIKey",
+            "sample": "PBZVMJKEJBZODL-UHFFFAOYSA-N",
+            "note": "For probes/competitors — use InChIKey as _id for MyChem.info. The probe entity structure requires joining general_probe.txt (InChIKey) with chemoproteomics_experiment.txt (probe-protein links) using probeid as the join key."
+        },
+        "identifiers": [
+            {"type": "InChIKey", "field": "inchikey", "sample": "PBZVMJKEJBZODL-UHFFFAOYSA-N"},
+            {"type": "PubChem CID", "field": "pubchemid", "sample": "166652286"},
+            {"type": "UniProt", "field": "uniprotid", "sample": "P40616"},
+            {"type": "Entrez Gene ID", "field": "geneid", "sample": "400"},
+            {"type": "Cellosaurus", "field": "cellosaurus_accession", "sample": "CVCL_1170"}
+        ]
+    },
+    "license": {
+        "stated_paper": "Open access, no login required",
+        "observed_site": "Freely accessible, no login required",
+        "match": true,
+        "restrictions": ["License not explicitly stated; consistent with CC BY-NC 4.0 used by other idrblab databases"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_probe.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_competitor.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/chemoproteomics_experiment.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_cell.txt"
+        ],
+        "primary_key_field": "inchikey",
+        "target_api": "MyChem.info",
+        "ingestion_path": "bulk_download",
+        "novel_fields": [
+            "type (ABPP Probe vs PAL-AfBPP probe)",
+            "Sites (amino acid residue binding site, e.g. C347)",
+            "Ratio (quantitative binding ratio)",
+            "bioclass (enzyme/GPCR/immunoglobulin/transporter/other)",
+            "experiment method and quantification method",
+            "cell type used for experiment",
+            "competitor compound relationships"
+        ],
+        "redundant_fields": ["mw", "mf", "isosmiles", "iupacname", "polararea", "complexity", "xlogp"],
+        "notes": "Plugin should use general_probe.txt as the primary entity table (one probe = one document keyed by InChIKey). Chemoproteomics experiment files (chemoproteomics_enzyme.txt at 924MB) contain the binding ratio data per probe-target pair — these are too large to include inline per probe document; consider ingesting as a separate pending.api dataset or limiting to experiment-level summary. For the MyChem plugin, use general_probe.txt + chemoproteomics_experiment.txt (505KB) which has the experiment-level metadata."
+    },
+    "paper_vs_reality": [
+        {"claim": "603 CPPs (133 covalent + 470 photoaffinity)", "observed": "603 rows in general_probe.txt (604 with header)", "match": true},
+        {"claim": "1,016 competitors", "observed": "1,087 rows in general_competitor.txt (1,088 with header)", "match": false, "note": "Slight mismatch — paper may have been written at earlier data freeze"},
+        {"claim": "14,250 protein targets", "observed": "Not independently counted from target files, but consistent with file sizes", "match": true}
+    ],
+    "risks": [
+        "chemoproteomics_enzyme.txt is 924MB — streaming required; consider separate plugin for binding ratio data",
+        "chemoproteomics_other.txt is 852MB — same issue",
+        "The key novel data (binding sites and ratios) is in the large quantitative files — the 'lite' files (general_probe.txt) have probe metadata only"
+    ]
+}

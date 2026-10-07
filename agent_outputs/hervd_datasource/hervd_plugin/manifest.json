@@ -1,0 +1,30 @@
+{
+    "version": "1.0",
+    "requires": ["requests"],
+    "__metadata__": {
+        "name": "HervD Atlas",
+        "description": "A curated knowledgebase of associations between human endogenous retroviruses (HERVs) and diseases, with HERV loci mapped to hg38 coordinates and diseases mapped to EFO/DOID/NCI/OMIM/MESH ontologies.",
+        "license": "CC BY 3.0 (China Mainland)",
+        "license_url": "http://creativecommons.org/licenses/by/3.0/cn/",
+        "url": "https://ngdc.cncb.ac.cn/hervd/",
+        "publication": {
+            "doi": "10.1093/nar/gkad904",
+            "pmid": "37870452",
+            "pmc": "PMC10767980"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "https://download.cncb.ac.cn/hervd/Disease%20Information.txt",
+            "https://ngdc.cncb.ac.cn/hervd/herv_term",
+            "https://ngdc.cncb.ac.cn/hervd/herv_element"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

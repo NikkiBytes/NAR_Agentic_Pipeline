@@ -1,0 +1,25 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "HMDD v4.0 - Human microRNA Disease Database",
+        "description": "Manually curated, experimentally-supported associations between human (and virus-encoded) microRNAs and human diseases, spanning 8 evidence categories (circulation, epigenetics, exosome, genetics, target, tissue, virus, other) and 23 evidence codes, each backed by a supporting PubMed citation.",
+        "license": "CC BY-NC (academic/non-commercial use only)",
+        "license_url": "http://www.cuilab.cn/hmdd",
+        "url": "http://www.cuilab.cn/hmdd",
+        "publication": {
+            "doi": "10.1093/nar/gkad717",
+            "pmid": "37650649",
+            "pmc": "PMC10767894"
+        }
+    },
+    "dumper": {
+        "data_url": ["http://www.cuilab.cn/static/hmdd3/data/alldata_v4.txt"],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

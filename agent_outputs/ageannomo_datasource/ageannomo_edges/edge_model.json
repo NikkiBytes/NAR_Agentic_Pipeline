@@ -1,0 +1,358 @@
+{
+  "name": "ageannomo",
+  "modeled_at": "2026-09-22",
+  "skill": "claude/kg-edge-modeler/SKILL.md",
+  "source_plugin": "NAR.API/plugins/ageannomo",
+  "parser_run": {
+    "docs_total": 61333,
+    "duplicate_ids": 0,
+    "docs_per_entity_type": {
+      "gene_expression": 40402,
+      "protein_expression": 16091,
+      "metabolite": 2959,
+      "lifespan_regulator": 1881
+    },
+    "note": "Shipped parser re-run against freshly downloaded source files; reproduces README.md counts exactly."
+  },
+  "resolvers": {
+    "nodenorm": "https://nodenormalization-sri.renci.org/get_normalized_nodes",
+    "nameres": "https://name-resolution-sri.renci.org/lookup"
+  },
+  "entity_types": [
+    {
+      "entity_type": "protein_expression",
+      "doc_count": 16091,
+      "resolution": [
+        {
+          "column": "ageannomo.protein.xrefs.uniprot",
+          "method": "nodenorm",
+          "namespace": "UniProtKB",
+          "sample_n": 200,
+          "any_hit": 0.95,
+          "correct_hit": 0.945,
+          "resolved_but_no_taxon": 1,
+          "resolved_categories": {
+            "biolink:Gene": 125,
+            "biolink:Protein": 65
+          },
+          "per_species": {
+            "Rhesus monkeys": {
+              "n": 45,
+              "correct": 40
+            },
+            "Callithrix jacchus": {
+              "n": 8,
+              "correct": 7
+            },
+            "Human": {
+              "n": 48,
+              "correct": 44
+            },
+            "C. elegans": {
+              "n": 34,
+              "correct": 33
+            },
+            "Nothobranchius furzeri": {
+              "n": 29,
+              "correct": 29
+            },
+            "Rat": {
+              "n": 2,
+              "correct": 2
+            },
+            "Rabit": {
+              "n": 24,
+              "correct": 24
+            },
+            "Drosophila melanogaster": {
+              "n": 9,
+              "correct": 9
+            },
+            "Mouse": {
+              "n": 1,
+              "correct": 1
+            }
+          },
+          "notes": "Taxon correctness verified against the row's own Animal column across all 9 species present. Accessions normalize inconsistently: 125/190 to biolink:Gene, 65/190 to biolink:Protein — subject category must be read from the normalized node, not assumed."
+        }
+      ],
+      "edge": {
+        "subject": "normalized UniProtKB node (biolink:Gene | biolink:Protein)",
+        "predicate": "biolink:associated_with",
+        "object": "age-group comparison (Category, e.g. 'old vs young')",
+        "qualifiers": {
+          "species": "Animal -> NCBITaxon",
+          "tissue": "Tissue",
+          "direction": "Up_or_down",
+          "object_direction_qualifier": "from logFC sign"
+        },
+        "provenance": {
+          "pubmed": "Pubmed",
+          "proteomics_project": "ProjectID (PRIDE PXD)"
+        },
+        "unmodelable": []
+      },
+      "filter": {
+        "rule": "adj.P.Val < 0.05",
+        "rows_in": 16109,
+        "rows_out": 7170,
+        "alternatives": {
+          "adj.P.Val<0.05 & abs(logFC)>1": 3662,
+          "P.Value<0.05": 16108
+        }
+      },
+      "species_present": {
+        "Human": 6001,
+        "Rhesus monkeys": 3256,
+        "Rabit": 2055,
+        "C. elegans": 2021,
+        "Nothobranchius furzeri": 1568,
+        "Drosophila melanogaster": 481,
+        "Callithrix jacchus": 419,
+        "Rat": 190,
+        "Mouse": 118
+      },
+      "blockers": [],
+      "verdict": "KG_READY"
+    },
+    {
+      "entity_type": "metabolite",
+      "doc_count": 2959,
+      "resolution": [
+        {
+          "column": "ageannomo.metabolite.xrefs.pubchem_cid",
+          "method": "nodenorm",
+          "namespace": "PUBCHEM.COMPOUND",
+          "sample_n": 200,
+          "any_hit": 1.0,
+          "correct_hit": 1.0,
+          "resolved_categories": {
+            "biolink:SmallMolecule": 200
+          },
+          "unique_values": 841,
+          "null_values": 0,
+          "notes": "Cleanest column in the source. All 200 sampled CIDs normalize to biolink:SmallMolecule."
+        }
+      ],
+      "edge": {
+        "subject": "normalized PUBCHEM.COMPOUND node (biolink:SmallMolecule)",
+        "predicate": "biolink:associated_with",
+        "object": "age-group comparison (Age group)",
+        "qualifiers": {
+          "species": "Animal -> NCBITaxon (Mouse|Human only)",
+          "tissue": "Tissue"
+        },
+        "provenance": {
+          "pubmed": "Pubmed",
+          "project": "Project ID"
+        },
+        "unmodelable": [
+          "'Age group' is free text with an ideographic comma as list separator, e.g. 'Old: 59、92 weeks old; Young: 3、16 weeks old' — needs locale-aware parsing before it can become a structured age qualifier"
+        ]
+      },
+      "filter": {
+        "rule": "is_AgeRelatedMetabolite == True",
+        "rows_in": 2960,
+        "rows_out": 77,
+        "alternatives": {
+          "plsda_vip>1": 2956
+        },
+        "notes": "plsda_vip>1 passes 2956/2960 (99.9%) — it looks like a threshold column but discriminates nothing. The curator flag is the real filter and keeps 2.6%."
+      },
+      "blockers": [],
+      "verdict": "KG_READY"
+    },
+    {
+      "entity_type": "gene_expression",
+      "doc_count": 40402,
+      "resolution": [
+        {
+          "column": "ageannomo.gene.symbol",
+          "method": "nameres",
+          "namespace": "n/a (free-text symbol)",
+          "sample_n": 300,
+          "sample_note": "30 distinct symbols per species x 10 species",
+          "any_hit": 0.857,
+          "correct_hit": 0.266,
+          "per_species": [
+            {
+              "species": "Nothobranchius furzeri",
+              "rows": 12645,
+              "sample_n": 30,
+              "any_hit": 0.97,
+              "correct_taxon_naive": 0.0,
+              "correct_taxon_only_taxa": 0.97
+            },
+            {
+              "species": "Danio_rerio",
+              "rows": 12507,
+              "sample_n": 30,
+              "any_hit": 0.73,
+              "correct_taxon_naive": 0.23,
+              "correct_taxon_only_taxa": 0.87
+            },
+            {
+              "species": "Mouse",
+              "rows": 4318,
+              "sample_n": 30,
+              "any_hit": 1.0,
+              "correct_taxon_naive": 0.0,
+              "correct_taxon_only_taxa": 0.97
+            },
+            {
+              "species": "Drosophila melanogaster",
+              "rows": 3410,
+              "sample_n": 30,
+              "any_hit": 1.0,
+              "correct_taxon_naive": 0.63,
+              "correct_taxon_only_taxa": null
+            },
+            {
+              "species": "Caenorhabditis. elegans",
+              "rows": 1766,
+              "sample_n": 30,
+              "any_hit": 0.87,
+              "correct_taxon_naive": 0.87,
+              "correct_taxon_only_taxa": null
+            },
+            {
+              "species": "Human",
+              "rows": 1577,
+              "sample_n": 30,
+              "any_hit": 1.0,
+              "correct_taxon_naive": 0.2,
+              "correct_taxon_only_taxa": 1.0
+            },
+            {
+              "species": "Naked mole rat",
+              "rows": 1490,
+              "sample_n": 30,
+              "any_hit": 1.0,
+              "correct_taxon_naive": 0.03,
+              "correct_taxon_only_taxa": 0.93
+            },
+            {
+              "species": "Sus scrofa",
+              "rows": 1320,
+              "sample_n": 30,
+              "any_hit": 1.0,
+              "correct_taxon_naive": 0.67,
+              "correct_taxon_only_taxa": null
+            },
+            {
+              "species": "Canis lupus",
+              "rows": 823,
+              "sample_n": 30,
+              "any_hit": 0.0,
+              "correct_taxon_naive": 0.0,
+              "correct_taxon_only_taxa": null
+            },
+            {
+              "species": "Rat",
+              "rows": 596,
+              "sample_n": 30,
+              "any_hit": 1.0,
+              "correct_taxon_naive": 0.03,
+              "correct_taxon_only_taxa": null
+            }
+          ],
+          "notes": "any_hit is misleading in isolation: naive top-1 NameRes places most rows on the wrong species' ortholog. Canis lupus symbols do not resolve at all (0/30)."
+        }
+      ],
+      "edge": {
+        "subject": null,
+        "predicate": "biolink:associated_with",
+        "object": "age-group comparison (group)",
+        "qualifiers": {
+          "species": "species -> NCBITaxon",
+          "tissue": "tissue",
+          "direction": "Up/Down"
+        },
+        "unmodelable": []
+      },
+      "filter": {
+        "rule": "FDR < 0.05",
+        "rows_in": 40452,
+        "rows_out": 12933,
+        "alternatives": {
+          "FDR<0.05 & abs(logFC)>1": 10666
+        },
+        "notes": "788 rows carry FDR == 1; 1,577 rows have null logFC. Plugin currently ingests unfiltered."
+      },
+      "blockers": [
+        "Mouse subset (4,318 rows, 100% of Mouse rows) has a purely numeric `symbol`. Not symbols. Read as NCBIGene, 0/60 resolve to mouse and several resolve to human genes (516->ATP5MC1, 965->CD58, 4058->LTK); many do not resolve at all. Provenance of this column is unidentified and requires source curation.",
+        "only_taxa constraint raises Mouse correct_taxon from 0% to 97% — a FALSE POSITIVE. Taxon-constrained NameRes returns a best fuzzy match inside the taxon for any input: '3155'->Gm31552, '331'->Plscr5. Do not report the constrained rate for this column.",
+        "Canis lupus (823 rows): 0/30 symbols resolve.",
+        "species column needs normalization before any taxon-constrained resolution: mixed common/Latin names, 'Danio_rerio' (underscore), 'Caenorhabditis. elegans' (stray period)."
+      ],
+      "verdict": "BLOCKED_PENDING_CURATION"
+    },
+    {
+      "entity_type": "lifespan_regulator",
+      "doc_count": 1881,
+      "resolution": [
+        {
+          "column": "ageannomo.gene.symbol",
+          "method": "nameres",
+          "namespace": "n/a (free-text symbol)",
+          "sample_n": 30,
+          "any_hit": 1.0,
+          "correct_hit": 0.0,
+          "notes": "correct_hit is 0% against the assumed mouse taxon. The file has 4 columns (Gene, R_value, p_value, Category) and NO species column — the mouse assumption originates in README.md prose, not the data. Per SKILL.md step 3.4, do not assume a species; the column is unresolvable as shipped."
+        }
+      ],
+      "edge": {
+        "subject": null,
+        "predicate": null,
+        "predicate_note": "Pos-MLS / neg-MLS is the SIGN OF A CORRELATION with maximum lifespan, not a causal claim. Do not map to a lifespan-extension predicate. No biolink predicate asserted without knowing how the correlation was derived.",
+        "object": "maximum lifespan",
+        "qualifiers": {},
+        "unmodelable": [
+          "R_value/p_value carry the whole assertion; there is no stated mechanism or direction of effect"
+        ]
+      },
+      "filter": {
+        "rule": "p_value < 0.05",
+        "rows_in": 1881,
+        "rows_out": 1881,
+        "notes": "File is pre-filtered; 100% pass. Category split: Pos-MLS 1121, neg-MLS 760."
+      },
+      "blockers": [
+        "No species column anywhere in the file.",
+        "Relationship is correlational and unnamed — K4 predicate nameability scores 0."
+      ],
+      "verdict": "BLOCKED_PENDING_CURATION"
+    }
+  ],
+  "files_never_examined": {
+    "note": "The relevancy report scored AgeAnnoMO across 10 aging hallmarks. The inspection enumerated 9 files from 4 hallmark directories. The plugin ingests 4. The files below were never listed, never inspected, and never reached the generator's shape-based file-selection policy.",
+    "files": [
+      "Anti-aging interventions (intervention -> effect -> target -> hallmark)",
+      "Dysbiosis / microbiota",
+      "Aging-related immune repertoire (TCR/BCR)",
+      "Epigenetic alterations",
+      "Intercellular communication"
+    ],
+    "kg_note": "The intervention file is the most edge-shaped content in the source and the most likely to be KG-valuable."
+  },
+  "summary": {
+    "kg_usable_entity_types": [
+      "protein_expression",
+      "metabolite"
+    ],
+    "blocked_entity_types": [
+      "gene_expression",
+      "lifespan_regulator"
+    ],
+    "curation_required": [
+      "species column normalization (both expression files)",
+      "Mouse `symbol` column provenance in Differential expression.xlsx",
+      "species for Lifespan regulators.xlsx",
+      "Anti-aging interventions file — never inspected"
+    ],
+    "docs_kg_usable": 19050,
+    "docs_blocked": 42283,
+    "kg_verdict": "NEEDS_CURATION",
+    "ingest_verdict_unchanged": "RECOMMEND_INGEST"
+  }
+}

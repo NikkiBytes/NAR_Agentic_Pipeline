@@ -1,0 +1,58 @@
+{
+    "name": "ncrnadrug",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly covers core BioThings entities (drugs mapped to DrugBank/PubChem/NSC identifiers) and their relations to non-coding RNAs (miRNA/lncRNA/circRNA) implicated in drug resistance/targeting. Data is fully tabular with standard biomedical identifiers, not free text."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API (mygene.info, mychem.info, myvariant.info, mydisease.info) or pending.api KP covers ncRNA (miRNA/lncRNA/circRNA)-drug resistance or ncRNA-drug-target relations. While Drug_Name/DrugBank_ID/CID overlap with MyChem's chemical identifier space, the actual association data (ncRNA-drug resistance/target relations, pathway, expression pattern, experimental evidence) is entirely new to the BioThings sphere. circBase/NONCODE/miRBase/DeepBase/CIRCpedia identifiers are also not represented anywhere in current BioThings sources."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "All 7 data files (TXT + XLSX pairs) are downloadable directly from the site's own /data_download/ path with no login, API key, or click-through gate (verified via direct curl, HTTP 200). Underlying NAR paper is CC BY 4.0 (Oxford Academic open access). The database website itself does not repeat an explicit data-specific license/terms page, so attribution/reuse terms for the raw files rely on the paper's CC BY 4.0 statement rather than an explicit site license — a minor, not blocking, ambiguity."
+        }
+    },
+    "evidence": {
+        "scope": "Validated and computationally predicted associations between non-coding RNAs (miRNA, lncRNA, circRNA) and drug resistance/response, plus ncRNAs targeted by drugs, curated from >9000 papers and integrating SM2miR, D-lnc, and ncDR (a predecessor DB by the same lab).",
+        "overlap": "Drug identifiers (DrugBank ID, PubChem CID) overlap with MyChem.info's DrugBank/PubChem sources, but only at the chemical-identity level, not the ncRNA-drug relation level, which is unique to this resource.",
+        "entity_types": ["chemical/drug", "miRNA", "lncRNA", "circRNA", "gene (ncRNA target)"],
+        "identifiers_found": ["DrugBank ID", "PubChem CID", "NSC number", "miRBase accession", "Ensembl Gene ID", "NONCODE Gene ID", "circBase ID", "DeepBase ID", "CIRCpedia ID", "PMID"],
+        "record_count": 971866
+    },
+    "license": {
+        "name": "CC BY 4.0 (per NAR publication; not separately restated as a data-file license on the site)",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "restrictions": ["Attribution/citation expected; site itself lacks an explicit standalone data-usage license statement"]
+    },
+    "urls": {
+        "homepage": "http://www.jianglab.cn/ncRNADrug/",
+        "download": [
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_Curated.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_GEO.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_NCI60.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DR_CCLE.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DT_Curated.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DT_GEO.txt",
+            "http://www.jianglab.cn/ncRNADrug/data_download/DT_CMap.txt"
+        ],
+        "paper_doi": "10.1093/nar/gkad1042",
+        "pmid": "38109296",
+        "pmc": "PMC10767907"
+    },
+    "api_info": {
+        "exists": false
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "No explicit standalone data-usage license on the website; relies on the paper's CC BY 4.0 status.",
+        "Site is a plain PHP/HTML site (no versioned API); no documented update cadence found — freshness/maintenance risk.",
+        "No single stable primary key field; records are relation rows keyed by a composite of PMID + ncRNA + Drug, requiring a synthesized _id in the plugin.",
+        "Predicted-association files (GEO/NCI60/CCLE/CMap) are computational predictions, not experimentally validated — should be flagged with a confidence/support tier distinct from the Curated files."
+    ],
+    "next_actions": ["Proceed to Phase 3 deep inspection", "Design a synthesized _id (e.g., hash of PMID+ncRNA_Name+Drug_Name+ncRNA_Type) for the plugin"],
+    "evaluated_at": "2026-07-09"
+}

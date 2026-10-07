@@ -1,0 +1,51 @@
+{
+    "name": "slkb",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "SLKB is a gene-pair-level knowledge base of synthetic lethality (SL) interactions derived from 11 published CRISPR combinatorial double-knockout (CDKO) screens across 22 cancer cell lines. Gene-gene functional relations are a core BioThings relation type (comparable to STRING/PPI-style interaction data already modeled in the ecosystem), and every record resolves to two human gene symbols plus a literature-backed relation type (SL vs. Not SL)."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "Checked references/existing-biothings-plugins.json (mygene.info, mychem.info, myvariant.info, mydisease.info source registries) for any synthetic-lethality, SynLethDB, or CDKO-screen source — no matches found. No existing BioThings API models gene-pair synthetic lethality relationships, per-study raw SL scores, or the 7 re-calculated scoring methods (Horlbeck, MAGeCK, GEMINI, Median-B/NB, sgRNA-derived-B/NB) that SLKB harmonizes across the 11 source screens. This is a wholly novel entity/relation type for BioThings."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "Full database export (SQL_Dumps.zip, 240 MB) is hosted on Figshare (DOI 10.6084/m9.figshare.22902839.v1) under GPL 3.0+, confirmed via a live Figshare API call (https://api.figshare.com/v2/articles/22902839) returning license.name='GPL 3.0+', is_public=true, download_disabled=false. No login, API key, or paywall required — verified by downloading the full 240,825,452-byte archive directly with curl. GPL 3.0+ permits reuse/redistribution (copyleft, not NC/ND), so scored 4 rather than 5 (fully permissive CC0/public-domain) due to copyleft obligations on derivative works."
+        }
+    },
+    "evidence": {
+        "scope": "Gene-pair synthetic lethality (SL) relations from 11 CRISPR CDKO screens (22 cell lines): original per-study SL classification (SL / Not SL) plus original SL score and statistical score, and 7 independently re-calculated SL scores per gene pair (Horlbeck, MAGeCK, GEMINI x3 sub-scores, Median-B, Median-NB, sgRNA-derived-B, sgRNA-derived-NB) computed uniformly across all 11 screens by the SLKB pipeline.",
+        "overlap": "None found with mygene.info/mychem.info/myvariant.info/mydisease.info source registries (references/existing-biothings-plugins.json). Related literature resource SynLethDB exists but is not a BioThings API/plugin.",
+        "entity_types": ["gene", "gene-gene interaction (synthetic lethality)"],
+        "identifiers_found": ["gene symbol", "PubMed ID (study provenance)", "cell line name"],
+        "record_count": 280483
+    },
+    "license": {
+        "name": "GPL 3.0+",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "restrictions": ["Copyleft: derivative works/redistributions must also be GPL 3.0+ licensed."]
+    },
+    "urls": {
+        "homepage": "https://slkb.osubmi.org",
+        "download": ["https://ndownloader.figshare.com/files/41055392"],
+        "api": "https://api.figshare.com/v2/articles/22902839",
+        "paper_doi": "10.1093/nar/gkad806",
+        "pmid": "37889037",
+        "pmc": "PMC10767912"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "No public REST/GraphQL API found for programmatic bulk access; the live site (slkb.osubmi.org) is an R Shiny application with server-generated browse/download UI only. Figshare API (api.figshare.com) is used only to check the deposited-data version/metadata, not to serve SLKB records."
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "GPL 3.0+ copyleft license may require legal review before redistributing derivative BioThings documents.",
+        "Live Shiny site (slkb.osubmi.org) offers only interactive/query-scoped downloads, not a stable bulk file endpoint — the Figshare archive is the only stable canonical bulk source and is a one-time snapshot (v1, deposited 2023-08-22) that has not been updated since the initial NAR publication; future re-ingestion should re-check Figshare for a newer version.",
+        "gene_pair_id is not globally unique across cell lines within the same study (a small number of gene pairs are re-tested across cell lines sharing the same CDKO library design), so the composite (study_origin, cell_line_origin, gene_pair_id) key is required for uniqueness."
+    ],
+    "next_actions": ["Proceed to plugin generation"],
+    "evaluated_at": "2026-08-13"
+}

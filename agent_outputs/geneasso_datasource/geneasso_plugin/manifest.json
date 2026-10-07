@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "__metadata__": {
+    "url": "https://www.geneasso.net/",
+    "license_url": "https://www.geneasso.net/",
+    "license": "Free for all users including commercial (see paper)",
+    "author": "Su Lab",
+    "description": "GENEasso: 716,122 high-confidence disease-gene associations from 8,226 GWAS summary statistics using 7 gene-based methods"
+  },
+  "uploader": {
+    "parser": "parser:load_data",
+    "on_duplicates": "ignore"
+  },
+  "dumper": {
+    "data_url": [
+      "https://www.geneasso.net/api/download/static/MAGMA.download.txt",
+      "https://www.geneasso.net/api/download/static/DEPICT.download.txt",
+      "https://www.geneasso.net/api/download/static/PASCAL.download.txt",
+      "https://www.geneasso.net/api/download/static/LDAK-GBAT.download.txt",
+      "https://www.geneasso.net/api/download/static/RWAS.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_CAGE.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_Geuvadis.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_GTEx-top1tissue.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_GTEx-top2tissue.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_GTEx-top3tissue.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_PsychENCODE.download.txt"
+    ],
+    "uncompress": false,
+    "release": "version:get_release"
+  }
+}

@@ -1,0 +1,75 @@
+{
+    "name": "circtarget",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "CircTarget covers circRNA-target RNA interaction pairs (6,651 circRNAs × 17,320 target RNAs = 132,517 interactions) with disease-associated variants from GWAS Catalog, ClinVar, and ICGC. Interaction records carry genomic coordinates (hg19), Ensembl gene IDs, cell-type context, chimeric read counts, and p-values. This is a direct fit for pending.api as an RNA-interaction edge resource. Docked one point because circRNAs are not yet a first-class entity type in any BioThings core API and ingestion will require a custom schema."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API (MyGene, MyChem, MyVariant, MyDisease) or pending.api dataset covers circRNA-target RNA interactions. The nearest analogue is starBase/ENCORI (miRNA-circRNA pairs), which is not in BioThings. CircTarget is the first resource providing experimentally-supported, single-nucleotide-resolution circRNA-RNA interactions at scale across 13 cell lines and 2 tissue types. Completely novel entity type and interaction class for BioThings."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Bulk download at https://circtarget.cn/static/download/all.rar returns HTTP 200 without login or registration. No paywall or click-through gate observed. No explicit license is published on the site or in the paper; the paper states data is 'freely accessible', consistent with open-for-research-use norms for NAR database papers. Score capped at 3 (attribution) until an explicit license is confirmed. Reuse for BioThings integration is consistent with the resource's stated purpose."
+        }
+    },
+    "evidence": {
+        "scope": "Experimentally-derived circRNA-target RNA interactions at single-nucleotide resolution, identified from five RNA-RNA interactome methods (RIC-seq, KARR-seq, PARIS, SPLASH, LIGR-seq) across 13 human/mouse cell lines and hippocampal tissues. Each interaction record captures circRNA identity, target gene, binding site coordinates, chimeric read support, p-value, predicted MFE, disease-associated variants at interaction loci, and cell-type/method provenance.",
+        "overlap": "No overlap with any existing BioThings data source. The referenced upstream databases (circBase, circAtlas, GWAS Catalog, ClinVar, ICGC) are already partially represented in BioThings APIs (MyVariant has ClinVar and GWAS Catalog), but CircTarget's novel contribution is the circRNA-RNA interaction layer, which is not captured anywhere in BioThings.",
+        "entity_types": ["circRNA", "gene", "mRNA", "lncRNA", "ncRNA"],
+        "identifiers_found": ["circBase ID (hsa_circ_XXXXXXX)", "circAtlas ID", "Ensembl Gene ID", "HGNC gene symbol", "hg19 genomic coordinates"],
+        "record_count": 132517
+    },
+    "license": {
+        "name": "Unspecified (implied open)",
+        "url": "https://circtarget.cn",
+        "restrictions": ["No explicit license published; open use implied by NAR publication and 'freely accessible' language"]
+    },
+    "urls": {
+        "homepage": "https://circtarget.cn",
+        "download": [
+            "https://circtarget.cn/static/download/all.rar",
+            "https://circtarget.cn/static/download/Neuron.rar",
+            "https://circtarget.cn/static/download/HeLa.rar",
+            "https://circtarget.cn/static/download/GM12878.rar",
+            "https://circtarget.cn/static/download/HT29.rar",
+            "https://circtarget.cn/static/download/Human_Hippocampus.rar",
+            "https://circtarget.cn/static/download/HepG2.rar",
+            "https://circtarget.cn/static/download/K562.rar",
+            "https://circtarget.cn/static/download/hNPC.rar",
+            "https://circtarget.cn/static/download/H1-hESC.rar",
+            "https://circtarget.cn/static/download/IMR90.rar",
+            "https://circtarget.cn/static/download/Mouse_Hippocampus.rar",
+            "https://circtarget.cn/static/download/GM12892.rar",
+            "https://circtarget.cn/static/download/A549.rar",
+            "https://circtarget.cn/static/download/mESC.rar"
+        ],
+        "api": null,
+        "paper_doi": "10.1093/nar/gkaf1280",
+        "pmid": "41468912",
+        "pmc": "PMC12807748"
+    },
+    "api_info": {
+        "exists": false,
+        "notes": "No public REST or GraphQL API found. Checked /api/ endpoint (404). Database backend is SQLite (Django framework). Web interface only supports interactive search by circRNA ID or target gene symbol."
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "No explicit open-source license published; open use is implied but not formally declared",
+        "Data files are in RAR format, requiring decompression before parsing",
+        "Genome assembly is hg19 only; BioThings pipelines may need liftover to hg38",
+        "CircRNA IDs span two namespaces (circBase and circAtlas) requiring ID harmonization in the parser",
+        "No public API available; ingestion must rely on bulk file download",
+        "Database was last modified 2025-10-13 (per HTTP Last-Modified header); update cadence unknown"
+    ],
+    "next_actions": [
+        "Run site inspection to confirm file format and schema of all.rar",
+        "Determine primary key strategy (circRNA_id + target_ensembl_id + cell_type vs. interaction-level hash)",
+        "Clarify license with CircTarget authors or proceed under implied open-for-research terms",
+        "Proceed to plugin generation targeting pending.api"
+    ],
+    "evaluated_at": "2026-05-15"
+}

@@ -1,0 +1,79 @@
+{
+    "name": "SORC",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {
+            "url": "http://bio-bigdata.hrbmu.edu.cn/SORC/0_files/innerpath/download_dataset.txt",
+            "filename": "download_dataset.txt",
+            "format": "JSON (manifest listing 82 dataset entries)",
+            "access": "public",
+            "note": "Successfully fetched directly; this is a metadata manifest, not the underlying spatial-omics data"
+        },
+        {
+            "url": "http://bio-bigdata.hrbmu.edu.cn/SORC/0_files/innerpath/download_slice.txt",
+            "filename": "download_slice.txt",
+            "format": "JSON (manifest listing per-slice entries with filenames for deconvolution/SVG/scRNA-seq/co-occurrence/GSVA/cell-cell result files)",
+            "access": "public",
+            "note": "Successfully fetched directly; lists filenames like slice1_Deconvolution.txt, slice1_SVG.txt, SC_GSM5699784.txt, slice1_GSVA_*.txt, slice1_Res_italktable.txt per slice"
+        },
+        {
+            "url": "http://bio-bigdata.hrbmu.edu.cn/SORC/downloadCopy.jsp?loc=<datasetID>&filename=<file>",
+            "filename": "e.g. slice1_Deconvolution.txt (per-slice result files referenced in the manifests above)",
+            "format": "TXT (tab/comma-delimited, exact delimiter unconfirmed)",
+            "access": "blocked",
+            "note": "Every tested request (multiple query-param orders, with and without a Download.jsp session cookie, with and without Referer header) returned HTTP 404 with a server error indicating the servlet mis-resolved the request path to '/SORC/download<filename>', dropping the loc/filename parameters. Could not retrieve or sample any actual per-spot/per-gene data file content."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "cancer", "type": "string", "sample": "LUAD (Lung Adenocarcinoma), AIS (Adenocarcinoma in situ), 10X Visium, Exp Mol Med, 2022", "classification": "NOVEL"},
+            {"name": "datasetID", "type": "string", "sample": "luad01", "classification": "NOVEL"},
+            {"name": "slice_site", "type": "string", "sample": "Slice1", "classification": "NOVEL"},
+            {"name": "spot_num", "type": "integer", "sample": "1696", "classification": "NOVEL"},
+            {"name": "spatial_file", "type": "string (linked .rds file)", "sample": "slice1.rds", "classification": "NOVEL"},
+            {"name": "spot_dev_table", "type": "string (linked result file, deconvolution proportions per spot per cell type)", "sample": "slice1_Deconvolution.txt", "classification": "NOVEL"},
+            {"name": "svg_table", "type": "string (linked result file, spatially variable genes with Moran's I)", "sample": "slice1_SVG.txt", "classification": "NOVEL"},
+            {"name": "sc_table", "type": "string (linked scRNA-seq expression file, GEO-sourced)", "sample": "SC_GSM5699784.txt", "classification": "REDUNDANT (raw scRNA-seq expression likely already retrievable via GEO)"},
+            {"name": "sc_celltype_table", "type": "string (linked scRNA-seq cell-type annotation file)", "sample": "SC_GSM5699784_CellType.txt", "classification": "NOVEL"},
+            {"name": "co_occ_table / cellcell_table / fun_*_table", "type": "string (linked GSVA/co-occurrence/ligand-receptor result files)", "sample": "slice1_GSVA_immune.txt, slice1_Res_italktable.txt", "classification": "NOVEL"},
+            {"name": "paper / paper_html", "type": "string / URL", "sample": "EXPERIMENTAL AND MOLECULAR MEDICINE,2022 / https://www.nature.com/articles/s12276-022-00896-9", "classification": "REDUNDANT (provenance link, not itself entity data)"}
+        ],
+        "primary_key": {
+            "field": "datasetID + slice_site",
+            "type": "custom",
+            "sample": "luad01 / Slice1"
+        },
+        "identifiers": [
+            {"type": "gene_symbol", "field": "expected within svg_table/spot_dev_table content (not confirmed -- files could not be downloaded)", "sample": "unconfirmed"},
+            {"type": "GEO sample accession", "field": "embedded in sc_table filename", "sample": "GSM5699784"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC (NAR Open Access article license)",
+        "observed_site": "No explicit license statement found on the SORC website itself",
+        "match": false,
+        "restrictions": ["Non-commercial use per article license; site-level terms undocumented"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "http://bio-bigdata.hrbmu.edu.cn/SORC/0_files/innerpath/download_dataset.txt",
+            "http://bio-bigdata.hrbmu.edu.cn/SORC/0_files/innerpath/download_slice.txt"
+        ],
+        "primary_key_field": "datasetID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["svg_table (spatially variable genes)", "spot_dev_table (cell-type deconvolution proportions)", "co_occ_table (immune-tumor co-occurrence)", "cellcell_table (ligand-receptor communication)", "fun_*_table (GSVA functional scores)", "sc_celltype_table"],
+        "redundant_fields": ["sc_table (raw scRNA-seq counts, likely available via source GEO accessions)", "paper/paper_html (citation metadata)"]
+    },
+    "paper_vs_reality": [
+        {"claim": "82 datasets across 17 cancer types, 722,899 spots, 269 slices, 334,379 single cells / 46 cell types", "observed": "download_dataset.txt manifest contains 82 dataset entries matching the paper's stated count; per-slice spot counts in download_slice.txt (e.g. 1696, 1753 for luad01 slices) are consistent with the paper's aggregate spot totals", "match": true},
+        {"claim": "Data can be queried, browsed, downloaded and accessed (per article's data availability statement)", "observed": "Browsing/manifest access confirmed working; actual per-file download via downloadCopy.jsp returned HTTP 404 on every attempt", "match": false}
+    ],
+    "risks": [
+        "Core per-slice/per-gene result files (deconvolution, SVG, GSVA, cell-cell communication) could not be downloaded or schema-verified due to a reproducible server-side 404 error on the site's own download endpoint",
+        "No site-level license statement independent of the journal article was found; NC restriction from the article may or may not formally apply to the database content itself",
+        "Primary/foreign keys are custom cancer-type + slice IDs rather than standard BioThings identifiers; gene-level identifiers are expected only inside the unretrieved result files",
+        "A meaningful portion of linked content (raw scRNA-seq count files) may be redundant with existing GEO-derived resources rather than novel to BioThings"
+    ]
+}

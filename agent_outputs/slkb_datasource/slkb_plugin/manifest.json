@@ -1,0 +1,26 @@
+{
+    "version": "1.0",
+    "requires": ["requests"],
+    "__metadata__": {
+        "name": "SLKB - Synthetic Lethality Knowledge Base",
+        "description": "Gene-pair synthetic lethality (SL) relations harmonized from 11 published CRISPR combinatorial double-knockout (CDKO) screens across 22 cancer cell lines, including each study's original SL classification/score and 7 independently re-calculated SL scoring methods (Horlbeck, MAGeCK, GEMINI, Median-B/NB, sgRNA-derived-B/NB).",
+        "license": "GPL 3.0+",
+        "license_url": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "url": "https://slkb.osubmi.org",
+        "publication": {
+            "doi": "10.1093/nar/gkad806",
+            "pmid": "37889037",
+            "pmc": "PMC10767912"
+        }
+    },
+    "dumper": {
+        "data_url": "https://ndownloader.figshare.com/files/41055392",
+        "uncompress": true,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

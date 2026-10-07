@@ -6,3 +6,4 @@ biothings[cli]>=1.1.0
 # pandas/openpyxl are used for .xlsx sources (see biothings-plugin-generator/SKILL.md).
 pandas
 openpyxl
+/Users/nacosta/Documents/NAR_DB/repo/NAR_Agentic_Pipeline

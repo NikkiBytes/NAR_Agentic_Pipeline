@@ -1,0 +1,73 @@
+{
+    "name": "signor",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "SIGNOR provides manually curated causal signaling interactions between proteins, complexes, protein families, small molecules, and phenotypes. Covers core BioThings entity types (gene/protein, chemical/small molecule) with standard identifiers (UniProtKB, ChEBI, PMID evidence). PhosphoSIGNOR sub-domain captures phosphosite-level data directly relevant to MyVariant-adjacent annotations. Causal interaction + mechanism + effect model is directly usable in pending.api."
+        },
+        "novelty": {
+            "score": 3,
+            "justification": "A prior SIGNOR PhosphoSIGNOR plugin (v1.1, 2026-04-30) already exists in the built-plugins-index (13,411 documents, PhosphoSIGNOR-only endpoint). SIGNOR 4.0 (NAR 2026) introduces: (1) 27% more interactions vs v3 (40,940 total), including 6,903 unique phosphosites, >400 kinases, 90 phosphatases; (2) the full SIGNOR interactome endpoint (getData.php?organism=9606) covering binding, chemical activation, ubiquitination, and other non-phosphorylation causal mechanisms not currently ingested. The full interactome endpoint is genuinely novel vs the existing PhosphoSIGNOR-only plugin. Score 3: existing coverage is partial, SIGNOR 4.0 adds meaningful new data and scope."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "CC BY 4.0 license stated in NAR 2026 paper. Two public endpoints verified: (1) full SIGNOR interactome at https://signor.uniroma2.it/getData.php?organism=9606 returns TSV data without login (>10 MB, HTTP 200); (2) PhosphoSIGNOR API at https://signor.uniroma2.it/PhosphoSIGNOR/apis/v1/index.php?role=all&format=tsv&header=yes returns 9-column TSV with column headers, no auth required. No paywall, no click-through, no API key. Score 4 (not 5): CC BY requires attribution."
+        }
+    },
+    "evidence": {
+        "scope": "Manually curated causal signaling interactions: proteins, protein families, complexes, small molecules, stimuli, and phenotypes. Interactions include phosphorylation, dephosphorylation, binding, chemical activation/inhibition, ubiquitination, acetylation, relocalization, and more. PhosphoSIGNOR sub-domain specialises in kinase/phosphatase → phosphosite → substrate chains. Covers human (9606) and other organisms.",
+        "overlap": "Existing SIGNOR PhosphoSIGNOR plugin (v1.1) covers the 9-column PhosphoSIGNOR API endpoint only (13,411 documents). SIGNOR 4.0 adds 27% more interactions; the full SIGNOR interactome (getData.php) is untapped. Signaling interaction data of this type is not duplicated in MyChem, MyGene, MyDisease, or MyVariant. No BioThings API currently ingests the full causal SIGNOR interactome.",
+        "entity_types": ["protein", "proteinfamily", "complex", "smallmolecule", "chemical", "stimulus", "phenotype"],
+        "identifiers_found": ["UniProtKB", "ChEBI", "SIGNOR-C (complex)", "SIGNOR-PF (proteinfamily)", "BTO (cell line)", "PMID"],
+        "record_count": 40940
+    },
+    "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "restrictions": ["Attribution required"]
+    },
+    "urls": {
+        "homepage": "https://signor.uniroma2.it/",
+        "phosphosignor_homepage": "https://signor.uniroma2.it/PhosphoSIGNOR/",
+        "download": [
+            "https://signor.uniroma2.it/PhosphoSIGNOR/apis/v1/index.php?role=all&format=tsv&header=yes",
+            "https://signor.uniroma2.it/getData.php?organism=9606"
+        ],
+        "api": "https://signor.uniroma2.it/PhosphoSIGNOR/apis/v1/index.php",
+        "paper_doi": "10.1093/nar/gkaf1237",
+        "pmid": "41243950",
+        "pmc": "PMC12807704"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://signor.uniroma2.it/PhosphoSIGNOR/apis/v1/index.php",
+        "auth_required": false,
+        "rate_limits": "unknown",
+        "pagination": "none (single bulk response)",
+        "record_coverage": "PhosphoSIGNOR subset (phosphorylation/dephosphorylation only); full interactome via getData.php?organism=9606",
+        "notes": "getData.php returns all causal interaction types for a given organism (NCBI taxid). PhosphoSIGNOR API returns phosphorylation-specific data with 9 named columns and includes column header row when header=yes. Both endpoints return text/plain TSV, no auth, no API key."
+    },
+    "target_api": "pending.api",
+    "prior_plugin": {
+        "version": "1.1",
+        "date": "2026-04-30",
+        "scope": "PhosphoSIGNOR only (9-column TSV endpoint)",
+        "doc_count": 13411,
+        "notes": "This pipeline run will produce an updated plugin (SIGNOR 4.0) to replace v1.1. Consider whether to expand scope to full interactome via getData.php."
+    },
+    "risks": [
+        "Full SIGNOR interactome (getData.php) uses 27+ columns with mixed uppercase field names — different schema from the 9-column PhosphoSIGNOR API. Parser must handle both or choose one endpoint.",
+        "Entities include internal SIGNOR IDs (SIGNOR-C*, SIGNOR-PF*) with no external registry — cannot normalize to standard gene/chemical identifiers for these.",
+        "Tax IDs in full interactome include non-human organisms (mouse, rat, etc.); consider filtering or tagging by organism.",
+        "getData.php response has no column header row — field positions must be hardcoded from documentation/inspection.",
+        "Monthly releases change the release filename (e.g., Apr2026_release.txt) — version.py must accommodate dynamic filenames."
+    ],
+    "next_actions": [
+        "Run site inspection to verify both download endpoints, sample column schemas, and determine which endpoint(s) to ingest",
+        "Decide scope: PhosphoSIGNOR-only (9-column, cleaner) vs full interactome (27+ columns, richer) — recommendation: full interactome for broader coverage",
+        "Proceed to plugin generation as update to prior v1.1 plugin"
+    ],
+    "evaluated_at": "2026-05-14"
+}

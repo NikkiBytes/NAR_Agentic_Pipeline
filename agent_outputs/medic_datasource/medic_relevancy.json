@@ -1,0 +1,57 @@
+{
+    "name": "medic",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Drug indications and contraindications are core MyChem.info/pending.api content. Covers 2,382 unique drugs across 2,688 diseases with 10,086 indication pairs and 3,982 contraindication pairs. Uses standard biomedical identifiers (CHEBI, MONDO, RxNorm, MeSH, UNII). Structured tabular format from government regulatory sources (FDA, EMA, PMDA). Actively maintained (latest release v1.4.1 indication-list, v2.3.1 drug-list)."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "Government-regulatory-source-only drug indications and contraindications. While MyChem.info has drug labels (FDA), MeDIC uniquely provides: (1) triple-agency coverage (FDA+EMA+PMDA), (2) MONDO-normalized disease IDs for all indications enabling cross-disease queries, (3) explicit contraindication relationships (not just indications), (4) LLM-extracted hyperrelations from label text. No existing BioThings source provides all three agency sources with MONDO normalization for both indications and contraindications."
+        },
+        "openness": {
+            "pass": true,
+            "score": 5,
+            "justification": "Source code on GitHub (CC0 Figshare archive). Drug list, indication list, contraindication list all available as public GitHub release assets with no login. `matrix` consolidated repo is Apache 2.0. Data releases have no explicit LICENSE file but are published openly with CC0 Figshare archive. Fully open."
+        }
+    },
+    "evidence": {
+        "scope": "Drug indications and contraindications sourced from FDA SPL, EMA EPAR, PMDA Japanese drug labels. Ontology-normalized to CHEBI/MONDO/RxNorm/MeSH/MedDRA. 2,295 unique drugs with indications, 994 with contraindications. Also includes a 3,857-entry drug list with cross-identifiers (CHEBI, UNII, PUBCHEM, RXCUI, DRUGBANK, InChIKey in 71% of entries).",
+        "overlap": "FDA drug labels exist in MyChem.info but without EMA/PMDA coverage or MONDO normalization. CTD covers drug-disease but from scientific literature, not regulatory sources. No MONDO-normalized contraindication source exists in BioThings.",
+        "entity_types": ["drug", "chemical", "disease"],
+        "identifiers_found": ["CHEBI", "UNII", "PUBCHEM.COMPOUND", "RXCUI", "DRUGBANK", "MONDO", "MESH", "InChIKey (71% of drugs)", "ICD-11"],
+        "record_count": 10224
+    },
+    "license": {
+        "name": "CC0 / Apache 2.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "restrictions": [],
+        "notes": "Figshare archive is CC0. Consolidated GitHub repo is Apache 2.0. Individual GitHub release data files have no explicit LICENSE file but are published openly."
+    },
+    "urls": {
+        "homepage": "https://medic.renci.org/",
+        "download": [
+            "https://github.com/everycure-org/matrix-drug-list/releases/latest/download/drugList.tsv",
+            "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/indicationList.xlsx",
+            "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/contraindicationList.xlsx"
+        ],
+        "paper_doi": "10.1093/nar/gkaf1312",
+        "pmid": "41385096",
+        "pmc": "PMC12807713"
+    },
+    "api_info": {
+        "exists": false,
+        "notes": "No REST API. Website is Next.js static viewer loading GitHub release files at runtime. All /api/ paths return 404."
+    },
+    "target_api": "MyChem.info",
+    "risks": [
+        "Data release files (GitHub releases) have no explicit LICENSE file — Figshare archive (CC0) is the canonical licensed version",
+        "Drug ID prefix is non-uniform (CHEBI 55%, UNII 16%, RXCUI 14%, PUBCHEM 8%, etc.) — no single InChIKey for all drugs",
+        "Indication list indications text column contains lengthy LLM-extracted JSON — should be excluded or stored separately",
+        "Downfilled/inferred files explicitly labeled NOT APPROVED — must only use core curated files",
+        "CHEBI as primary drug ID has partial overlap with MyChem.info; CHEBI IDs may not directly map to InChIKey in all cases"
+    ],
+    "next_actions": ["Proceed to plugin generation — primary key: drug CURIE (curie field from drugList.tsv); target MyChem.info with CHEBI as dominant ID; nest indications + contraindications per drug"],
+    "evaluated_at": "2026-06-25"
+}

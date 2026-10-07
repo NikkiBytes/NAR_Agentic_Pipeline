@@ -1,0 +1,113 @@
+{
+    "name": "cancerproteome",
+    "status": "VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {
+            "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/cancer_names.txt",
+            "filename": "cancer_names.txt",
+            "format": "TSV",
+            "access": "public (requires standard browser User-Agent header; default curl UA returns 403)",
+            "description": "Mapping of cancer type abbreviation (e.g. LAML, BRCA) to uniform full name (e.g. Acute Myeloid Leukemia)"
+        },
+        {
+            "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_inf.txt",
+            "filename": "protein_inf.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 2.47,
+            "description": "Differential canonical protein expression (control vs. tumor) per cancer type/dataset"
+        },
+        {
+            "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/microprotein_inf.txt",
+            "filename": "microprotein_inf.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "Differential microprotein (ribo-seq-supported small ORF) expression, control vs. tumor"
+        },
+        {
+            "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_protein_inf.txt",
+            "filename": "PTM_protein_inf.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "Differential PTM site-level expression on canonical proteins, control vs. tumor"
+        },
+        {
+            "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_microprotein_inf.txt",
+            "filename": "PTM_microprotein_inf.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "Differential PTM site-level expression on microproteins, control vs. tumor"
+        },
+        {
+            "url": "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_durg_inf.txt",
+            "filename": "protein_durg_inf.txt",
+            "format": "TSV",
+            "access": "public",
+            "description": "Protein expression vs. drug IC50 sensitivity correlations (DepMap/GDSC drugs) per cancer type"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "protein", "type": "string", "sample": "HEXB_P07686", "classification": "IDENTIFIER"},
+            {"name": "geneName", "type": "string", "sample": "HEXB", "classification": "IDENTIFIER"},
+            {"name": "protein_length", "type": "integer", "sample": "556", "classification": "REDUNDANT"},
+            {"name": "Mean expression in control samples", "type": "float", "sample": "22.347", "classification": "NOVEL"},
+            {"name": "Mean expression in tumor samples", "type": "float", "sample": "22.967", "classification": "NOVEL"},
+            {"name": "FC", "type": "float", "sample": "1.537", "classification": "NOVEL"},
+            {"name": "FDR", "type": "float", "sample": "3.576e-02", "classification": "NOVEL"},
+            {"name": "cancer", "type": "string", "sample": "LAML", "classification": "IDENTIFIER"},
+            {"name": "source", "type": "string", "sample": "PDC000400", "classification": "IDENTIFIER"},
+            {"name": "PTM_in_protein", "type": "string", "sample": "AHCTF1_Q8WYP5[S1142]", "classification": "NOVEL"},
+            {"name": "Drug", "type": "string", "sample": "AICAR (GDSC1:1001)", "classification": "IDENTIFIER"},
+            {"name": "cor", "type": "float", "sample": "-0.155", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "protein",
+            "type": "custom (GeneSymbol_UniProtAccession composite, e.g. HEXB_P07686; some entries use non-canonical suffixes like '_Canonical_4' or '_pseudogene_MP_4' for isoforms/microproteins lacking a UniProt accession)",
+            "sample": "HEXB_P07686"
+        },
+        "identifiers": [
+            {"type": "UniProt", "field": "protein (suffix)", "sample": "P07686"},
+            {"type": "gene_symbol", "field": "geneName", "sample": "HEXB"},
+            {"type": "PDC study accession", "field": "source", "sample": "PDC000400"},
+            {"type": "TCGA-style cancer abbreviation", "field": "cancer", "sample": "LAML"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC",
+        "observed_site": "no explicit license text found on live site; only copyright notice '© 2023 College of Bioinformatics Science and Technology, Harbin Medical University'",
+        "match": false,
+        "restrictions": ["non-commercial re-use per paper; site itself does not restate license terms — MISMATCH/gap between paper and site"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/microprotein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_protein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/PTM_microprotein_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/protein_durg_inf.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/CancerProteome/download/cancer_names.txt"
+        ],
+        "primary_key_field": "protein",
+        "target_api": "pending.api (new: cancerproteome)",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["Mean expression in control samples", "Mean expression in tumor samples", "FC", "FDR", "PTM_in_protein", "cor (drug correlation)"],
+        "redundant_fields": ["protein_length"]
+    },
+    "paper_vs_reality": [
+        {"claim": "31,120 proteins (paper abstract)", "observed": "site homepage displays 35,231 proteins catalogued", "match": false},
+        {"claim": "4,111 microproteins", "observed": "4,111 microproteins on site", "match": true},
+        {"claim": "84,257 PTM sites (paper text mentions differing PTM site counts across versions)", "observed": "84,257 modification sites on site", "match": true},
+        {"claim": "7,406 samples across 21 cancer types", "observed": "site lists 7,406 (labeled 'normal samples' on homepage, likely a mislabeled combined total) and 21 cancer types", "match": true},
+        {"claim": "413 unique drug IC50 measurements (paper)", "observed": "413 drugs analyzed (site)", "match": true},
+        {"claim": "CC BY-NC license (paper)", "observed": "no license text visible on live site pages", "match": false}
+    ],
+    "risks": [
+        "Protein identifier field is a composite string (GeneSymbol_UniProtAccession) with inconsistent suffix patterns for isoforms/microproteins (e.g. '_Canonical_4', '_pseudogene_MP_4') — will require regex-based parsing to reliably extract UniProt accessions; not all rows have a clean UniProt ID",
+        "Site returns 403 Forbidden to default/bot User-Agent strings; a plugin dumper must set a realistic browser User-Agent header to fetch files reliably",
+        "protein_inf.txt paper-vs-site protein count mismatch (31,120 vs, 35,231) suggests the site has been updated since publication without a versioned release note — recommend re-checking counts at ingestion time",
+        "No license text on the live site itself; relying solely on the paper's CC BY-NC statement for compliance",
+        "cancer field requires a manual crosswalk from TCGA-style abbreviation to MONDO/DOID for full BioThings disease-entity alignment; cancer_names.txt only provides a human-readable name, not an ontology ID"
+    ]
+}

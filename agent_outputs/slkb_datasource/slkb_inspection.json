@@ -1,0 +1,90 @@
+{
+    "name": "slkb",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://ndownloader.figshare.com/files/41055392",
+            "filename": "SQL_Dumps.zip",
+            "format": "ZIP (containing plain-text SQL dump files)",
+            "access": "public",
+            "size_mb": 229.7
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "gene_pair_id", "type": "integer", "sample": "0", "classification": "IDENTIFIER"},
+            {"name": "gene_1", "type": "string", "sample": "AKT1", "classification": "IDENTIFIER"},
+            {"name": "gene_2", "type": "string", "sample": "AMBRA1", "classification": "IDENTIFIER"},
+            {"name": "gene_pair", "type": "string", "sample": "AKT1|AMBRA1", "classification": "REDUNDANT (derivable from gene_1/gene_2)"},
+            {"name": "study_origin", "type": "string (PMID)", "sample": "33956155", "classification": "IDENTIFIER"},
+            {"name": "cell_line_origin", "type": "string", "sample": "RPE1", "classification": "IDENTIFIER"},
+            {"name": "SL_or_not", "type": "string (SL | Not SL)", "sample": "Not SL", "classification": "NOVEL"},
+            {"name": "SL_score", "type": "float", "sample": "-0.010982069570913", "classification": "NOVEL"},
+            {"name": "statistical_score", "type": "float", "sample": "0.0", "classification": "NOVEL"},
+            {"name": "SL_score_cutoff", "type": "float", "sample": "-1.0", "classification": "NOVEL"},
+            {"name": "statistical_score_cutoff", "type": "float", "sample": "0.0", "classification": "NOVEL"},
+            {"name": "horlbeck_score.SL_score", "type": "float|null", "sample": "-0.178003957676781", "classification": "NOVEL"},
+            {"name": "horlbeck_score.standard_error", "type": "float|null", "sample": "0.155416824289453", "classification": "NOVEL"},
+            {"name": "median_b_score.SL_score", "type": "float|null", "sample": "0.780423482317997", "classification": "NOVEL"},
+            {"name": "median_b_score.standard_error", "type": "float|null", "sample": "0.298489874966176", "classification": "NOVEL"},
+            {"name": "median_b_score.Z_SL_score", "type": "float|null", "sample": "2.61457271341761", "classification": "NOVEL"},
+            {"name": "median_nb_score.SL_score", "type": "float|null", "sample": "1.03596604555625", "classification": "NOVEL"},
+            {"name": "median_nb_score.standard_error", "type": "float|null", "sample": "0.298489874966176", "classification": "NOVEL"},
+            {"name": "median_nb_score.Z_SL_score", "type": "float|null", "sample": "3.47069074176687", "classification": "NOVEL"},
+            {"name": "gemini_score.SL_score_Strong", "type": "float|null", "sample": "-1.45745362193367", "classification": "NOVEL"},
+            {"name": "gemini_score.SL_score_SensitiveLethality", "type": "float|null", "sample": null, "classification": "NOVEL"},
+            {"name": "gemini_score.SL_score_SensitiveRecovery", "type": "float|null", "sample": "1.90139811755965", "classification": "NOVEL"},
+            {"name": "mageck_score.SL_score", "type": "float|null", "sample": "1.01035", "classification": "NOVEL"},
+            {"name": "mageck_score.standard_error", "type": "float|null", "sample": "0.600021731346504", "classification": "NOVEL"},
+            {"name": "mageck_score.Z_SL_score", "type": "float|null", "sample": "1.68385567924795", "classification": "NOVEL"},
+            {"name": "sgrna_derived_b_score.SL_score", "type": "float|null", "sample": "2.98126342993733", "classification": "NOVEL"},
+            {"name": "sgrna_derived_nb_score.SL_score", "type": "float|null", "sample": "2.81370247365843", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "study_origin + cell_line_origin + gene_pair_id (composite)",
+            "type": "custom",
+            "sample": "33956155_RPE1_0"
+        },
+        "identifiers": [
+            {"type": "gene_symbol", "field": "gene_1", "sample": "AKT1"},
+            {"type": "gene_symbol", "field": "gene_2", "sample": "AMBRA1"},
+            {"type": "PMID", "field": "study_origin", "sample": "33956155"},
+            {"type": "cell_line_name", "field": "cell_line_origin", "sample": "RPE1"}
+        ]
+    },
+    "license": {
+        "stated_paper": "GNU General Public License v.3.0 (per Data Availability statement)",
+        "observed_site": "GPL 3.0+ (confirmed via Figshare API: license.name='GPL 3.0+', license.url='https://www.gnu.org/licenses/gpl-3.0.html')",
+        "match": true,
+        "restrictions": ["Copyleft — derivative works must remain GPL 3.0+."]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://ndownloader.figshare.com/files/41055392"],
+        "primary_key_field": "study_origin_cell_line_origin_gene_pair_id (composite)",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": [
+            "SL_or_not", "SL_score", "statistical_score", "SL_score_cutoff", "statistical_score_cutoff",
+            "horlbeck_score.SL_score", "horlbeck_score.standard_error",
+            "median_b_score.SL_score", "median_b_score.standard_error", "median_b_score.Z_SL_score",
+            "median_nb_score.SL_score", "median_nb_score.standard_error", "median_nb_score.Z_SL_score",
+            "gemini_score.SL_score_Strong", "gemini_score.SL_score_SensitiveLethality", "gemini_score.SL_score_SensitiveRecovery",
+            "mageck_score.SL_score", "mageck_score.standard_error", "mageck_score.Z_SL_score",
+            "sgrna_derived_b_score.SL_score", "sgrna_derived_nb_score.SL_score"
+        ],
+        "redundant_fields": ["gene_pair (string concat of gene_1|gene_2, dropped from output since gene_1/gene_2 are kept separately)"]
+    },
+    "paper_vs_reality": [
+        {"claim": "11 CDKO experiments", "observed": "11 distinct study_origin (PMID) values in cdko_original_sl_results", "match": true},
+        {"claim": "22 cell lines", "observed": "22 distinct cell_line_origin values", "match": true},
+        {"claim": "16,059 SL gene pairs", "observed": "16,059 rows with SL_or_not='SL'", "match": true},
+        {"claim": "264,424 non-SL gene pairs", "observed": "264,424 rows with SL_or_not='Not SL'", "match": true},
+        {"claim": "Downloadable as SQL dump and CSV file (per Fig. 3 / Back-end database text)", "observed": "Figshare deposit (SQL_Dumps.zip) contains only SQL dump files (mysql + sqlite3) and schema files, no plain CSV export bundled; live Shiny site offers ad hoc CSV export of query results but not a stable bulk CSV endpoint", "match": false}
+    ],
+    "risks": [
+        "GPL 3.0+ copyleft may require legal review for redistribution as part of a BioThings API.",
+        "The Figshare deposit is a single static v1 snapshot (2023-08-22) with no evidence of updates since original publication; a `version.py` release string is derived from the Figshare article's `modified_date`, which will not change unless the maintainers publish a new version.",
+        "study_origin+cell_line_origin+gene_pair_id composite key required because gene_pair_id alone is not unique (verified: 276,382 distinct gene_pair_id values out of 280,483 rows in cdko_original_sl_results — some gene pairs are shared across multiple cell lines within the same study)."
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "name": "tarbase",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "TarBase v9.0 catalogues experimentally-supported microRNA (miRNA) to protein-coding-gene target interactions — a core gene-regulation relation type squarely within the BioThings sphere (gene + regulatory-RNA entity types, analogous to existing gene-gene/gene-disease association plugins like SIGNOR, ncRNADrug). Each record links a miRBase miRNA accession to an Ensembl gene ID with supporting experimental evidence counts and a computational prediction score."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings plugin or pending.api datasource covers miRNA-target interaction data — a grep of references/existing-biothings-plugins.json and references/pending-api-datasources.json for 'mirna' returns zero hits. TarBase is the only experimentally-curated miRNA-target database with a public, no-login bulk export; it introduces entirely new entity relations (miRNA-gene targeting, evidence provenance, multi-species coverage across 24 species, cell-type/tissue context) not represented anywhere else in the BioThings ecosystem."
+        },
+        "openness": {
+            "pass": true,
+            "score": 5,
+            "justification": "CC BY 4.0 (confirmed independently via Crossref license metadata: https://creativecommons.org/licenses/by/4.0/, matching the PMC article's stated license). Site explicitly states no registration/login required. Full dataset (1,847,088 rows / ~115 MB CSV) was successfully retrieved in a single unauthenticated HTTP POST request during this evaluation with no API key, no rate-limit block, and no paywall."
+        }
+    },
+    "evidence": {
+        "scope": "Experimentally-supported and computationally-predicted miRNA-to-gene target interactions, aggregated at the unique miRNA-gene-pair level with supporting-evidence counts (number of experiments, publications, and cell lines) and a microT-CDS-2023 prediction score. Underlying per-experiment records also carry sample/tissue/cell-type/experimental-method/publication metadata and genomic coordinates of the targeted region (per PMC full text), though only the pair-level aggregate is exposed via the single-shot bulk export used here.",
+        "overlap": "No overlap identified with existing BioThings sources — MyGene.info and other BioThings APIs do not carry miRNA-target relations. Ensembl gene IDs and miRBase accessions used as identifiers are standard cross-referenceable IDs already used elsewhere in BioThings (joins natively to MyGene.info via Ensembl ID).",
+        "entity_types": ["gene", "miRNA", "gene-regulation-interaction"],
+        "identifiers_found": ["Ensembl Gene ID", "miRBase mature miRNA accession (MIMAT)"],
+        "record_count": 1847088
+    },
+    "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "restrictions": []
+    },
+    "urls": {
+        "homepage": "https://dianalab.e-ce.uth.gr/tarbasev9",
+        "download": ["https://dianalab.e-ce.uth.gr/tarbasev9/api/get_all_interactions/"],
+        "api": "https://dianalab.e-ce.uth.gr/tarbasev9/api/",
+        "paper_doi": "10.1093/nar/gkad1071",
+        "pmid": "37986224",
+        "pmc": "PMC10767993"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://dianalab.e-ce.uth.gr/tarbasev9/api/",
+        "auth_required": false,
+        "rate_limits": "unknown (no throttling observed on a single ~115MB export request)",
+        "pagination": "none for get_all_interactions/ (returns full unfiltered result set in one POST); get_interactions/ (paginated, 20/page) is used by the UI table but not needed for bulk export",
+        "record_coverage": "full — get_all_interactions/ with an empty JSON filter body ({}) returns every miRNA-gene pair in the database as a CSV blob"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "The bulk export endpoint (get_all_interactions/) is a POST-only, undocumented internal API route reverse-engineered from the React SPA's compiled JS bundle, not a documented public bulk-download page or file — the paper's Data Availability section describes 'boundless local retrieval' via the web interface but does not publish a stable file URL or API contract, so this route could change without notice in future site updates.",
+        "The exported CSV is the aggregated per-miRNA-gene-pair view (gene_name, gene_id, mirna_name, mirna_id, experiments, publications, cell_lines, micro_tscore) — it does NOT include the richer per-experiment-level metadata (individual tissue/cell-type, experimental method, sample, publication PMID, genomic coordinates of the binding site) that the paper describes as part of the ~6 million total entries. Full per-experiment granularity would require crawling get_interactions/ or get_interaction_site/ per pair, which is not practical at ~1.8M pairs.",
+        "1,839,985 unique (gene_id, mirna_id) pairs out of 1,847,088 total rows (7,103 duplicate pairs, likely alternate gene_name synonyms for the same Ensembl ID) — requires deduplication in the parser."
+    ],
+    "next_actions": ["Proceed to plugin generation using the get_all_interactions/ bulk export as the data source"],
+    "evaluated_at": "2026-08-13"
+}

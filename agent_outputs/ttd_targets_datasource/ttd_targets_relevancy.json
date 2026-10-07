@@ -1,0 +1,54 @@
+{
+    "name": "ttd",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "TTD is a curated therapeutic-target database directly covering core BioThings entity types: protein/gene targets (UniProt-identified), drugs (InChIKey/InChI/SMILES-identified small molecules and biologics), and disease indications (ICD-11 coded). It also links targets to KEGG/WikiPathways pathways and provides target-drug and target-disease relations."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "An older TTD snapshot (v8.1.01, 2023, ~876K records) is already deployed as 'BioThings TTD' at https://biothings.transltr.io/ttd (drug/gene/disease entity types, UniProt/ChEMBL/DrugBank identifiers) per references/pending-api-datasources.json. A separate drug-centric plugin for a later TTD release (v10.1.01, associated with the 2026 NAR update paper DOI 10.1093/nar/gkaf1154) is already recorded in built-plugins-index.md at this same 'ttd' slug/output path (agent_outputs/ttd_datasource/ttd_plugin/), covering TTD Drug ID-keyed records from P1-02/P1-03/P1-05. That prior entry's own Notes explicitly flag that target-centric records (P1-01 target info + P1-06 target-disease indications) were NOT ingested and would be 'a separate plugin' -- which is exactly the entity type and file set this evaluation targets. Target-level fields (BioChemical Class, EC number, PDB structures, function text, per-target associated-drug list, per-target ICD-11 disease indications) are not represented in the existing deployed BioThings TTD snapshot or in the drug-centric v10.1.01 plugin, so this is genuinely novel at the target-entity level even though the underlying source (TTD) is partially represented elsewhere."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "All TTD bulk download files are served with no login, no API key, and no click-through wall from https://ttd.idrblab.cn/files/download/. License is CC BY-NC 4.0, which the evaluation-checklist explicitly treats as PASS for BioThings' non-profit academic use context (Su Lab, Scripps Research), with only a minor documented ambiguity for downstream commercial API consumers."
+        }
+    },
+    "evidence": {
+        "scope": "Curated database of therapeutic protein/nucleic-acid targets and their cognate drugs, covering target identity (UniProt), target type/druggability class (Successful/Clinical trial/Preclinical/Literature-reported/Patented/Discontinued), BioChemical Class, EC number, PDB structures, function annotation, per-target list of associated drugs with clinical development status, and per-target ICD-11-coded disease indications. Also covers target-pathway (KEGG/WikiPathway) mappings and drug-level chemical structures/cross-references (evaluated separately in the pre-existing drug-centric ttd plugin).",
+        "overlap": "Partial overlap with the already-deployed 'BioThings TTD' pending.api source (older v8.1.01 snapshot) and with the pre-existing drug-centric ttd_plugin (v10.1.01, DOI gkaf1154) recorded in built-plugins-index.md, which covers TTD Drug ID-keyed records only. This evaluation targets the target-centric slice (P1-01 target info + P1-06 target-disease indications) that neither prior source covers.",
+        "entity_types": ["target", "gene", "drug", "disease"],
+        "identifiers_found": ["UniProt", "TTD Target ID", "TTD Drug ID", "ICD-11", "EC number", "PDB"],
+        "record_count": 4298
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only"]
+    },
+    "urls": {
+        "homepage": "https://ttd.idrblab.cn/",
+        "download": [
+            "https://ttd.idrblab.cn/files/download/P1-01-TTD_target_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-06-Target_disease.txt"
+        ],
+        "api": "No public REST/GraphQL API documented; bulk flat-file downloads only",
+        "paper_doi": "10.1093/nar/gkad751",
+        "pmid": "37713619",
+        "pmc": "PMC10767903"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "full (bulk download files cover the complete current TTD release)"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Data volume/counts in the live v10.1.01 download files (4,298 targets) exceed the paper's reported 2024 snapshot (3,730 targets) -- TTD is continuously updated between paper publication and the live site, so the paper's counts are a lower bound, not the current total (flagged as MISMATCH in inspection).",
+        "IMPORTANT NAMING COLLISION: built-plugins-index.md already contains a '### ttd' entry (generated 2026-05-28) for a DIFFERENT paper (TTD 2026 update, DOI 10.1093/nar/gkaf1154) at the identical output path agent_outputs/ttd_datasource/ttd_plugin/. That prior plugin is drug-centric (TTD Drug ID keyed, from P1-02/P1-03/P1-05). This evaluation and its resulting plugin are for the 2024 Database Issue paper (DOI 10.1093/nar/gkad751) and are target-centric (P1-01/P1-06), which the prior entry's own Notes flag as an intentionally separate, un-ingested slice. Both entries use the same 'ttd' slug -- downstream consolidation must reconcile or rename one of the two before merging pipeline_state.json.",
+        "CC BY-NC restricts commercial redistribution; acceptable for BioThings' non-profit research use per evaluation-checklist guidance, but flag for downstream commercial API consumers."
+    ],
+    "next_actions": ["Proceed to plugin generation (target-centric slice: P1-01 + P1-06)"],
+    "evaluated_at": "2026-08-13"
+}

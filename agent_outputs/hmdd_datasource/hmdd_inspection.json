@@ -1,0 +1,61 @@
+{
+    "name": "hmdd",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "http://www.cuilab.cn/static/hmdd3/data/alldata_v4.txt",
+            "filename": "alldata_v4.txt",
+            "format": "TSV (5 columns, header row)",
+            "access": "public",
+            "size_mb": 12.25
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "code", "type": "string", "sample": "target gene", "classification": "NOVEL"},
+            {"name": "PMID", "type": "integer (string in file)", "sample": "36948479", "classification": "NOVEL"},
+            {"name": "miRNA", "type": "string", "sample": "hsa-mir-29b", "classification": "IDENTIFIER"},
+            {"name": "disease", "type": "string", "sample": "Zika Virus Infection", "classification": "NOVEL"},
+            {"name": "description", "type": "string (free text, up to ~3500 chars)", "sample": "Zika virus NS1 suppresses VE-cadherin via hsa-miR-29b-3p/DNMT3b/MMP-9 pathway in human brain microvascular endothelial cells.", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "composite: miRNA + disease (slugified)",
+            "type": "custom",
+            "sample": "hsa-mir-21_breast_neoplasms"
+        },
+        "identifiers": [
+            {"type": "miRNA name (HMDD/miRBase-style nomenclature)", "field": "miRNA", "sample": "hsa-mir-21"},
+            {"type": "disease name (MeSH-descriptor-style free text)", "field": "disease", "sample": "Breast Neoplasms"},
+            {"type": "PMID", "field": "PMID", "sample": "36948479"}
+        ]
+    },
+    "license": {
+        "stated_paper": "Creative Commons Attribution-NonCommercial License",
+        "observed_site": "\"HMDD is free only for academic usage. For commercial usage, please Contact Dr. Qinghua Cui...\" -- no formal CC badge/link displayed on the live site itself",
+        "match": true,
+        "restrictions": ["non-commercial / academic use only"]
+    },
+    "plugin_inputs": {
+        "data_url": ["http://www.cuilab.cn/static/hmdd3/data/alldata_v4.txt"],
+        "primary_key_field": "composite of miRNA + disease",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["code (evidence category)", "PMID", "disease", "description"],
+        "redundant_fields": []
+    },
+    "paper_vs_reality": [
+        {"claim": "53,530 miRNA-disease association entries", "observed": "53,553 rows in alldata_v4.txt (header excluded)", "match": true},
+        {"claim": "1,817 human miRNA genes + 79 virus-derived miRNAs", "observed": "1,896 unique values in the miRNA column overall (hsa- + virus- prefixes combined; consistent with 1,817 + 79 = 1,896)", "match": true},
+        {"claim": "2,360 human diseases", "observed": "2,379 unique values in the disease column (small drift consistent with continuous post-publication updates; Last-Modified 2023-07-11 vs. paper acceptance 2023-08-19)", "match": true},
+        {"claim": "37,090 source papers", "observed": "37,022 unique PMIDs in alldata_v4.txt", "match": true},
+        {"claim": "8 evidence categories, 23 evidence codes", "observed": "22 distinct 'code' values found in alldata_v4.txt, grouping cleanly into the 8 stated categories (circulation[6 codes]/genetics[5]/target[3]/tissue[3]/exosome/epigenetics/virus_miRNA/other/therapeutic target)", "match": true},
+        {"claim": "Data Availability: online/open access at http://www.cuilab.cn/hmdd, Download page", "observed": "Confirmed -- homepage HTML lists direct static file hrefs under /static/hmdd3/data/, including alldata_v4.txt and alldata_v4.xlsx, no login required", "match": true},
+        {"claim": "License: Creative Commons Attribution-NonCommercial License (paper)", "observed": "Site displays plain-text 'free only for academic usage' notice rather than a CC BY-NC badge/link -- non-commercial restriction confirmed on both, but presentation differs (MISMATCH in form, not substance)", "match": false}
+    ],
+    "risks": [
+        "No public API -- bulk TSV is the only ingestion path; no live-update crawl possible.",
+        "Disease names are free text, not IDs -- no DOID/MONDO/MeSH code column present in this bulk file, so cross-referencing to mydisease.info requires future string-normalization work, not done here.",
+        "Non-commercial license restriction should be flagged to downstream API consumers, consistent with other NAR plugins carrying the same restriction (chemprob, molbic, persade, ttd)."
+    ]
+}

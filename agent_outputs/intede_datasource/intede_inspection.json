@@ -1,0 +1,116 @@
+{
+    "name": "intede",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P2-04-1-INTEDE_DME_Cross_Matching_ID.txt",
+            "filename": "P2-04-1-INTEDE_DME_Cross_Matching_ID.txt",
+            "format": "TXT (key-value block, tab-delimited)",
+            "access": "public",
+            "size_mb": 0.17
+        },
+        {
+            "url": "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-02-1-INTEDE_XEOTIC_DME_Interaction.txt",
+            "filename": "P1-02-1-INTEDE_XEOTIC_DME_Interaction.txt",
+            "format": "TXT (key-value block, tab-delimited)",
+            "access": "public",
+            "size_mb": 19.27
+        },
+        {
+            "url": "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-01-1-INTEDE_MICBIO_DME_Interaction.csv",
+            "filename": "P1-01-1-INTEDE_MICBIO_DME_Interaction.csv",
+            "format": "CSV (standard header row)",
+            "access": "public",
+            "size_mb": 1.98
+        },
+        {
+            "url": "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-1-INTEDE_HOSPPI_DME_Interaction_TF&Oligomerization&ncRNA&Histone_Modification.txt",
+            "filename": "P1-03-1-INTEDE_HOSPPI_DME_Interaction_TF&Oligomerization&ncRNA&Histone_Modification.txt",
+            "format": "TXT (key-value block, tab-delimited)",
+            "access": "public",
+            "size_mb": 1.15
+        },
+        {
+            "url": "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-2-INTEDE_HOSPPI_DME_Interaction_DNA_Methylation.txt",
+            "filename": "P1-03-2-INTEDE_HOSPPI_DME_Interaction_DNA_Methylation.txt",
+            "format": "TXT (key-value block, tab-delimited)",
+            "access": "public",
+            "size_mb": 3.63
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "DME___ID", "type": "string", "sample": "DME0001", "classification": "IDENTIFIER"},
+            {"name": "DME_NAME", "type": "string", "sample": "Cytochrome P450 3A4 (CYP3A4)", "classification": "NOVEL"},
+            {"name": "SPESNAME", "type": "string", "sample": "Homo sapiens", "classification": "NOVEL"},
+            {"name": "UNIPROID", "type": "string", "sample": "CP3A4_HUMAN", "classification": "IDENTIFIER"},
+            {"name": "GENE__ID", "type": "string", "sample": "1576", "classification": "IDENTIFIER"},
+            {"name": "ECNUMBER", "type": "string", "sample": "1.14.13.32", "classification": "IDENTIFIER"},
+            {"name": "XEOTICID", "type": "string", "sample": "XEO00001", "classification": "IDENTIFIER"},
+            {"name": "XEO_NAME", "type": "string", "sample": "Dimethyl sulfoxide", "classification": "NOVEL"},
+            {"name": "XEO_TYPE", "type": "string", "sample": "Pharmaceutical Agent(s)", "classification": "NOVEL"},
+            {"name": "XEO_CLAS", "type": "string", "sample": "Approved/Marketed Drug", "classification": "NOVEL"},
+            {"name": "DESCRIPT", "type": "string", "sample": "Dimethyl sulfoxide up-regulates the expression of DME CYP3A4", "classification": "NOVEL"},
+            {"name": "GENEFORM", "type": "string", "sample": "mRNA", "classification": "NOVEL"},
+            {"name": "MOACRIVE", "type": "string", "sample": "Induction", "classification": "NOVEL"},
+            {"name": "Drug_ID", "type": "string", "sample": "DR0881", "classification": "IDENTIFIER"},
+            {"name": "Drug_Name", "type": "string", "sample": "Irinotecan hydrochloride", "classification": "NOVEL"},
+            {"name": "Interacted_species_name", "type": "string", "sample": "Bacteroides thetaiotaomicron (CFB bacteria)", "classification": "NOVEL"},
+            {"name": "Location", "type": "string", "sample": "Gut", "classification": "NOVEL"},
+            {"name": "Result", "type": "string", "sample": "Human Cytochrome P450 3A4 (CYP3A4) metabolizes the drug Irinotecan hydrochloride, and Bacteroides thetaiotaomicron further metabolizes its metabolite (SN-38G)...", "classification": "NOVEL"},
+            {"name": "UNIPROID (HOSPPI partner)", "type": "string", "sample": "EHMT1_HUMAN", "classification": "NOVEL"},
+            {"name": "PROTNAME", "type": "string", "sample": "Histone methyltransferases (HMTs)", "classification": "NOVEL"},
+            {"name": "HPPI_DIS", "type": "string", "sample": "Liver cancer [ICD-11: 2C12]", "classification": "NOVEL"},
+            {"name": "MOFCLASS", "type": "string", "sample": "Histone modification", "classification": "NOVEL"},
+            {"name": "MOFDETAI", "type": "string", "sample": "Histone hypermethylation", "classification": "NOVEL"},
+            {"name": "ICD_CODE", "type": "string", "sample": "2A00.11", "classification": "IDENTIFIER"},
+            {"name": "DIS_NAME", "type": "string", "sample": "Brain neuroblastoma", "classification": "NOVEL"},
+            {"name": "C_H_DNAM/C_H_DELB/C_H_PVAL", "type": "string/float", "sample": "Moderate hypomethylation / -2.04E-01 / 1.71E-06", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "DME___ID",
+            "type": "custom (INTEDE internal DME identifier)",
+            "sample": "DME0001"
+        },
+        "identifiers": [
+            {"type": "UniProt", "field": "UNIPROID", "sample": "CP3A4_HUMAN"},
+            {"type": "NCBI Gene ID", "field": "GENE__ID", "sample": "1576"},
+            {"type": "EC Number", "field": "ECNUMBER", "sample": "1.14.13.32"},
+            {"type": "ICD-11", "field": "ICD_CODE", "sample": "2A00.11"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0",
+        "observed_site": "No explicit license text found on intede.idrblab.net (plain copyright/contact footer only)",
+        "match": false,
+        "restrictions": ["Non-commercial use only per paper"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P2-04-1-INTEDE_DME_Cross_Matching_ID.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-02-1-INTEDE_XEOTIC_DME_Interaction.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-01-1-INTEDE_MICBIO_DME_Interaction.csv",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-1-INTEDE_HOSPPI_DME_Interaction_TF&Oligomerization&ncRNA&Histone_Modification.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-2-INTEDE_HOSPPI_DME_Interaction_DNA_Methylation.txt"
+        ],
+        "primary_key_field": "DME___ID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["xenobiotic_interactions (modulation of DME by drugs/xenobiotics)", "microbiome_interactions (gut microbiome further metabolizing DME-generated metabolites)", "host_protein_interactions (TF/oligomerization/ncRNA/histone regulation of DME)", "methylation_interactions (disease-associated DME promoter methylation)"],
+        "redundant_fields": ["DME_NAME", "SPESNAME (basic gene/species identity partially present in MyGene.info, but not carried alone — kept for context)"]
+    },
+    "paper_vs_reality": [
+        {"claim": "4,701 drugs total in INTEDE 2.0", "observed": "Bulk drug reference files not ingested in this v1 scope (structure files P2-02-x contain ~1,890 unique drug IDs, a legacy subset); full 4,701-drug roadmap catalog is web-search-only", "match": false},
+        {"claim": "1,088 drug-metabolizing enzymes (DMEs)", "observed": "889 DMEs in the bulk cross-matching xref file; up to 500 DMEs appear in the XEOTIC interaction file — smaller than paper's reported 1,088, consistent with the bulk files being the pre-2024-update legacy dataset", "match": false},
+        {"claim": "22,165 metabolic reactions / 18,882 drug metabolites / 11,055 drug-metabolism relationships (the 2024 'roadmap' novelty)", "observed": "No bulk-downloadable file contains structured reaction or metabolite records; this content is exposed only via the JS-driven /search/drug-metabolism-roadmap, /search/metabolic-reaction, /search/drug-metabolite pages with no static export found", "match": false},
+        {"claim": "Freely accessible without login (Data Availability statement)", "observed": "Confirmed — all 5 selected bulk files return HTTP 200 with real content-type (text/plain, text/csv), no auth required", "match": true},
+        {"claim": "CC BY-NC 4.0 license", "observed": "Confirmed in paper text; not restated on the live site itself", "match": true}
+    ],
+    "risks": [
+        "The paper's headline 'metabolic roadmap' (reactions/metabolites, the actual novelty of the 2024 update vs. the original 2018 INTEDE) is NOT present in any bulk download file discovered — only reachable via the site's search UI, which returns JS-rendered results not suited for a manifest-based bulk-download plugin per this generator's ingestion-strategy policy.",
+        "Bulk files are dated 2020.08.15 internally (version strings 1.8.1/1.9.1), predating the 2024 update by ~4 years — entity counts are correspondingly smaller than the paper's reported figures (889 vs. 1,088 DMEs).",
+        "This plugin therefore ingests the legacy DME-regulatory-interactome content (still novel and BioThings-relevant) rather than the paper's specific new-in-2024 contribution; flagged for future re-ingestion if/when the roadmap data becomes bulk-exportable.",
+        "Drug_ID in the MICBIO file (e.g. DR0881) is an INTEDE-internal ID not cross-referenced to InChIKey/PubChem within the 5 files ingested in this scope (that mapping lives in P2-02-3/P2-02-4, excluded from v1 for tractability)."
+    ]
+}

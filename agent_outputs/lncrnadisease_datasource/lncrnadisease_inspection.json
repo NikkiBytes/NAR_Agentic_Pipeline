@@ -1,0 +1,117 @@
+{
+    "name": "lncrnadisease",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/website_alldata.tsv",
+            "filename": "website_alldata.tsv",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 13.6
+        },
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/website_simple_data.csv",
+            "filename": "website_simple_data.csv",
+            "format": "CSV",
+            "access": "public",
+            "size_mb": 1.5
+        },
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/website_causal_data.tsv",
+            "filename": "website_causal_data.tsv",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 7.4,
+            "excluded_reason": "Strict subset of website_alldata.tsv filtered to Causality=Yes rows; alldata.tsv already carries the Causality column so this file is redundant."
+        },
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/lncRNA.xlsx",
+            "filename": "lncRNA.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 8.9,
+            "excluded_reason": "208,275 rows with no Causality/confidence columns — schema and scale do not match the v3.0 paper (25,440 entries); appears to be a legacy cumulative dump predating v3.0 restructuring. Not used to avoid ingesting stale/superseded records."
+        },
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/circRNA.xlsx",
+            "filename": "circRNA.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 1.2,
+            "excluded_reason": "Same legacy-schema issue as lncRNA.xlsx (13,075 rows, no Causality column)."
+        },
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/all ncRNA-disease information.xlsx",
+            "filename": "all ncRNA-disease information.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 8.1,
+            "excluded_reason": "206,963 rows, no Causality/confidence columns, includes 'Prediction Method' style entries — legacy/predicted superset inconsistent with the current v3.0 experimentally-supported dataset described in the paper."
+        },
+        {
+            "url": "http://www.rnanut.net/lncrnadisease/static/download/predicted lncRNA-disease information.xlsx",
+            "filename": "predicted lncRNA-disease information.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 6.7,
+            "excluded_reason": "195,395 rows of computationally predicted (not experimentally supported) associations — out of scope; paper's headline dataset (25,440 entries) is explicitly experimentally supported only."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "Database_ID", "type": "string", "sample": "LDA0000001", "classification": "IDENTIFIER"},
+            {"name": "ncRNA Symbol", "type": "string", "sample": "ARHGAP5-AS1", "classification": "NOVEL"},
+            {"name": "ncRNA Category", "type": "string", "sample": "LncRNA", "classification": "NOVEL"},
+            {"name": "Species", "type": "string", "sample": "Homo sapiens", "classification": "NOVEL"},
+            {"name": "Disease Name", "type": "string", "sample": "Carcinoma, Hepatocellular", "classification": "NOVEL"},
+            {"name": "Sample", "type": "string", "sample": "HCC cells and tissues", "classification": "NOVEL"},
+            {"name": "Dysfunction Pattern", "type": "string", "sample": "Epigenetics( m6A-modified)", "classification": "NOVEL"},
+            {"name": "Validated Method", "type": "string", "sample": "qRT-PCR", "classification": "NOVEL"},
+            {"name": "Description", "type": "string", "sample": "Among these lncRNAs, we found that ARHGAP5-AS1 is the lncRNA with the highest levels of m6A modification...", "classification": "NOVEL"},
+            {"name": "Clinical Application", "type": "string", "sample": "", "classification": "NOVEL"},
+            {"name": "Causality", "type": "string", "sample": "Yes", "classification": "NOVEL"},
+            {"name": "Causal Description", "type": "string", "sample": "ARHGAP5-AS1 remarkably promotes malignant behaviours of HCC cells ex vivo and in vivo.", "classification": "NOVEL"},
+            {"name": "PubMed ID", "type": "string", "sample": "36354136", "classification": "IDENTIFIER"}
+        ],
+        "primary_key": {
+            "field": "Database_ID",
+            "type": "custom",
+            "sample": "LDA0000001"
+        },
+        "identifiers": [
+            {"type": "gene_symbol_like", "field": "ncRNA Symbol", "sample": "HOTTIP"},
+            {"type": "PubMed ID", "field": "PubMed ID", "sample": "33475442"},
+            {"type": "internal_accession", "field": "Database_ID", "sample": "LDA0000001"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0",
+        "observed_site": "Generic copyright notice only ('Copyright 2013-2023. All rights reserved.'), no CC badge or explicit license text on the site itself",
+        "match": false,
+        "restrictions": ["Non-commercial use only, per article license"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "http://www.rnanut.net/lncrnadisease/static/download/website_simple_data.csv",
+            "http://www.rnanut.net/lncrnadisease/static/download/website_alldata.tsv"
+        ],
+        "primary_key_field": "Database_ID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["ncRNA Symbol", "ncRNA Category", "Species", "Disease Name", "Sample", "Dysfunction Pattern", "Validated Method", "Description", "Clinical Application", "Causality", "Causal Description", "PubMed ID"],
+        "redundant_fields": []
+    },
+    "paper_vs_reality": [
+        {"claim": "25440 experimentally supported entries (15721 general + 9719 causal)", "observed": "25,788 rows in website_alldata.tsv (15,639 general/No + 149 blank + 9,682 causal/Yes... approx.); 22,786 unique Database_IDs in website_simple_data.csv", "match": false},
+        {"claim": "6066 lncRNAs, 10732 circRNAs, 566 diseases", "observed": "5,540 unique lncRNA symbols, 11,309 unique circRNA symbols, 566 unique disease names in website_alldata.tsv", "match": false},
+        {"claim": "Disease names mapped to Disease Ontology (DO) and MeSH", "observed": "Downloadable files contain only free-text Disease Name strings, no DO/MeSH ID columns", "match": false},
+        {"claim": "Each pair assigned a confidence score (0.75-1.0)", "observed": "No confidence-score column present in any downloadable file", "match": false},
+        {"claim": "CC BY-NC 4.0 (article license)", "observed": "Site footer shows only generic copyright notice, no license badge", "match": false}
+    ],
+    "risks": [
+        "Post-publication data drift: current live download counts differ from the published paper counts, though disease count (566) matches exactly, confirming file identity is correct.",
+        "No machine-readable disease ontology codes in the bulk files despite the paper's DO/MeSH mapping claim — downstream consumers will need free-text disease name matching if ontology normalization is required later.",
+        "Confidence score described in the paper is not exposed in any bulk download file."
+    ]
+}

@@ -1,0 +1,62 @@
+{
+    "name": "intede",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Covers drug-metabolizing enzymes (DME/gene-protein entities with UniProt/Gene ID/EC number), xenobiotic/drug modulators of DME activity, gut-microbiome-DME interactions, host-protein (TF/ncRNA/histone) regulation of DMEs, and disease-associated DME methylation (ICD-coded). Directly aligned with core BioThings entity types: gene/protein, chemical/drug, disease."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API (MyGene, MyChem, MyDisease, MyVariant) or plugin in references/existing-biothings-plugins.json / pending-api-datasources.json covers the DME regulatory interactome (xenobiotic induction/inhibition of specific enzymes, microbiome-mediated drug metabolism, host-protein/epigenetic regulation of DME expression). This is a distinct relation type not represented elsewhere."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "All bulk files are served as static files with no login/registration/paywall (HTTP 200, Content-Type text/plain or text/csv, Access-Control-Allow-Origin: *). License is CC BY-NC 4.0 per the NAR 2024 paper (non-commercial restriction; not displayed explicitly on the live site itself, which is a minor discrepancy)."
+        }
+    },
+    "evidence": {
+        "scope": "Drug-Metabolizing Enzyme (DME) interactome: (1) xenobiotic/drug modulation of DME expression or activity (induction/inhibition), (2) gut-microbiome species that further metabolize DME-generated drug metabolites, (3) host-protein interactions regulating DMEs via transcription factors, oligomerization, non-coding RNA, and histone modification, (4) disease-associated DME promoter methylation (case vs. health/adjacent/other tissue, ICD-11 coded).",
+        "overlap": "MyGene.info has basic gene/protein records for many DME genes (e.g. CYP3A4) but does not carry this regulatory-interaction layer. MyChem.info covers drug structures/properties but not drug-as-DME-modulator relationships. No overlap found for the microbiome-DME or host-protein-DME interaction layers.",
+        "entity_types": ["gene", "protein", "chemical/drug", "disease", "microbiome_species"],
+        "identifiers_found": ["UniProt", "NCBI Gene ID", "EC Number", "PubChem CID", "TTD Drug ID", "InChIKey", "CAS Number", "ChEBI ID", "ICD-11"],
+        "record_count": 889
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only (stated in the NAR 2024 paper; not explicitly restated on the live intede.idrblab.net site, which only shows a plain copyright/contact footer)"]
+    },
+    "urls": {
+        "homepage": "http://idrblab.org/intede/",
+        "download": [
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-01-1-INTEDE_MICBIO_DME_Interaction.csv",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-02-1-INTEDE_XEOTIC_DME_Interaction.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-1-INTEDE_HOSPPI_DME_Interaction_TF&Oligomerization&ncRNA&Histone_Modification.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-2-INTEDE_HOSPPI_DME_Interaction_DNA_Methylation.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P2-04-1-INTEDE_DME_Cross_Matching_ID.txt"
+        ],
+        "api": "No public REST/GraphQL API found. Site is a Drupal 8 web app (intede.idrblab.net) with search forms only (/search/dme-xeotic-search, /search/dme-micbio-search, /search/dme-hosppi-search, /search/drug-metabolism-roadmap, /search/drug-metabolite, /search/metabolic-reaction) — no documented programmatic endpoint.",
+        "paper_doi": "10.1093/nar/gkad1013",
+        "pmid": "37930837",
+        "pmc": "PMC10767827"
+    },
+    "api_info": {
+        "exists": false,
+        "base_url": null,
+        "auth_required": false,
+        "rate_limits": "unknown",
+        "pagination": "n/a",
+        "record_coverage": "n/a — no API; bulk download only"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "MISMATCH: The NAR 2024 paper's headline 'metabolic roadmap' content (22,165 metabolic reactions, 18,882 drug metabolites, 11,055 drug-metabolism relationships, 4,701 drugs) is exposed only via searchable web pages (/search/drug-metabolism-roadmap, /search/metabolic-reaction, /search/drug-metabolite) with no bulk-download files found for it.",
+        "The only bulk-downloadable files (P1-xx, P2-xx under /full-data-download) are internally dated 'Version 1.8.1/1.9.1 (2020.08.15)' — this is the legacy INTEDE 1.0-era DME-interactome data, not the 2024-updated roadmap content.",
+        "Drug identifiers in the MICBIO interaction file (Drug_ID, e.g. DR0881) are INTEDE-internal IDs; cross-referencing to InChIKey/PubChem requires joining against the (not-ingested-in-v1) drug structure files (P2-02-3/P2-02-4).",
+        "License is stated as CC BY-NC 4.0 in the paper but not explicitly displayed on the live site — non-commercial restriction should be verified before any commercial redistribution."
+    ],
+    "next_actions": ["Proceed to Stage 2 plugin generation scoped to the DME-interactome bulk files (MICBIO/XEOTIC/HOSPPI + DME cross-matching xref); flag the roadmap/reaction/metabolite data gap for a future re-ingestion once/if it becomes bulk-downloadable."],
+    "evaluated_at": "2026-08-13"
+}

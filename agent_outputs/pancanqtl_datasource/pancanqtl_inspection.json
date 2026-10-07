@@ -1,0 +1,106 @@
+{
+    "name": "pancanqtl",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://hanlaboratory.com/static/PancanQTLv2/Download/Fine-mapping/{CANCER}.cis.susie.txt.gz",
+            "filename": "{CANCER}.cis.susie.txt.gz",
+            "format": "TSV (gzipped)",
+            "access": "public",
+            "size_mb": "~0.03-1.3 per cancer type (25 cancer types with sample size > 100; 8 excluded: ACC, CHOL, DLBC, KICH, MESO, READ, UCS, UVM)"
+        },
+        {
+            "url": "https://hanlaboratory.com/static/PancanQTLv2/Download/eQTL-GWAS/{CANCER}.eQTL-GWAS.xls.gz",
+            "filename": "{CANCER}.eQTL-GWAS.xls.gz",
+            "format": "TSV (gzipped, .xls extension is a misnomer -- content is plain tab-delimited text, not a binary spreadsheet)",
+            "access": "public",
+            "size_mb": "~0.05 (DLBC) to ~121 (BRCA) per cancer type, all 33 cancer types available"
+        },
+        {
+            "url": "https://hanlaboratory.com/static/PancanQTLv2/Download/Drug-eQTL/{CANCER}.drug-eQTL.xls.gz",
+            "filename": "{CANCER}.drug-eQTL.xls.gz",
+            "format": "TSV (gzipped, .xls extension misnomer)",
+            "access": "public",
+            "size_mb": "~0.003 (LAML) to ~2.5 (BRCA) per cancer type, all 33 cancer types available"
+        },
+        {
+            "url": "https://hanlaboratory.com/static/PancanQTLv2/Download/Immune-eQTL/{CANCER}.immune-eQTL.xls.gz",
+            "filename": "{CANCER}.immune-eQTL.xls.gz",
+            "format": "TSV (gzipped, .xls extension misnomer)",
+            "access": "public",
+            "size_mb": "~0.001 (LAML, 0 rows) to ~0.54 (BRCA) per cancer type, all 33 cancer types available"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "Cancer_type / CancerType / cancer_type", "type": "string", "sample": "BRCA", "classification": "IDENTIFIER"},
+            {"name": "Gene_name / eGene / gene", "type": "string", "sample": "RPL9", "classification": "NOVEL"},
+            {"name": "RS_id / eQTL_SNP / SNP", "type": "string", "sample": "rs2608828", "classification": "IDENTIFIER"},
+            {"name": "Variant", "type": "string", "sample": "4_39453730_C_G", "classification": "NOVEL"},
+            {"name": "Chr / chr", "type": "string", "sample": "4", "classification": "REDUNDANT"},
+            {"name": "Position / position / eQTL_SNP_pos", "type": "string/int", "sample": "39453730", "classification": "REDUNDANT"},
+            {"name": "Credible_Set", "type": "string", "sample": "BRCA_RPL9_cis_L1", "classification": "NOVEL"},
+            {"name": "Credible_Set_Size", "type": "int", "sample": 1, "classification": "NOVEL"},
+            {"name": "PIP", "type": "float", "sample": 0.9999999655848, "classification": "NOVEL"},
+            {"name": "GWAS_SNP", "type": "string", "sample": "rs4975018", "classification": "IDENTIFIER"},
+            {"name": "GWAS_SNP_pos", "type": "string", "sample": "4:39476926", "classification": "REDUNDANT"},
+            {"name": "R2", "type": "float", "sample": 0.53998, "classification": "NOVEL"},
+            {"name": "RISK_ALLELE", "type": "string", "sample": "A", "classification": "NOVEL"},
+            {"name": "OR_or_BETA", "type": "float", "sample": 0.6, "classification": "NOVEL"},
+            {"name": "P_value", "type": "float", "sample": 2e-19, "classification": "NOVEL"},
+            {"name": "Trait_or_Disease", "type": "string", "sample": "Beta-klotho level in Chronic kidney disease with hypertension and no diabetes (19557_3)", "classification": "NOVEL"},
+            {"name": "PUBMEDID", "type": "string", "sample": "35870639", "classification": "IDENTIFIER"},
+            {"name": "alleles", "type": "string", "sample": "A/G", "classification": "NOVEL"},
+            {"name": "drug", "type": "string", "sample": "QL-VIII-58", "classification": "NOVEL"},
+            {"name": "Beta", "type": "float", "sample": 0.0636181484128648, "classification": "NOVEL"},
+            {"name": "SE", "type": "float", "sample": 0.0134520024149884, "classification": "NOVEL"},
+            {"name": "FDR", "type": "float", "sample": 0.0326453236217711, "classification": "NOVEL"},
+            {"name": "Drug_source", "type": "string", "sample": "cancerRxTissue", "classification": "NOVEL"},
+            {"name": "Cell", "type": "string", "sample": "Dendritic_Cells_Activated", "classification": "NOVEL"},
+            {"name": "Immune_cell_source", "type": "string", "sample": "CIBERSORT", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "composite (module-prefixed, built from cancer_type + SNP + gene + module-specific disambiguator)",
+            "type": "custom",
+            "sample": "finemap:BRCA_RPL9_cis_L1:rs2608828"
+        },
+        "identifiers": [
+            {"type": "dbSNP RS ID", "field": "RS_id / eQTL_SNP / GWAS_SNP / SNP", "sample": "rs2608828"},
+            {"type": "gene_symbol", "field": "Gene_name / eGene / gene", "sample": "RPL9"},
+            {"type": "PubMed ID", "field": "PUBMEDID", "sample": "35870639"},
+            {"type": "TCGA_cancer_type", "field": "Cancer_type / CancerType / cancer_type", "sample": "BRCA"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0",
+        "observed_site": "No independent license statement found on hanlaboratory.com/PancanQTLv2/ site pages checked (homepage, download.html); relying on paper's ali:license_ref (CC BY-NC 4.0)",
+        "match": true,
+        "restrictions": ["non-commercial use only"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/Fine-mapping/<25 cancer type files>.cis.susie.txt.gz",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/eQTL-GWAS/<33 cancer type files>.eQTL-GWAS.xls.gz",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/Drug-eQTL/<33 cancer type files>.drug-eQTL.xls.gz",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/Immune-eQTL/<33 cancer type files>.immune-eQTL.xls.gz"
+        ],
+        "primary_key_field": "composite _id per row (module + cancer_type + SNP + gene + module-specific field)",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["Credible_Set", "Credible_Set_Size", "PIP", "R2", "RISK_ALLELE", "OR_or_BETA", "P_value", "Trait_or_Disease", "drug", "Beta", "SE", "FDR", "Drug_source", "Cell", "Immune_cell_source", "Variant"],
+        "redundant_fields": ["Chr/chr", "Position/position (basic genomic coordinates, low novelty value on their own)"]
+    },
+    "paper_vs_reality": [
+        {"claim": "58,747 fine-mapped eQTL credible sets across 25 cancer types", "observed": "ESCA sampled file: 745 unique Credible_Set values (17,263 SNP-level rows), matching Table 1 exactly", "match": true},
+        {"claim": "84,592,135 total eQTL-GWAS linkage associations", "observed": "DLBC sampled file: 8,053 data rows, matching Table 1 (DLBC GWAS-related eQTLs = 8053) exactly", "match": true},
+        {"claim": "659,516 drug-related eQTL associations total (321,954 DrVAEN + 337,562 cancerRxTissue)", "observed": "LAML sampled file: 110 data rows, matching Table 1 (LAML drug-related eQTLs = 110) exactly", "match": true},
+        {"claim": "146,948 immune-related eQTL associations total", "observed": "GBM sampled file: 37 data rows, matching Table 1 (GBM immune-related eQTLs = 37) exactly", "match": true},
+        {"claim": "Data freely available without registration", "observed": "Confirmed: all download.html links resolve directly to gzip files with no auth wall", "match": true}
+    ],
+    "risks": [
+        "eQTL-GWAS module totals 84.6M rows across 33 cancer types (BRCA alone is 5.9M rows / 121MB gzipped) -- full-scale production ingestion is a large-volume job; this session's biothings-cli validation used small representative cancer-type files only (see README.md)",
+        ".xls file extension is misleading -- files are plain TSV text, not binary Excel; parser must NOT use an Excel reader",
+        "No independent site-level license page; relying solely on the paper's license statement"
+    ]
+}

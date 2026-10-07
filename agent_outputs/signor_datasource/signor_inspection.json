@@ -1,0 +1,114 @@
+{
+    "name": "signor",
+    "status": "VERIFIED",
+    "inspection_date": "2026-05-14",
+    "download_files": [
+        {
+            "url": "https://signor.uniroma2.it/getData.php?organism=9606",
+            "filename": "signor_human_interactions.tsv",
+            "format": "TSV (no header, 28 columns + trailing empty col = 29 fields per row)",
+            "access": "public",
+            "size_mb": 19.5,
+            "row_count": 42441,
+            "notes": "Returns all human (Homo sapiens, taxid 9606) interactions. No authentication required. Column names derived from official release file header (getLatestRelease.php). Adds SIGNOR_SCORE at position 27 (not in release file). Tab-separated, UTF-8."
+        },
+        {
+            "url": "https://signor.uniroma2.it/releases/getLatestRelease.php",
+            "filename": "Apr2026_release.txt",
+            "format": "TSV (with header row, 27 named columns, values quoted when containing spaces/commas)",
+            "access": "public",
+            "size_mb": 19.4,
+            "row_count": 42338,
+            "notes": "Official quarterly release file covering ALL organisms. Redirects to the latest release (currently /releases/Apr2026_release.txt). Has official column header row. Lacks SIGNOR_SCORE column. Use getData.php?organism=9606 for human-only with SIGNOR_SCORE."
+        },
+        {
+            "url": "https://signor.uniroma2.it/PhosphoSIGNOR/apis/v1/index.php?role=all&format=tsv&header=yes",
+            "filename": "phosphosignor_all.tsv",
+            "format": "TSV (9-column header row included)",
+            "access": "public",
+            "size_mb": 2.6,
+            "row_count": 26831,
+            "notes": "PhosphoSIGNOR-only endpoint (phosphorylation and dephosphorylation interactions). Paired-row format: each interaction appears twice (enzyme→phosphosite + phosphosite→substrate). 26,830 rows / 2 = ~13,415 unique interaction pairs. Columns: entityA, entityA_name, mechanism, effect, entityB, entityB_name, pmid, signor_id, signor-score. Already covered by prior v1.1 plugin."
+        }
+    ],
+    "schema": {
+        "source": "getData.php?organism=9606 — column names from official Apr2026_release.txt header",
+        "fields": [
+            {"col": 0, "name": "ENTITYA", "type": "string", "sample": "CDK9", "classification": "NOVEL"},
+            {"col": 1, "name": "TYPEA", "type": "string", "sample": "protein", "values": ["protein", "proteinfamily", "complex", "smallmolecule", "chemical", "stimulus", "phenotype"], "classification": "NOVEL"},
+            {"col": 2, "name": "IDA", "type": "string", "sample": "P50750", "classification": "IDENTIFIER", "notes": "UniProt accession for proteins; CHEBI:* for small molecules/chemicals; SIGNOR-C* for complexes; SIGNOR-PF* for protein families; SIGNOR-ST* for stimuli; SIGNOR-PH* for phenotypes"},
+            {"col": 3, "name": "DATABASEA", "type": "string", "sample": "UNIPROT", "values": ["UNIPROT", "ChEBI", "SIGNOR"], "classification": "IDENTIFIER"},
+            {"col": 4, "name": "ENTITYB", "type": "string", "sample": "POLR2A", "classification": "NOVEL"},
+            {"col": 5, "name": "TYPEB", "type": "string", "sample": "protein", "classification": "NOVEL"},
+            {"col": 6, "name": "IDB", "type": "string", "sample": "P24928", "classification": "IDENTIFIER"},
+            {"col": 7, "name": "DATABASEB", "type": "string", "sample": "UNIPROT", "classification": "IDENTIFIER"},
+            {"col": 8, "name": "EFFECT", "type": "string", "sample": "up-regulates", "values": ["up-regulates", "down-regulates", "up-regulates activity", "down-regulates activity", "up-regulates quantity", "down-regulates quantity", "up-regulates quantity by expression", "down-regulates quantity by destabilization", "form complex", "unknown"], "classification": "NOVEL"},
+            {"col": 9, "name": "MECHANISM", "type": "string", "sample": "phosphorylation", "values": ["phosphorylation", "dephosphorylation", "binding", "ubiquitination", "chemical activation", "chemical inhibition", "gtpase-activating protein", "relocalization", "transcriptional regulation", "cleavage", "precursor of"], "classification": "NOVEL"},
+            {"col": 10, "name": "RESIDUE", "type": "string", "sample": "Ser1693", "notes": "Empty for non-PTM interactions", "classification": "NOVEL"},
+            {"col": 11, "name": "SEQUENCE", "type": "string", "sample": "SPTSPSYsPTSPSYS", "notes": "Flanking sequence context around modification site; lowercase letter = modified residue", "classification": "NOVEL"},
+            {"col": 12, "name": "TAX_ID", "type": "string", "sample": "9606", "notes": "NCBI taxonomy ID; -1 for in vitro/unknown", "classification": "NOVEL"},
+            {"col": 13, "name": "CELL_DATA", "type": "string", "sample": "BTO:0000007", "notes": "BTO cell line ontology ID; semicolon-delimited for multiple", "classification": "NOVEL"},
+            {"col": 14, "name": "TISSUE_DATA", "type": "string", "sample": "BTO:0000975", "notes": "BTO tissue ontology ID; semicolon-delimited", "classification": "NOVEL"},
+            {"col": 15, "name": "MODULATOR_COMPLEX", "type": "string", "sample": "SIGNOR-C300", "notes": "SIGNOR complex ID if entityA is a complex component", "classification": "NOVEL"},
+            {"col": 16, "name": "TARGET_COMPLEX", "type": "string", "sample": "SIGNOR-C6", "notes": "SIGNOR complex ID if entityB is a complex component", "classification": "NOVEL"},
+            {"col": 17, "name": "MODIFICATIONA", "type": "string", "sample": "", "notes": "Post-translational modification state of entityA; often empty", "classification": "NOVEL"},
+            {"col": 18, "name": "MODASEQ", "type": "string", "sample": "", "notes": "Sequence for MODIFICATIONA; often empty", "classification": "NOVEL"},
+            {"col": 19, "name": "MODIFICATIONB", "type": "string", "sample": "", "notes": "Post-translational modification state of entityB; often empty", "classification": "NOVEL"},
+            {"col": 20, "name": "MODBSEQ", "type": "string", "sample": "", "notes": "Sequence for MODIFICATIONB; often empty", "classification": "NOVEL"},
+            {"col": 21, "name": "PMID", "type": "string", "sample": "24385927", "classification": "NOVEL", "notes": "PubMed ID for supporting evidence"},
+            {"col": 22, "name": "DIRECT", "type": "boolean_string", "sample": "t", "values": ["t", "f"], "classification": "NOVEL", "notes": "Whether interaction is direct (t) or indirect (f)"},
+            {"col": 23, "name": "NOTES", "type": "string", "sample": "", "notes": "Curator notes or dataset tag; often empty", "classification": "NOVEL"},
+            {"col": 24, "name": "ANNOTATOR", "type": "string", "sample": "lperfetto", "classification": "NOVEL"},
+            {"col": 25, "name": "SENTENCE", "type": "string", "sample": "Cyclin-dependent kinase 9 (cdk9) promotes elongation...", "classification": "NOVEL"},
+            {"col": 26, "name": "SIGNOR_ID", "type": "string", "sample": "SIGNOR-203532", "classification": "IDENTIFIER", "notes": "Unique SIGNOR interaction ID — used as _id"},
+            {"col": 27, "name": "SIGNOR_SCORE", "type": "float", "sample": "0.779", "classification": "NOVEL", "notes": "Confidence/reliability score 0-1; higher = more supported. Only in getData.php, not in release .txt files."}
+        ],
+        "primary_key": {
+            "field": "SIGNOR_ID",
+            "col": 26,
+            "type": "custom SIGNOR identifier",
+            "sample": "SIGNOR-203532",
+            "notes": "Globally unique per interaction. Pattern: SIGNOR-{6-digit integer}"
+        },
+        "identifiers": [
+            {"type": "UniProtKB", "field": "IDA / IDB", "sample": "P50750 / P24928"},
+            {"type": "ChEBI", "field": "IDA / IDB", "sample": "CHEBI:33019"},
+            {"type": "SIGNOR-C (complex)", "field": "IDA / IDB / MODULATOR_COMPLEX / TARGET_COMPLEX", "sample": "SIGNOR-C300"},
+            {"type": "SIGNOR-PF (protein family)", "field": "IDA / IDB", "sample": "SIGNOR-PF76"},
+            {"type": "BTO (cell/tissue)", "field": "CELL_DATA / TISSUE_DATA", "sample": "BTO:0000007"},
+            {"type": "PMID", "field": "PMID", "sample": "24385927"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "CC BY 4.0",
+        "match": true,
+        "restrictions": ["Attribution required"]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://signor.uniroma2.it/getData.php?organism=9606"],
+        "primary_key_field": "SIGNOR_ID",
+        "primary_key_col": 26,
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "scope": "Human (taxid 9606) causal interactions only — all mechanisms (phosphorylation, binding, chemical activation, ubiquitination, etc.)",
+        "novel_fields": ["EFFECT", "MECHANISM", "RESIDUE", "SEQUENCE", "CELL_DATA", "TISSUE_DATA", "MODULATOR_COMPLEX", "TARGET_COMPLEX", "DIRECT", "SENTENCE", "SIGNOR_SCORE"],
+        "redundant_fields": [],
+        "notes": "Supersedes prior v1.1 PhosphoSIGNOR plugin (which covered only phosphorylation-specific 9-column TSV). This plugin ingests the full human SIGNOR interactome with all causal interaction types."
+    },
+    "api_crawl_details": null,
+    "paper_vs_reality": [
+        {"claim": "40,940 total interactions (SIGNOR 4.0 paper, NAR 2026)", "observed": "42,441 rows in getData.php?organism=9606", "match": "approximate", "notes": "Small discrepancy (~1,500 rows) likely due to in vitro interactions (TAX_ID=-1) counted in getData.php but excluded from paper count, or minor update since paper submission"},
+        {"claim": "CC BY 4.0 license", "observed": "CC BY 4.0 (confirmed via paper and site)", "match": true},
+        {"claim": "6,903 unique phosphosites", "observed": "PhosphoSIGNOR endpoint confirmed active with 26,830 paired rows (~13,415 phospho interactions)", "match": "consistent"},
+        {"claim": "Public API available", "observed": "Two confirmed endpoints: getData.php?organism=9606 and PhosphoSIGNOR/apis/v1/", "match": true}
+    ],
+    "risks": [
+        "getData.php has no column header row — parser must hardcode column positions (mapped from official release file)",
+        "TAX_ID column includes -1 (in vitro/unknown) entries — parser should pass these through or filter per user preference",
+        "getData.php URL has no versioning — will return latest snapshot at dump time; version.py must derive release date from Last-Modified header or getLatestRelease redirect URL",
+        "SIGNOR_ID is unique per interaction but not a standard external identifier — downstream linking requires SIGNOR_ID or UniProt IDs",
+        "SENTENCE field contains long rich text that may cause index overhead",
+        "getData.php may change column count in future SIGNOR releases — version.py should check column count as a sanity check"
+    ]
+}

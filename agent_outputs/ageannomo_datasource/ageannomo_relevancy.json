@@ -1,0 +1,57 @@
+{
+    "name": "ageannomo",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "Covers core BioThings entity types (gene, protein, metabolite/chemical) plus mitochondrial genes, microbiota, and TCR/BCR sequences, annotated with aging-hallmark relations across 50 species; identifiers include gene symbols, UniProt entries, PubChem CIDs, and PubMed provenance, though multi-species gene symbols (vs. Entrez/Ensembl IDs) will require mapping work."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "No existing MyGene/MyChem/MyDisease/MyVariant source annotates genes, proteins, or metabolites for age-related differential expression, lifespan correlation, aging-related PPI/metabolite networks, or age-specific TCR/BCR repertoires; this is a distinct relation type (entity-to-aging-hallmark) absent from BioThings, confirmed against actual sampled fields (not just paper claims)."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Data files (11 XLSX files across 8 aging-hallmark categories) are publicly downloadable with no login from the paper-designated GitHub companion repo (github.com/vikkihuangkexin/AgeAnnoMO) and mirrored on Zenodo (DOI 10.5281/zenodo.8394076); license is CC BY-NC, which per project convention (Su Lab, academic/non-profit) is PASS but capped at 3/5 for the non-commercial restriction. The canonical web app (relab.xidian.edu.cn) is a JS-rendered Vue SPA whose Download tab could not be verified via HTTP fetch, so canonical-site access is unconfirmed and only the GitHub/Zenodo mirrors were verified directly."
+        }
+    },
+    "evidence": {
+        "scope": "Multi-omics annotation of aging across genomic instability, epigenetic alterations, loss of proteostasis, mitochondrial dysfunction, intercellular communication, dysregulated metabolism, dysbiosis, aging-related immune repertoire, lifespan regulators, and anti-aging interventions (10 aging hallmarks). Paper (NAR 2024, D1) reports 90,972 aging-related genes, 16,244 proteins, 841 metabolites, 13 mitochondrial genes, 422 microbiotas, 229,413 TCR and 1,391 BCR sequences across 136 datasets, 50 species, 61 tissues, 8,596 samples, 1,044,141 cells. NOTE: the GitHub repo README states smaller counts (7,530 genes, 878 metabolites, 18 mitochondrial genes, 393 microbiotas, 138 datasets/48 species/8,525 samples/60 tissues) -- a version/staleness mismatch between the v1.0 GitHub release (Sept 2023) and the published NAR article (Jan 2024); flagged as risk.",
+        "overlap": "Gene symbols and UniProt/PubChem identifiers overlap with entities already indexed in MyGene.info/MyChem.info, but the aging-hallmark annotation, differential-expression-by-age, and lifespan-correlation relations themselves are not present in any existing BioThings source.",
+        "entity_types": ["gene", "protein", "metabolite/chemical", "mitochondrial gene", "microbiome taxon", "immune repertoire (TCR/BCR)"],
+        "identifiers_found": ["gene_symbol", "UniProt", "PubChem CID", "PubMed ID (provenance)"],
+        "record_count": 136
+    },
+    "license": {
+        "name": "Creative Commons Attribution-NonCommercial (CC BY-NC)",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["non-commercial reuse only; attribution required"]
+    },
+    "urls": {
+        "homepage": "https://relab.xidian.edu.cn/AgeAnnoMO/#/",
+        "download": [
+            "https://github.com/vikkihuangkexin/AgeAnnoMO",
+            "https://zenodo.org/records/8394076"
+        ],
+        "paper_doi": "10.1093/nar/gkad884",
+        "pmid": "37850649",
+        "pmc": "PMC10767957"
+    },
+    "api_info": {
+        "exists": false,
+        "rate_limits": "unknown",
+        "pagination": "n/a",
+        "record_coverage": "n/a"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Canonical site (relab.xidian.edu.cn) is a JS-rendered Vue 3 SPA; its Download tab could not be confirmed via direct HTTP fetch -- verified access is through the GitHub/Zenodo mirrors named in the paper's Data Availability statement, not the live site itself",
+        "Entity counts differ between the published paper (90,972 genes/16,244 proteins/841 metabolites) and the GitHub v1.0 README (7,530 genes/878 metabolites) -- likely a stale repo snapshot vs. the live/published version",
+        "No single stable primary-key field across files; identifiers are gene symbols (species-specific, not Entrez/Ensembl) in most files, which requires species-aware ID mapping before BioThings ingestion",
+        "CC BY-NC license restricts commercial reuse; acceptable for Su Lab academic BioThings use per project convention but should be flagged to any commercial downstream consumers",
+        "Spans multiple BioThings entity types simultaneously (gene, protein, metabolite) rather than fitting cleanly into one existing API -- may require a new standalone API or multi-target annotation strategy"
+    ],
+    "next_actions": ["Proceed to Phase 3 deep inspection / plugin generation"],
+    "evaluated_at": "2026-07-09"
+}

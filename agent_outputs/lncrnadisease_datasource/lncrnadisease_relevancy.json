@@ -1,0 +1,54 @@
+{
+    "name": "lncrnadisease",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "Covers experimentally-supported associations between long non-coding RNAs (lncRNAs), circular RNAs (circRNAs), and human/mouse diseases. Disease is a core BioThings entity type; lncRNA/circRNA are RNA-class molecular entities analogous to gene-level entities used elsewhere in BioThings (e.g. MyGene-adjacent). Not scored 5 because lncRNA/circRNA symbols are not yet a first-class BioThings entity with a dedicated resolver API (no MyGene/MyDisease xrefs shipped in the raw download files)."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "No existing BioThings plugin or pending.api datasource covers lncRNA/circRNA-disease associations (checked references/existing-biothings-plugins.json and references/pending-api-datasources.json — no hits for lncrna/circrna/ncrna). The dataset provides evidence-level fields (validated method, dysfunction pattern, causality classification, clinical application, supporting PubMed ID) not available anywhere else in BioThings. Not scored 5 because disease names are free-text (not yet normalized to MONDO/DOID within the downloadable files, despite the paper claiming DO/MeSH mapping on the live site)."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "All core association files (website_alldata.tsv, website_simple_data.csv, website_causal_data.tsv) are directly downloadable from the datasource's own domain (rnanut.net) with no login, API key, or click-through gate — confirmed via curl with content-type text/tab-separated-values / text/csv (not text/html). Not scored 5 because the article states CC BY-NC 4.0 (non-commercial restriction), and the live site footer shows only a generic 'All rights reserved' copyright notice with no explicit license badge — a minor license-clarity mismatch (see risks)."
+        }
+    },
+    "evidence": {
+        "scope": "Experimentally-supported and causal associations between lncRNAs, circRNAs, and human/mouse diseases, each linked to supporting literature (PubMed ID), validated method, dysfunction pattern, sample context, and clinical application notes.",
+        "overlap": "No existing BioThings API (MyGene.info, MyDisease.info, MyVariant.info, MyChem.info, pending.api) hosts lncRNA/circRNA-disease association data. Closest adjacent resource is HMDD (already ingested, miRNA-disease, different RNA class) — no entity overlap.",
+        "entity_types": ["lncRNA", "circRNA", "disease"],
+        "identifiers_found": ["ncRNA Symbol (gene-symbol-like)", "PubMed ID", "Database_ID (LncRNADisease-internal accession, e.g. LDA0000001)"],
+        "record_count": 25440
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only (per article license statement); live site itself shows only a generic copyright notice, not a CC badge"]
+    },
+    "urls": {
+        "homepage": "http://www.rnanut.net/lncrnadisease",
+        "download": [
+            "http://www.rnanut.net/lncrnadisease/static/download/website_alldata.tsv",
+            "http://www.rnanut.net/lncrnadisease/static/download/website_simple_data.csv"
+        ],
+        "paper_doi": "10.1093/nar/gkad828",
+        "pmid": "37819033",
+        "pmc": "PMC10767967"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "n/a — no public API documented on homepage, download page, or in the paper; bulk TSV/CSV download only"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Disease names are free-text strings in the downloadable files (not MONDO/DOID/MeSH-coded), despite the paper stating disease names are mapped to Disease Ontology and MeSH on the live site — that mapping is apparently web-UI-only and not exposed in the bulk download.",
+        "Confidence score (0.75-1.0, described in the paper as assigned per lncRNA/circRNA-disease pair) is not present as a column in any downloadable file — appears to be a web-UI-only computed/displayed value.",
+        "License mismatch: paper states CC BY-NC 4.0; live site footer shows only a generic all-rights-reserved copyright notice with no license badge.",
+        "Entity counts have drifted slightly from the paper since publication (paper: 6066 lncRNAs / 10732 circRNAs / 566 diseases; live download as of 2026-08-13: 5540 lncRNAs / 11309 circRNAs / 566 diseases) — files carry Last-Modified dates of 2023-09-07 (website_alldata.tsv, website_causal_data.tsv) and 2024-03-25 (website_simple_data.csv), indicating a post-publication content refresh. Disease count matches exactly, confirming correct file identification."
+    ],
+    "next_actions": ["Proceed to plugin generation"],
+    "evaluated_at": "2026-08-13"
+}

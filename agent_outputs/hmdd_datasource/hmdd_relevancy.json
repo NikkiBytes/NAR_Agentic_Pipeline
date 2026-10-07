@@ -1,0 +1,53 @@
+{
+    "name": "hmdd",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with core BioThings entity types: curates experimentally-supported associations between human microRNAs (miRBase-style names, e.g. hsa-mir-21) and diseases (MeSH-style disease terms, e.g. 'Breast Neoplasms'), classified into 8 evidence categories (circulation, epigenetics, exosome, genetics, target, tissue, virus, other) with 23 evidence codes. This is exactly the kind of curated entity-relation data BioThings pending.api is built to serve."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API (mygene.info, mychem.info, myvariant.info, mydisease.info) curates experimentally-supported miRNA-disease associations. mydisease.info covers disease ontology/xrefs (MONDO, Disease Ontology, HPO, CTD chemical-disease/gene-disease) but nothing on miRNA-disease evidence. Checked references/existing-biothings-plugins.json and pending-api-datasources.json for any miRNA-disease or HMDD entries -- none found. HMDD v4.0 is also the only major manually-curated miRNA-disease association resource of its kind (used as ground truth by most miRNA-disease prediction papers), so novelty is unambiguous."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Full dataset (alldata_v4.txt, 12.8MB, 53,553 rows) is directly downloadable from the datasource's own domain with no login/registration/paywall/click-through gate (curl with a standard User-Agent returns the file directly, HTTP 200, content-type text/plain). License is non-commercial only (site: 'HMDD is free only for academic usage... For commercial usage, please Contact Dr. Qinghua Cui'; paper states 'Creative Commons Attribution-NonCommercial License'), which caps the openness score below full-open (5) but does not block academic/research ingestion."
+        }
+    },
+    "evidence": {
+        "scope": "Experimentally-supported associations between human (and virus-derived) microRNAs and human diseases, spanning 8 evidence categories: circulation biomarker (diagnosis/prognosis, up/down/no-significant-change), epigenetics, exosome, genetics (overexpression/knockdown, promote/suppress, GWAS), target (gene/lncRNA/circRNA/transcription-factor), tissue expression, virus-encoded miRNA, therapeutic target, and other. Each row cites a supporting PMID and a free-text description of the finding.",
+        "overlap": "No direct overlap with existing BioThings sources -- mydisease.info has disease ontology/xrefs but no miRNA-disease evidence; no BioThings API curates non-coding-RNA-disease relations of this kind.",
+        "entity_types": ["microRNA", "disease", "association/evidence"],
+        "identifiers_found": ["miRNA name (miRBase-style precursor/mature nomenclature, e.g. hsa-mir-21, ebv-mir-BART1)", "disease name (free-text, largely MeSH-descriptor-style, e.g. 'Stomach Neoplasms')", "PMID"],
+        "record_count": 53553
+    },
+    "license": {
+        "name": "CC BY-NC (non-commercial, academic use only)",
+        "url": "http://www.cuilab.cn/hmdd",
+        "restrictions": ["Non-commercial / academic use only per site notice; paper states Creative Commons Attribution-NonCommercial License. Commercial use requires contacting the PI (Dr. Qinghua Cui) directly. No formal CC BY-NC badge/link found on the live site itself -- flagged as a minor paper-vs-site license-presentation mismatch, though both agree on the non-commercial restriction."]
+    },
+    "urls": {
+        "homepage": "http://www.cuilab.cn/hmdd",
+        "download": [
+            "http://www.cuilab.cn/static/hmdd3/data/alldata_v4.txt"
+        ],
+        "paper_doi": "10.1093/nar/gkad717",
+        "pmid": "37650649",
+        "pmc": "PMC10767894"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "No public REST/GraphQL API found; site only exposes an interactive search/browse UI (no documented API endpoints). No API mentioned in the NAR 2024 paper."
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Non-commercial license restriction (CC BY-NC / academic-only) -- flag for commercial API-consumer compatibility, consistent with several other recently ingested NAR plugins (chemprob, molbic, persade, ttd).",
+        "Disease field is free text (not a controlled-vocabulary ID like DOID/MONDO in the bulk file itself) -- cross-referencing to mydisease.info would require a separate string-matching/normalization step, not available in this bulk file.",
+        "Live site row count (53,553) is very close to but not identical to the paper's reported 53,530 -- consistent with the site's stated 'continuously updated' policy (Last-Modified: 2023-07-11, after the paper's 2023-08-19 acceptance date); treated as a minor, expected drift rather than a data-quality issue.",
+        "No miRBase accession/MIMAT IDs in the bulk file -- miRNA names are HMDD's own curated nomenclature strings, some of which (e.g. cluster names like '14q32 cluster', 'C19MC cluster') do not map cleanly to a single miRBase entry."
+    ],
+    "next_actions": ["Proceed to plugin generation using alldata_v4.txt as the sole bulk-download source"],
+    "evaluated_at": "2026-08-13"
+}

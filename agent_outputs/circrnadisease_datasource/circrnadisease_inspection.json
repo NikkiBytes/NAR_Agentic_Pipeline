@@ -1,0 +1,95 @@
+{
+    "name": "circrnadisease",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circrna_details.txt",
+            "filename": "circRNADisease_V3_circrna_details.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 9.2
+        },
+        {
+            "url": "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circrna_details.xlsx",
+            "filename": "circRNADisease_V3_circrna_details.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 3.2,
+            "note": "Same content as the TXT file in spreadsheet form; TXT selected as the plugin source (plain-text, no pandas/openpyxl dependency needed)"
+        },
+        {
+            "url": "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circ2mut.txt.zip",
+            "filename": "circRNADisease_V3_circ2mut.txt.zip",
+            "format": "ZIP (TSV inside)",
+            "access": "public",
+            "size_mb": 43.3,
+            "note": "Independent module: 7,159,865 mutation-circRNA co-occurrence records across 30 TCGA cancer types. Different entity/relation type (genomic variant x circRNA, not circRNA x disease). Excluded from this plugin — out of scope for the 'circRNA-disease associations' resource this evaluation targets; candidate for a separate future plugin."
+        },
+        {
+            "url": "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circ2cnv.zip",
+            "filename": "circRNADisease_V3_circ2cnv.zip",
+            "format": "ZIP",
+            "access": "public",
+            "size_mb": 39.3,
+            "note": "Independent module: 2,962,504 CNV-circRNA records across 33 TCGA cancer types. Same exclusion rationale as circ2mut."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "pmid", "type": "string", "sample": "37897359-style PMID, e.g. 21151960", "classification": "IDENTIFIER"},
+            {"name": "journal", "type": "string", "sample": "PLoS genetics", "classification": "REDUNDANT"},
+            {"name": "pub_time", "type": "string", "sample": "2010", "classification": "REDUNDANT"},
+            {"name": "title", "type": "string", "sample": "Expression of linear and novel circular forms of an INK4/ARF-associated non-coding RNA correlates with atherosclerosis risk.", "classification": "NOVEL"},
+            {"name": "circrna_id", "type": "string", "sample": "hsa_circ_CDKN2BAS", "classification": "IDENTIFIER"},
+            {"name": "circrna_synonyms", "type": "string", "sample": "cANRIL / circular ANRIL", "classification": "NOVEL"},
+            {"name": "circ_rna_name", "type": "string", "sample": "ciRS-7", "classification": "NOVEL"},
+            {"name": "host_gene", "type": "string", "sample": "CDKN2BAS", "classification": "NOVEL"},
+            {"name": "species_details", "type": "string", "sample": "Homo sapiens", "classification": "NOVEL"},
+            {"name": "Disease_Details", "type": "string", "sample": "atherosclerosis", "classification": "NOVEL"},
+            {"name": "Disease_MONDO_id", "type": "string", "sample": "MONDO:0005311", "classification": "IDENTIFIER"},
+            {"name": "Disease_MONDO_name", "type": "string", "sample": "atherosclerosis", "classification": "NOVEL"},
+            {"name": "expression_pattern", "type": "string", "sample": "down-regulated", "classification": "NOVEL"},
+            {"name": "Detection_Method", "type": "string", "sample": "RT-qPCR", "classification": "NOVEL"},
+            {"name": "description", "type": "string", "sample": "Circular ANRIL (cANRIL) isoforms from the CDKN2BAS/ANRIL locus...", "classification": "NOVEL"},
+            {"name": "Confidence Score", "type": "float", "sample": "0.5841", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "circrna_id (fallback: circ_rna_name, then circrna_synonyms) + Disease_MONDO_id, composited",
+            "type": "custom (circBase-style circRNA label + MONDO disease ID)",
+            "sample": "hsa_circ_CDKN2BAS_MONDO:0005311"
+        },
+        "identifiers": [
+            {"type": "circBase ID", "field": "circrna_id", "sample": "hsa_circ_CDKN2BAS"},
+            {"type": "MONDO", "field": "Disease_MONDO_id", "sample": "MONDO:0005311"},
+            {"type": "PMID", "field": "pmid", "sample": "21151960"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC",
+        "observed_site": "Not stated on site (about.jsp/license.jsp return 404)",
+        "match": false,
+        "restrictions": ["Non-commercial use only, per the paper's stated CC BY-NC license"]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circrna_details.txt"],
+        "primary_key_field": "circrna_id (fallback circ_rna_name/circrna_synonyms) + Disease_MONDO_id",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["circrna_synonyms", "circ_rna_name", "host_gene", "species_details", "Disease_Details", "Disease_MONDO_name", "expression_pattern", "Detection_Method", "description", "Confidence Score", "title"],
+        "redundant_fields": ["journal", "pub_time"]
+    },
+    "paper_vs_reality": [
+        {"claim": "6,998 circRNA-disease entries (v2.0, as of the 2024 paper)", "observed": "15,423 rows in the live 'v3.0' bulk TXT file (13,122 unique circRNA-disease pairs after aggregating multi-evidence rows)", "match": false},
+        {"claim": "4,246 circRNAs (v2.0)", "observed": "~4,970 unique non-empty circrna_id values (9,690/15,423 rows carry a circrna_id; the rest use circ_rna_name/synonym as fallback label) in the live v3.0 data", "match": false},
+        {"claim": "330 disease types (v2.0), Disease Ontology (DO) standardized names", "observed": "656-657 unique Disease_MONDO_id values in the live v3.0 data; disease IDs are MONDO (not DO) in the actual downloadable file", "match": false},
+        {"claim": "12 species covered", "observed": "67 distinct species_details values (including several viruses, e.g. Human papillomavirus 16/18, and non-human hosts), consistent with continued expansion beyond the paper's reported 12", "match": false},
+        {"claim": "CC BY-NC license (from PMC full text Data Availability framing)", "observed": "No explicit license text found on the live site itself", "match": false}
+    ],
+    "risks": [
+        "The live site now serves 'circRNADisease v3.0' bulk data rather than the exact v2.0 snapshot described in the cited NAR paper; entity counts and disease-ontology system (MONDO vs. DO) have both changed since publication. Ingesting the live file is still the correct choice (it is the current, most complete, most accessible data release of the same underlying resource) but the paper's exact statistics should not be quoted as ground truth for the ingested dataset.",
+        "37% of rows (5,733/15,423) lack a circrna_id and must fall back to circ_rna_name or circrna_synonyms for a circRNA label; 79 rows lack both a usable circRNA label and a MONDO id and are skipped by the parser.",
+        "No public API; bulk-download-only ingestion path.",
+        "No site-level license page; license claim rests solely on the paper's CC BY-NC statement."
+    ]
+}

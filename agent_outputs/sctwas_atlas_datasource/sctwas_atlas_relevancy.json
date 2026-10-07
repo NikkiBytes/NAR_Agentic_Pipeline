@@ -1,0 +1,62 @@
+{
+    "name": "sctwas_atlas",
+    "verdict": "NEEDS_REVIEW",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with BioThings entity types: integrates gene (Ensembl IDs), disease/trait (EFO/MONDO ontology, MeSH), cell type (Cell Ontology CL IDs), and variant (rsID SNPs) identifiers. Covers 2,765,211 single-cell TWAS associations across 34 traits, 30 cell types, 9 conditions, and 16,470 genes. Links sc-eQTL with GWAS — a multi-omics regulatory network directly relevant to gene-disease-variant relationships."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "scTWAS associations at single-cell resolution are novel to BioThings. Existing BioThings sources (e.g., DisGeNET, HPO in MyDisease; dbSNP/ClinVar in MyVariant; NCBI/Ensembl in MyGene) lack cell-type-specific TWAS associations. The sc-eQTL data (127M+ variants, 21 cell types) is a novel layer not replicated elsewhere in BioThings. Some GWAS trait annotations overlap with existing BioThings ontology sources, but the scTWAS link (gene-trait-celltype) is genuinely new."
+        },
+        "openness": {
+            "pass": false,
+            "score": 2,
+            "justification": "FAIL — The 2.7M core TWAS associations are NOT available for bulk download; they are stored in MySQL and only accessible via web interface search/filter. The downloadable files (eQTL data, metadata) are the input data, not the value-added scTWAS results. License is CC-BY-NC 4.0 (permits non-commercial redistribution) but the bulk export of the core database is not provided. This makes plugin generation using manifest-based bulk download impossible for the primary data."
+        }
+    },
+    "evidence": {
+        "scope": "2,765,211 single-cell TWAS associations spanning 34 traits, 30 cell types, 9 cell conditions, 16,470 genes. Integrates 10 sc-eQTL datasets with GWAS summary statistics from 5 publications. Multi-omics regulatory network linking genes, traits, cell types, and variants.",
+        "overlap": "Gene annotations overlap with MyGene.info (Ensembl IDs). Trait ontology (EFO/MONDO/MeSH) overlaps with MyDisease.info. rsID SNPs overlap with MyVariant.info. The novel layer — cell-type-specific TWAS scores — is not in any existing BioThings API.",
+        "entity_types": ["gene", "variant", "disease", "cell_type", "eQTL_association"],
+        "identifiers_found": ["Ensembl Gene ID", "rsID (SNP)", "EFO ontology", "MONDO", "MeSH", "Cell Ontology (CL)"],
+        "record_count": 2765211
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only", "Attribution required"]
+    },
+    "urls": {
+        "homepage": "https://ngdc.cncb.ac.cn/sctwas/",
+        "download": [
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/Allstudies_sig_eQTL.txt",
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/Download_AllGeneAnnotation.txt",
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/Detail_trait_summary.txt",
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/Detail_celltype_summary.txt",
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/CurationPublication_Information.txt",
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/AnalysisDataset_Information.xlsx"
+        ],
+        "paper_doi": "10.1093/nar/gkae931",
+        "pmid": "39420631",
+        "pmc": "PMC11701648"
+    },
+    "api_info": {
+        "exists": false,
+        "notes": "No public REST API documented. Data access is through web interface only. The 2.7M TWAS associations are stored in MySQL and accessible only via the web search/browse interface."
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Core TWAS association data (2.7M records) is NOT bulk downloadable — only browsable via web interface",
+        "CC-BY-NC 4.0 restricts commercial use by downstream API consumers",
+        "Only downloadable data is sc-eQTL input files (~133MB), not the scTWAS association outputs",
+        "Server hosted at CNCB (Chinese National Center for Bioinformatics) — may have intermittent international access"
+    ],
+    "next_actions": [
+        "Contact scTWAS authors to request bulk data export of TWAS associations",
+        "Alternatively, ingest the sc-eQTL data (Allstudies_sig_eQTL.txt, ~1.3M rows) as a useful subset — these are the input eQTLs, not the scTWAS outputs",
+        "Flag as api_only_backlog for TWAS associations until bulk download is available"
+    ],
+    "evaluated_at": "2026-06-25"
+}

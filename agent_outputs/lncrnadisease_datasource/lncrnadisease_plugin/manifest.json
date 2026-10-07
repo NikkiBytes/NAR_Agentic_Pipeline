@@ -1,0 +1,28 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "LncRNADisease v3.0",
+        "description": "Experimentally-supported and causal associations between long non-coding RNAs (lncRNAs), circular RNAs (circRNAs), and human/mouse diseases, curated from the literature with supporting evidence, validated method, and PubMed citation per association.",
+        "license": "CC BY-NC 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "http://www.rnanut.net/lncrnadisease",
+        "publication": {
+            "doi": "10.1093/nar/gkad828",
+            "pmid": "37819033",
+            "pmc": "PMC10767967"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "http://www.rnanut.net/lncrnadisease/static/download/website_simple_data.csv",
+            "http://www.rnanut.net/lncrnadisease/static/download/website_alldata.tsv"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

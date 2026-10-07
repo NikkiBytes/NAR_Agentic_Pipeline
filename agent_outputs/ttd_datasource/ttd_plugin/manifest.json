@@ -1,0 +1,29 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "Therapeutic Target Database (TTD)",
+        "description": "Drug-target-disease associations from the Therapeutic Target Database, including drug clinical status, therapeutic class, cross-references, and ICD-11 disease indications.",
+        "license": "CC BY-NC 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "https://db.idrblab.net/ttd/",
+        "publication": {
+            "doi": "10.1093/nar/gkaf1154",
+            "pmid": "41243978",
+            "pmc": "PMC12807707",
+            "url": "https://doi.org/10.1093/nar/gkaf1154"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "https://ttd.idrblab.cn/files/download/P1-02-TTD_drug_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-03-TTD_crossmatching.txt",
+            "https://ttd.idrblab.cn/files/download/P1-05-Drug_disease.txt"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error"
+    }
+}

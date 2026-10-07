@@ -1,0 +1,61 @@
+{
+    "name": "hervd",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "HervD Atlas curates associations between human endogenous retroviruses (HERVs) and diseases, mapping diseases to standard ontologies (EFO, DOID, NCI, OMIM, MESH) and genomic elements to chromosomal coordinates/gene proximity. This is a disease-association resource with structured identifiers, directly in the BioThings sphere (disease + genomic-element/gene-adjacent entities), though HERVs themselves are a niche entity type not covered by any core BioThings API (gene/variant/disease/chemical)."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "HERVs (endogenous retroviral genomic elements/loci) are not represented in MyGene.info, MyVariant.info, or MyDisease.info. The HERV-disease association layer (60,726 curated associations per the paper, ~58,731 recoverable via the site's bulk JSON endpoints) with per-association evidence (PMID, DOI, expression trend, log2FC, omics level) is entirely novel to the BioThings ecosystem. Disease records also carry EFO/DOID/NCI/OMIM/MESH cross-references not otherwise packaged together in a HERV context."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "All entity-list files (HERV-Terms, HERV-Elements, Disease, Publication) are freely downloadable via direct HTTPS GET with no login/auth/paywall. The site (ngdc.cncb.ac.cn, part of China National Genomics Data Center / BIG Data Center) publishes its footer-wide data license as Creative Commons Attribution 3.0 China Mainland (CC BY 3.0 CN) with no NC/ND restriction. Note: the NAR journal article text itself carries OUP's standard CC BY-NC license (per PMC), which is separate from and does not override the site's stated data license for the database content."
+        }
+    },
+    "evidence": {
+        "scope": "Curated associations between human endogenous retroviruses (HERV-Terms and HERV-Elements) and human diseases, with per-association evidence (study, PMID, DOI, omics-level trend/log2FC).",
+        "overlap": "No existing BioThings API (MyGene, MyVariant, MyDisease, MyChem) contains HERV entities or HERV-disease association data. Disease identifiers (DOID, MESH) overlap partially with MyDisease.info's underlying MONDO mappings, but the novel contribution is the HERV linkage, not the disease vocabulary itself.",
+        "entity_types": ["herv_element", "disease", "publication"],
+        "identifiers_found": ["EFO", "DOID", "NCI", "OMIM", "MESH", "PMID", "DOI", "genomic_coordinates_hg38"],
+        "record_count": 60726
+    },
+    "license": {
+        "name": "CC BY 3.0 (China Mainland)",
+        "url": "http://creativecommons.org/licenses/by/3.0/cn/",
+        "restrictions": []
+    },
+    "urls": {
+        "homepage": "https://ngdc.cncb.ac.cn/hervd/",
+        "download": [
+            "https://download.cncb.ac.cn/hervd/HERV-Terms%20Information.txt",
+            "https://download.cncb.ac.cn/hervd/HERV-Elements%20Information.txt",
+            "https://download.cncb.ac.cn/hervd/Disease%20Information.txt",
+            "https://download.cncb.ac.cn/hervd/Publication%20Information.txt"
+        ],
+        "api": "https://ngdc.cncb.ac.cn/hervd/herv_term (POST, no auth, single-call bulk JSON)",
+        "paper_doi": "10.1093/nar/gkad904",
+        "pmid": "37870452",
+        "pmc": "PMC10767980"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://ngdc.cncb.ac.cn/hervd/",
+        "auth_required": false,
+        "rate_limits": "unknown, not documented; observed single-call responses complete in <5s",
+        "pagination": "none — herv_term and herv_element endpoints return the full table (21,049 and 741 rows respectively) in one POST call with no query parameters",
+        "record_coverage": "full for entity-level aggregated disease association lists; a richer per-association-record endpoint (/hervd/herv/term/association) exists but requires one POST call per HERV ID (~21,790 calls) to retrieve full evidence (PMID/DOI/trend/log2FC) for every association — not crawled in this pass, see risks"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "The full per-association evidence table (60,726 records with PMID/DOI/omics-level trend) is only exposed via a per-HERV-ID POST endpoint (/hervd/herv/term/association) requiring ~21,790 individual calls — not a single bulk fetch. This ingestion pass uses the aggregated single-call herv_term/herv_element endpoints instead, which yield disease-name-level linkage (~58,731 recoverable disease links) without per-association PMID/evidence granularity.",
+        "The 4 static TXT download files (HERV-Terms/Elements/Disease/Publication) do not themselves contain the association linkage — only entity metadata. The association linkage comes from the herv_term/herv_element JSON endpoints, which require POST rather than the standard GET used by the manifest bulk-downloader.",
+        "Filenames on the canonical download server contain literal spaces (must be percent-encoded as %20 in URLs).",
+        "No formal license badge found on the hervd subsite itself; license derived from the shared NGDC/BIG Data Center footer template (CC BY 3.0 CN), which applies site-wide across NGDC resources."
+    ],
+    "next_actions": ["Proceed to plugin generation using a custom dumper.py (GET for the 4 static files + POST for herv_term/herv_element)"],
+    "evaluated_at": "2026-08-13"
+}

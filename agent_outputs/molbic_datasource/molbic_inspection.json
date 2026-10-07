@@ -1,0 +1,142 @@
+{
+    "name": "molbic",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/1-1. Cell_Line.txt",
+            "filename": "1-1. Cell_Line.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "Cell line general information"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/1-2. Protein.txt",
+            "filename": "1-2. Protein.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "Protein target general information"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/1-3. Compound.txt",
+            "filename": "1-3. Compound.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "Compound general information including SMILES, InChIKey, physicochemical properties"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/2-1. CMBs_All.txt",
+            "filename": "2-1. CMBs_All.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "All 550,093 cell-based molecular bioactivity records"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/2-1-1. CMBs_High.txt",
+            "filename": "2-1-1. CMBs_High.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "CMBs with high activity (<=100 nM), 188,027 records"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/2-1-2. CMBs_Moderate.txt",
+            "filename": "2-1-2. CMBs_Moderate.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "CMBs with moderate activity (100 nM - 10 uM), 177,755 records"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/2-1-3. CMBs_Low.txt",
+            "filename": "2-1-3. CMBs_Low.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "CMBs with low activity (>10 uM), 73,246 records"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/5-2. Proteins_with_Uniprot_IDs.txt",
+            "filename": "5-2. Proteins_with_Uniprot_IDs.txt",
+            "format": "TSV",
+            "access": "browser_only",
+            "description": "Protein-UniProt ID mapping"
+        },
+        {
+            "url": "https://molbic.idrblab.net/sites/files/full_data/4-1. All_Compounds_in _SDF.tar.xz",
+            "filename": "4-1. All_Compounds_in _SDF.tar.xz",
+            "format": "SDF (tar.xz)",
+            "access": "browser_only",
+            "description": "SDF structures for all compounds"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "Compound ID", "type": "string", "sample": "CP0122977", "classification": "IDENTIFIER", "note": "Internal MolBiC ID"},
+            {"name": "Compound Name", "type": "string", "sample": "", "classification": "NOVEL"},
+            {"name": "Formula", "type": "string", "sample": "", "classification": "REDUNDANT"},
+            {"name": "Canonical SMILES", "type": "string", "sample": "", "classification": "REDUNDANT"},
+            {"name": "InChI", "type": "string", "sample": "", "classification": "IDENTIFIER"},
+            {"name": "InChIKey", "type": "string", "sample": "", "classification": "IDENTIFIER"},
+            {"name": "logP", "type": "float", "sample": "", "classification": "REDUNDANT"},
+            {"name": "Rotatable Bonds", "type": "integer", "sample": "", "classification": "REDUNDANT"},
+            {"name": "Heavy Atom Count", "type": "integer", "sample": "", "classification": "REDUNDANT"},
+            {"name": "Polar Areas", "type": "float", "sample": "", "classification": "REDUNDANT"},
+            {"name": "PubChem ID", "type": "string", "sample": "", "classification": "IDENTIFIER"},
+            {"name": "ChEMBL ID", "type": "string", "sample": "", "classification": "IDENTIFIER"},
+            {"name": "Cell Line", "type": "string", "sample": "", "classification": "NOVEL"},
+            {"name": "Protein", "type": "string", "sample": "", "classification": "IDENTIFIER"},
+            {"name": "Bioactivity Value (IC50/EC50/Ki)", "type": "float", "sample": "", "classification": "NOVEL"},
+            {"name": "Activity Class", "type": "string", "sample": "High/Moderate/Low", "classification": "NOVEL"},
+            {"name": "Drug Development Stage", "type": "string", "sample": "TI/LI/LO/TS", "classification": "NOVEL"},
+            {"name": "UniProt ID", "type": "string", "sample": "", "classification": "IDENTIFIER"},
+            {"name": "Cellosaurus accession", "type": "string", "sample": "CVCL_0030", "classification": "IDENTIFIER"}
+        ],
+        "primary_key": {
+            "field": "InChIKey",
+            "type": "InChIKey",
+            "sample": "AAAQFGUYHFJNHI-SFHVURJKSA-N",
+            "note": "InChIKey used for MyChem.info. The Compound.txt file will have InChIKey. CMBs_All.txt contains bioactivity records to be grouped by compound InChIKey."
+        },
+        "identifiers": [
+            {"type": "InChIKey", "field": "InChIKey", "sample": "(from compound page)"},
+            {"type": "PubChem CID", "field": "PubChem ID", "sample": "46227761"},
+            {"type": "ChEMBL ID", "field": "ChEMBL ID", "sample": "CHEMBL..."},
+            {"type": "UniProt", "field": "UniProt ID", "sample": "P12345"},
+            {"type": "Cellosaurus", "field": "Cellosaurus accession", "sample": "CVCL_0030"}
+        ]
+    },
+    "license": {
+        "stated_paper": "Freely accessible without any login requirement",
+        "observed_site": "Freely accessible, no login required; download buttons publicly listed",
+        "match": true,
+        "restrictions": ["License not explicitly stated; assumed CC BY-NC 4.0 consistent with other idrblab databases"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://molbic.idrblab.net/sites/files/full_data/1-3. Compound.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/2-1. CMBs_All.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/1-1. Cell_Line.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/5-2. Proteins_with_Uniprot_IDs.txt"
+        ],
+        "primary_key_field": "InChIKey",
+        "target_api": "MyChem.info",
+        "ingestion_path": "bulk_download",
+        "novel_fields": [
+            "CMB bioactivity value (IC50/EC50/Ki in cellular context)",
+            "activity_class (High/Moderate/Low)",
+            "cell_line (Cellosaurus ID)",
+            "drug_development_stage (TI/LI/LO/TS)",
+            "assay_type (CETSA/FRET/ABPP etc.)"
+        ],
+        "redundant_fields": ["smiles", "formula", "mw", "logp", "pubchem_id", "chembl_id"],
+        "critical_note": "BLOCKER: MolBiC download files have spaces in their filenames and return 404 when fetched programmatically with URL-encoded paths. Files are served via browser JS click (download= attribute) from Drupal 8. Direct curl/requests fetch fails. The plugin manifest data_url will fail during dump. Resolution: (1) contact idrblab maintainers to request space-free filenames; (2) pre-download files manually and place in data_folder; (3) write a custom dumper.py that bypasses the Drupal routing."
+    },
+    "paper_vs_reality": [
+        {"claim": "550,093 CMBs", "observed": "Per download page: CMBs_All.txt exists (file content not verifiable programmatically)", "match": "unverified"},
+        {"claim": "321,086 unique molecules", "observed": "Compound.txt listed on download page", "match": "unverified"},
+        {"claim": "988 cell lines", "observed": "Cell_Line.txt listed on download page", "match": "unverified"}
+    ],
+    "risks": [
+        "CRITICAL: Download files cannot be fetched programmatically — Drupal serves them only via browser JS click. Standard biothings-cli dump will fail.",
+        "Files must be pre-downloaded manually before plugin validation",
+        "License not explicitly stated"
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "name": "tpddb",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly covers core MyChem.info entity type (chemical/drug compounds). 28,655 targeted protein degraders (PROTACs, molecular glues, LYTACs, ATTECs, AUTACs, AUTOTACs) with SMILES, molecular formula, target UniProt IDs, bioactivity measurements (IC50, DC50, Dmax), and disease associations (ICD-11, OrphaID). All five BioThings relevance criteria met: structured tabular data, standard biomedical identifiers, drug-target relationships, actively maintained (last updated 2025-08-31)."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "Targeted protein degrader (TPD)-specific activity data (DC50, Dmax, cell viability) is not present in any existing BioThings source. While PROTACs/molecular glues may appear in ChEMBL as compounds, the degrader-specific mechanism fields (Ligase identity, Subtype classification, TPD-specific activity metrics) are completely novel. 27,796 activity measurements across 201 cell lines with ICD-11 disease associations and PDB ternary complex IDs are not replicated elsewhere in BioThings."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "CC BY-NC 4.0 license. Freely accessible bulk download, no login required. Non-commercial restriction is compatible with BioThings academic/research posture (Su Lab, Scripps Research is non-profit). Minor risk for downstream commercial API consumers."
+        }
+    },
+    "evidence": {
+        "scope": "Targeted protein degraders (TPDs): PROTACs, molecular glues, LYTACs, ATTECs, AUTACs, AUTOTACs. Covers compound structures (SMILES), targets (UniProtKB), degrader-specific activity (IC50/DC50/Dmax), disease associations, PDB ternary complex structures.",
+        "overlap": "Compound structures may overlap partially with ChEMBL/PubChem in MyChem.info, but TPD-specific activity data (DC50, Dmax, Ligase, degrader Subtype) is novel. No existing BioThings source covers the TPD modality specifically.",
+        "entity_types": ["chemical", "drug", "compound"],
+        "identifiers_found": ["TPD proprietary ID", "SMILES", "UniProtKB (targets)", "ICD-11", "OrphaID", "PubChem synonyms", "PDB ID"],
+        "record_count": 28655
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only"]
+    },
+    "urls": {
+        "homepage": "https://idrblab.org/TPDdb/",
+        "canonical_site": "https://tpddb.idrblab.net",
+        "download": [
+            "https://tpddb.idrblab.net/sites/files/tpd_download/PROTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/MG_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/LYTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/ATTEC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/AUTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/AUTOTAC_main_table.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/PROTAC_activity.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/MG_activity.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/Lysosome-based_TPD_activity.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/TPD_Related_Diseases.txt",
+            "https://tpddb.idrblab.net/sites/files/tpd_download/TPD_PDB.txt"
+        ],
+        "paper_doi": "10.1093/nar/gkaf996",
+        "pmid": "41091922",
+        "pmc": "PMC12807599"
+    },
+    "api_info": {
+        "exists": false,
+        "notes": "No public REST API. /api endpoint returns HTTP 500. Drupal 8 CMS site without JSON API module enabled."
+    },
+    "target_api": "MyChem.info",
+    "risks": [
+        "CC BY-NC 4.0 license — commercial downstream API consumers may violate non-commercial clause",
+        "InChIKey not in bulk download files — must compute from SMILES using RDKit or rdkit-stdinchi",
+        "Activity values are heterogeneous (numeric with units, qualitative +++/++/+, '>10' bounds) — normalization needed",
+        "Multiple delimiter styles: semicolons in Target Symbol, forward-slash in Target ID for multi-target compounds",
+        "LYTAC table has many placeholder '.' values for structural components"
+    ],
+    "next_actions": ["Proceed to plugin generation — primary key strategy: compute InChIKey from SMILES; use TPD ID as fallback; target MyChem.info"],
+    "evaluated_at": "2026-06-25"
+}

@@ -1,0 +1,59 @@
+{
+    "name": "clinicalomicsdb",
+    "verdict": "NEEDS_REVIEW",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with core BioThings entity types and relations: genes (gene symbols/Ensembl IDs), drugs/treatments (NCIt-standardized oncology drugs), diseases (cancer types), and clinical trial evidence (NCT IDs, PubMed IDs), linked via quantitative drug-response statistics (p-value, AUROC, FDR) per gene per trial arm."
+        },
+        "novelty": {
+            "score": 3,
+            "justification": "Provides per-clinical-trial, per-gene transcriptomic drug-response association statistics (responder vs non-responder AUROC/p-value/FDR) across 40 oncology trials (5,913 patients, 11 cancer types, 67 treatment arms) — a specific data type (harmonized clinical-trial-derived pharmacogenomic response biomarkers) not itemized in mygene.info/mychem.info/mydisease.info/myvariant.info. However, the pending.api ecosystem already hosts 'Multiomics Drug Response KP' (pharmacogenomics/drug response) and 'Multiomics Clinical Trials' (clinical trials + multiomics) with closely overlapping domain descriptions; the registry does not document their underlying sources, so overlap with ClinicalOmicsDB could not be confirmed or ruled out. Novelty is scored conservatively pending that check."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "Live-verified: public REST API (https://trials.linkedomics.org/api/) requires no login/API key and returned data via plain curl requests; per-study raw CSV files are hosted on public Box.com static links (also verified accessible without auth). License is CC BY-NC 4.0 (Oxford University Press journal license for the paper) — PASS per project policy since BioThings/Su Lab is an academic non-profit, but the NC clause is a minor risk for any downstream commercial consumers of the resulting BioThings API."
+        }
+    },
+    "evidence": {
+        "scope": "Harmonized transcriptomic (gene expression, KEGG/MSigDB Hallmark/PROGENy gene-set scores, immune-cell deconvolution) data from 40 oncology clinical trials (5,913 patients, 11 cancer types, 67 treatment arms, 33 drugs) with binary responder/non-responder labels, plus precomputed gene-level and gene-set-level significance statistics (p-value, AUROC, FDR) for each study and meta-analyzed across studies per treatment.",
+        "overlap": "Potential domain overlap with two already-deployed pending.api Translator KPs: 'Multiomics Drug Response KP' (pharmacogenomics/drug response) and 'Multiomics Clinical Trials' (clinical trials + multiomics). Neither entry in references/pending-api-datasources.json lists constituent source databases, so it is unconfirmed whether either already ingests ClinicalOmicsDB/LinkedOmics-derived data. No overlap found with mygene.info, mychem.info, mydisease.info, or myvariant.info source lists.",
+        "entity_types": ["gene", "chemical/drug", "disease", "clinical_trial"],
+        "identifiers_found": ["gene_symbol", "Ensembl gene ID", "NCIt drug terminology", "ClinicalTrials.gov NCT ID", "PubMed ID", "GEO series accession"],
+        "record_count": 40
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only per OUP journal license; commercial re-use requires contacting journals.permissions@oup.com"]
+    },
+    "urls": {
+        "homepage": "https://trials.linkedomics.org/",
+        "download": ["https://trials.linkedomics.org/api/info/{study}", "https://bcm.box.com/shared/static/<per-study-hash>.csv"],
+        "api": "https://trials.linkedomics.org/api/",
+        "paper_doi": "10.1093/nar/gkad871",
+        "pmid": "37811874",
+        "pmc": "PMC10767859"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://trials.linkedomics.org/api/",
+        "auth_required": false,
+        "rate_limits": "unknown (not documented)",
+        "pagination": "none observed; study lists returned as full arrays via POST /filter/",
+        "record_coverage": "full — API exposes study metadata, per-study download links, and precomputed gene/gene-set statistics for all 40 studies"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Unconfirmed overlap with existing pending.api KPs 'Multiomics Drug Response KP' and 'Multiomics Clinical Trials' — their source composition is not documented in the local registry",
+        "CC BY-NC 4.0 license restricts commercial re-use; acceptable for Su Lab academic BioThings context but should be confirmed with maintainers if downstream commercial Translator consumers are a concern",
+        "Raw expression CSVs are hosted on third-party Box.com static links generated per-study by the API rather than on the datasource's own domain — link stability/staleness risk if Box links are regenerated",
+        "Disease/cancer-type field is free text (e.g. 'Kidney', 'Melanoma') without a standard ontology ID (no MONDO/DOID mapping observed) — would require a mapping step"
+    ],
+    "next_actions": [
+        "Confirm with pending.api maintainers whether 'Multiomics Drug Response KP' or 'Multiomics Clinical Trials' already ingest ClinicalOmicsDB/LinkedOmics data before committing to a new plugin",
+        "Proceed to Phase 3 deep inspection since relevance and openness are strong and novelty, while uncertain, is not disqualifying"
+    ],
+    "evaluated_at": "2026-07-09"
+}

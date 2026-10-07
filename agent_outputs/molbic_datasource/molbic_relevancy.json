@@ -1,0 +1,59 @@
+{
+    "name": "molbic",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with BioThings entity types. Contains 321,086 molecules with InChIKey/SMILES (chemical entities → MyChem.info), 2,666 protein targets with UniProt IDs, 988 cell lines with Cellosaurus IDs, 550,093 cell-based molecular bioactivity records. Structured tabular data with standard identifiers across all entity types."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "First database dedicated to cell-based molecular bioactivities (CMBs) — compound-protein interactions measured within cellular contexts (not purified proteins). This cellular context dimension is not available in ChEMBL, BindingDB, or PubChem BioAssay. Novel fields: CMB values stratified by cell line (988 lines), activity level classification (high/moderate/low: 188K/177K/73K), drug development stage tags (TI/LI/LO/TS), 137 disease classes for cell lines, CCLE/DepMap Cellosaurus IDs. ChEMBL has in vitro data but not cell-based context-specific activity with this granularity."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "Freely accessible at molbic.idrblab.net without any login. Paper explicitly states 'now freely accessible without any login requirement'. Download page lists 22 files (txt + sdf archives). Files are publicly accessible. License not explicitly stated on page — likely CC BY-NC 4.0 consistent with other idrblab databases. Compatible with BioThings non-commercial academic deployment."
+        }
+    },
+    "evidence": {
+        "scope": "Cell-based molecular bioactivity (CMB) database: 550,093 experimentally validated compound-protein bioactivities in cellular contexts, 321,086 unique molecules (SMILES/InChIKey), 2,666 protein targets (UniProt), 988 cell lines (Cellosaurus), 137 disease classes, 25 species. Also includes 60,483 purified protein bioactivities for comparison.",
+        "overlap": "Partial overlap: molecule structures (InChIKey/SMILES) overlap with PubChem/ChEMBL; protein targets overlap with UniProt/MyGene. The CMB values with cell-line context are entirely novel. Drug-to-disease and protein-to-disease mappings partially overlap with CTD/DisGeNET but from a CMB perspective.",
+        "entity_types": ["chemical/molecule", "protein/target", "cell_line"],
+        "identifiers_found": ["InChIKey", "SMILES", "UniProt ID", "Cellosaurus accession", "PubChem CID", "ChEMBL ID", "DrugBank ID", "HGNC", "ICD-11", "Entrez Gene ID"],
+        "record_count": 550093
+    },
+    "license": {
+        "name": "CC BY-NC 4.0 (assumed, consistent with other idrblab databases)",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only — BioThings academic deployment compatible"]
+    },
+    "urls": {
+        "homepage": "https://molbic.idrblab.net/",
+        "homepage_alt": "https://idrblab.org/MolBiC/",
+        "download_page": "https://molbic.idrblab.net/download",
+        "download": [
+            "https://molbic.idrblab.net/sites/files/full_data/1-3. Compound.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/2-1. CMBs_All.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/1-1. Cell_Line.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/1-2. Protein.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/1-4. Drug_to_Disease.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/1-5. Protein_Target_to_Disease.txt",
+            "https://molbic.idrblab.net/sites/files/full_data/5-2. Proteins_with_Uniprot_IDs.txt"
+        ],
+        "paper_doi": "10.1093/nar/gkae868",
+        "pmid": "39373530",
+        "pmc": "PMC11701603"
+    },
+    "api_info": {
+        "exists": false
+    },
+    "target_api": "MyChem.info",
+    "risks": [
+        "MolBiC file URLs contain literal spaces (e.g. '2-1. CMBs_All.txt') — URL encoding fails on this server; requires --path-as-is curl flag or Python requests with unencoded path",
+        "License not explicitly stated — assumed CC BY-NC 4.0; confirm before production ingestion",
+        "CMBs_All.txt may be large — need to verify file size before streaming"
+    ],
+    "next_actions": ["Proceed to plugin generation — verify file access method for space-in-URL issue"],
+    "evaluated_at": "2026-06-25"
+}

@@ -1,0 +1,55 @@
+{
+    "name": "open_genes",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with the gene entity type: curated per-gene records with NCBI/Entrez, Ensembl, UniProt cross-references, ICD-10/ICD-11 disease links, and functional/pathway annotations (aging mechanisms, GO-like protein classes). Confirmed live via the API which returns fully structured, tabular gene records (not free text)."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "Curates aging/longevity biology (lifespan-extension experiments across model organisms, aging mechanisms, functional clusters, confidence-tiered gene-aging associations, disease links via ICD) that is not present in MyGene.info, MyDisease.info, or any existing/pending BioThings API. The only tangential overlap is Wellderly (healthy-aging variant frequencies in existing-biothings-plugins.json), which is variant-level population genomics, not gene-aging-mechanism curation — no meaningful overlap. Neither 'open genes' nor 'aging'/'genage' sources appear in existing-biothings-plugins.json or pending-api-datasources.json."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "Paper states CC-BY license for the data and MPL-2.0 for the codebase (GitHub open-genes/open-genes-api). Live REST API confirmed publicly queryable with no auth/key (verified with a direct curl call returning full JSON records). MySQL dump and TSV downloads also offered per the paper and GitHub README. Scored 4/5 rather than 5 because the CC-BY license/version text could not be independently re-confirmed on the live site (open-genes.com is JS-rendered and returned no license text directly), and the exact SQL dump direct-download URL could not be verified live (only referenced in GitHub docs as open_genes_sql_dump.zip)."
+        }
+    },
+    "evidence": {
+        "scope": "Curated database of human genes associated with aging and longevity: 2,402-2,405 genes, ~1,975 lifespan-experiment records (model organism gene modulation vs. lifespan), ~4,644 age-related-change records, ~1,458 longevity-association records across 362 genes, plus disease links (ICD-10/ICD-11), aging mechanisms, functional clusters, protein classes, and genomic location/transcript/exon data.",
+        "overlap": "Minor conceptual overlap with Wellderly (healthy aging, population variant frequencies) but no field-level or entity-level redundancy — Wellderly is variant-level, Open Genes is gene/mechanism-level curation of aging biology.",
+        "entity_types": ["gene", "disease"],
+        "identifiers_found": ["NCBI Gene (Entrez)", "Ensembl gene ID", "UniProt", "HGNC gene symbol", "ICD-10/ICD-11 disease codes"],
+        "record_count": 2405
+    },
+    "license": {
+        "name": "CC-BY (data, per paper) / MPL-2.0 (code, per GitHub repo)",
+        "url": "https://github.com/open-genes/open-genes-api/blob/main/LICENSE",
+        "restrictions": ["Attribution required for CC-BY data reuse; exact CC-BY version (4.0 assumed) not independently re-confirmed on live site."]
+    },
+    "urls": {
+        "homepage": "https://open-genes.com/",
+        "download": ["https://open-genes.com/download"],
+        "api": "https://open-genes.com/api/gene/search",
+        "paper_doi": "10.1093/nar/gkad712",
+        "pmid": "37665017",
+        "pmc": "PMC10768108"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "https://open-genes.com/api",
+        "auth_required": false,
+        "rate_limits": "unknown (not documented, not encountered during a single test query)",
+        "pagination": "page/pageSize (default pageSize=20; 121 pages observed for 2405 records)",
+        "record_coverage": "full — verified live query returned complete nested per-gene record (cross-refs, diseases, aging mechanisms, transcripts/exons)"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Homepage and /download page are JS-rendered SPA shells — direct download file URLs and on-site license text could not be confirmed via WebFetch; relied on paper (PMC10768108) and GitHub repo docs instead.",
+        "Exact CC-BY version number not independently confirmed on the live site.",
+        "Rate limits and API stability under bulk crawl (2,405 records / 121 pages) not stress-tested."
+    ],
+    "next_actions": ["Proceed to Phase 3 deep inspection (completed in this pass)", "Proceed to plugin generation targeting pending.api as an API-crawl-based new BioThings API"],
+    "evaluated_at": "2026-07-09"
+}

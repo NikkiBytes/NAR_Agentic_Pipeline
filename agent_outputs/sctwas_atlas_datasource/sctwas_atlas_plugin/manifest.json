@@ -1,0 +1,25 @@
+{
+    "version": "1.0",
+    "requires": ["pandas"],
+    "__metadata__": {
+        "name": "scTWAS Atlas",
+        "description": "Single-cell transcriptome-wide association study (scTWAS) eQTL data linking SNPs to genes in specific cell types and conditions, covering 21 cell types across 10 sc-eQTL datasets integrated in the scTWAS Atlas.",
+        "license": "CC BY-NC 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "https://ngdc.cncb.ac.cn/sctwas/",
+        "publication": {
+            "doi": "10.1093/nar/gkae931",
+            "pmid": "39420631",
+            "pmc": "PMC11701648"
+        }
+    },
+    "dumper": {
+        "data_url": "https://ngdc.cncb.ac.cn/sctwas/static/file/Allstudies_sig_eQTL.txt",
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error"
+    }
+}

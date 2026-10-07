@@ -1,0 +1,31 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "INTEDE - Interactome of Drug-Metabolizing Enzymes",
+        "description": "Regulatory interactome of drug-metabolizing enzymes (DMEs): xenobiotic/drug modulation of DME expression or activity, gut-microbiome-mediated metabolism of DME-generated drug metabolites, host-protein (transcription factor / oligomerization / non-coding RNA / histone) regulation of DMEs, and disease-associated DME promoter methylation.",
+        "license": "CC BY-NC 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "http://idrblab.org/intede/",
+        "publication": {
+            "doi": "10.1093/nar/gkad1013",
+            "pmid": "37930837",
+            "pmc": "PMC10767827"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P2-04-1-INTEDE_DME_Cross_Matching_ID.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-02-1-INTEDE_XEOTIC_DME_Interaction.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-01-1-INTEDE_MICBIO_DME_Interaction.csv",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-1-INTEDE_HOSPPI_DME_Interaction_TF&Oligomerization&ncRNA&Histone_Modification.txt",
+            "https://intede.idrblab.net/sites/default/files/INTEDE_Download/P1-03-2-INTEDE_HOSPPI_DME_Interaction_DNA_Methylation.txt"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

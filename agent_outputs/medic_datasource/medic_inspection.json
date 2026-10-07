@@ -1,0 +1,119 @@
+{
+    "name": "medic",
+    "status": "VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "url": "https://github.com/everycure-org/matrix-drug-list/releases/latest/download/drugList.tsv",
+            "filename": "drugList.tsv",
+            "format": "TSV",
+            "access": "public",
+            "content_type": "application/octet-stream",
+            "rows": 3857,
+            "release_tag": "v2.3.1",
+            "columns": ["curie", "drug_name", "ingredients_list", "ingredient_ids", "combination_therapy", "alternate_ids", "curie_label", "approved_japan", "marketing_status_europe", "approved_eu", "marketing_status_usa", "approved_usa", "approved_russia", "approved_india", "is_radioisotope_or_diagnostic_agent", "is_allergen", "is_metallic_salt", "is_steroid", "is_antimicrobial", "is_chemotherapy", "is_glucose_regulator", "is_vaccine_or_antigen", "is_no_therapeutic_value", "atc_codes", "atc_main", "atc_level1", "atc_level2", "atc_level3", "atc_level4", "atc_level5", "l1_label", "l2_label", "l3_label", "l4_label", "l5_label", "smiles"]
+        },
+        {
+            "url": "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/indicationList.xlsx",
+            "filename": "indicationList.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "content_type": "application/octet-stream",
+            "size_mb": 2.0,
+            "rows": 10224,
+            "release_tag": "v1.4.1",
+            "columns": ["final normalized drug id", "final normalized drug label", "final normalized disease id", "final normalized disease label", "indications text", "disease name", "drug|disease", "FDA", "EMA", "PMDA", "hyperrelations"]
+        },
+        {
+            "url": "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/contraindicationList.xlsx",
+            "filename": "contraindicationList.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "content_type": "application/octet-stream",
+            "size_mb": 0.74,
+            "rows": 3981,
+            "release_tag": "v1.4.1",
+            "columns": ["active ingredient", "contraindications", "disease contraindicated", "disease id nameres", "disease label nameres", "llm_nameres_correct", "llm disease id", "drug id nameres", "drug label nameres", "final normalized disease id", "final normalized disease label", "llm_nameres_correct_drug", "llm drug id", "final normalized drug id", "final normalized drug label", "drug|disease", "is_allergen", "is_diagnostic_agent"]
+        }
+    ],
+    "excluded_files": [
+        {
+            "url": "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/indicationList_downfilled.INFERRED.RELATIONSHIPS.BASED.ON.DISEASE.SUBTYPES.-.NOT.APPROVED.BY.ANY.GOVERNMENT.AGENCY.xlsx",
+            "reason": "Inferred/downfilled relationships NOT approved by any government agency — only curated core files ingested"
+        },
+        {
+            "url": "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/contraindicationList_downfilled.INFERRED.RELATIONSHIPS.BASED.ON.DISEASE.SUBTYPES.-.NOT.APPROVED.BY.ANY.GOVERNMENT.AGENCY.xlsx",
+            "reason": "Same — inferred only"
+        },
+        {
+            "url": "https://github.com/everycure-org/matrix-disease-list/releases/latest/download/matrix-disease-list.tsv",
+            "reason": "Disease ontology list — different entity type, not drug-centric; would be a separate plugin"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "curie", "type": "string", "sample": "CHEBI:8327", "classification": "IDENTIFIER"},
+            {"name": "drug_name", "type": "string", "sample": "Polythiazide", "classification": "REDUNDANT"},
+            {"name": "alternate_ids", "type": "string", "sample": "['INCHIKEY:BZZKEPGENYLQSC-FIBGUPNXSA-N', 'RXCUI:2612087']", "classification": "NOVEL"},
+            {"name": "smiles", "type": "string", "sample": "CC1=CC=CC=C1", "classification": "REDUNDANT"},
+            {"name": "atc_codes", "type": "string", "sample": "C03AA04", "classification": "NOVEL"},
+            {"name": "approved_usa", "type": "boolean", "sample": "True", "classification": "NOVEL"},
+            {"name": "is_radioisotope_or_diagnostic_agent", "type": "boolean", "sample": "False", "classification": "NOVEL"},
+            {"name": "final normalized drug id", "type": "string", "sample": "CHEBI:8327", "classification": "IDENTIFIER"},
+            {"name": "final normalized disease id", "type": "string", "sample": "MONDO:0005009", "classification": "IDENTIFIER"},
+            {"name": "final normalized disease label", "type": "string", "sample": "congestive heart failure", "classification": "NOVEL"},
+            {"name": "FDA", "type": "integer", "sample": "1", "classification": "NOVEL"},
+            {"name": "EMA", "type": "integer", "sample": "null", "classification": "NOVEL"},
+            {"name": "PMDA", "type": "integer", "sample": "null", "classification": "NOVEL"},
+            {"name": "final normalized disease id (contraind)", "type": "string", "sample": "MONDO:0002476", "classification": "IDENTIFIER"},
+            {"name": "final normalized drug id (contraind)", "type": "string", "sample": "CHEBI:8327", "classification": "IDENTIFIER"},
+            {"name": "is_allergen", "type": "boolean", "sample": "False", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "curie",
+            "type": "CHEBI/UNII/PUBCHEM/RXCUI CURIE",
+            "sample": "CHEBI:8327",
+            "note": "Drug CURIE — CHEBI for 55% of 3,857 drugs; InChIKey available in alternate_ids for 71% but not uniform across all drugs. Using drug CURIE as _id for pending.api."
+        },
+        "identifiers": [
+            {"type": "CHEBI", "field": "curie", "sample": "CHEBI:8327"},
+            {"type": "MONDO", "field": "final normalized disease id", "sample": "MONDO:0005009"},
+            {"type": "RXCUI", "field": "alternate_ids (extracted)", "sample": "RXCUI:2612087"},
+            {"type": "InChIKey", "field": "alternate_ids (extracted)", "sample": "BZZKEPGENYLQSC-FIBGUPNXSA-N"},
+            {"type": "ATC", "field": "atc_codes", "sample": "C03AA04"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "Apache 2.0 (matrix repo) / CC0 (Figshare archive)",
+        "match": false,
+        "restrictions": [],
+        "notes": "Paper is CC BY 4.0. Figshare archive explicitly CC0. GitHub release data files have no LICENSE file. Open access in all cases."
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://github.com/everycure-org/matrix-drug-list/releases/latest/download/drugList.tsv",
+            "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/indicationList.xlsx",
+            "https://github.com/everycure-org/matrix-indication-list/releases/latest/download/contraindicationList.xlsx"
+        ],
+        "primary_key_field": "curie (from drugList.tsv)",
+        "target_api": "MyChem.info",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["indications", "contraindications", "atc_codes", "approval_status", "drug_classification_flags", "xrefs"],
+        "redundant_fields": ["smiles", "drug_name"],
+        "document_structure": "One document per drug (keyed by CHEBI/UNII/PUBCHEM CURIE), with nested indications list (MONDO disease IDs + agency flags) and contraindications list"
+    },
+    "paper_vs_reality": [
+        {"claim": "2,836 drugs (stringent list)", "observed": "3,857 drugs in drugList.tsv v2.3.1", "match": false, "note": "Release v2.3.1 is newer than paper — drug count has grown"},
+        {"claim": "11,068 indications", "observed": "10,224 rows in indicationList.xlsx v1.4.1", "match": false, "note": "Close; version difference"},
+        {"claim": "3,982 contraindications", "observed": "3,981 rows in contraindicationList.xlsx v1.4.1", "match": true},
+        {"claim": "MONDO/RxNorm/MeSH/MedDRA ontology mapping", "observed": "MONDO primary for disease (75.8%), CHEBI primary for drugs; RXCUI/MESH in alternate_ids", "match": true},
+        {"claim": "FDA/EMA/PMDA sources", "observed": "FDA/EMA/PMDA columns present in indication list; FDA 75.8%/EMA 9.2%/PMDA 14.9%", "match": true}
+    ],
+    "risks": [
+        "GitHub release data files lack explicit LICENSE; Figshare CC0 archive is authoritative",
+        "Drug ID prefix non-uniform — parser must handle CHEBI/UNII/PUBCHEM/RXCUI as _id",
+        "hyperrelations column contains large LLM-extracted JSON blobs — exclude from ingestion",
+        "GitHub /releases/latest URLs redirect via 302 — biothings-cli dump should follow redirects"
+    ]
+}

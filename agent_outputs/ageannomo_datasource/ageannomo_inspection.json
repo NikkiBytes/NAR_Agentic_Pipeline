@@ -1,0 +1,140 @@
+{
+    "name": "ageannomo",
+    "status": "VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Genomic%20instability/Differential%20expression.xlsx",
+            "filename": "Differential expression.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 2.9
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Genomic%20instability/Somatic%20mutation.xlsx",
+            "filename": "Somatic mutation.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 10.6
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Genomic%20instability/eQTL.xlsx",
+            "filename": "eQTL.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 1.1
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Loss%20of%20proteostasis/Age-correlated%20protein.xlsx",
+            "filename": "Age-correlated protein.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 0.23
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Loss%20of%20proteostasis/Differential%20protein.xlsx",
+            "filename": "Differential protein.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 1.1
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Loss%20of%20proteostasis/Protein%20interaction.xlsx",
+            "filename": "Protein interaction.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 9.8
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Dysregulated%20metabolism%20in%20aging/Differential%20metabolite.xlsx",
+            "filename": "Differential metabolite.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 0.2
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Dysregulated%20metabolism%20in%20aging/Metabolite%20interaction.xlsx",
+            "filename": "Metabolite interaction.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 15.1
+        },
+        {
+            "url": "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Lifespan%20regulators/Lifespan%20regulators.xlsx",
+            "filename": "Lifespan regulators.xlsx",
+            "format": "XLSX",
+            "access": "public",
+            "size_mb": 0.08
+        },
+        {
+            "url": "https://zenodo.org/records/8394076",
+            "filename": "vikkihuangkexin/AgeAnnoMO-v1.0.zip",
+            "format": "ZIP (mirror archive)",
+            "access": "public",
+            "size_mb": 81.2
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "Dataset ID", "type": "string", "sample": "AMO-BT-001", "classification": "IDENTIFIER"},
+            {"name": "species", "type": "string", "sample": "Caenorhabditis elegans", "classification": "NOVEL"},
+            {"name": "mutation_gene / symbol", "type": "string", "sample": "linc-25 / col-122", "classification": "IDENTIFIER"},
+            {"name": "aging_related_DEG", "type": "string", "sample": "col-122", "classification": "NOVEL"},
+            {"name": "statistic / pvalue / FDR / logFC", "type": "float", "sample": "-42.39 / 1.85e-06 / 1 / 4.99", "classification": "NOVEL"},
+            {"name": "Up/Down / species_specific_gene", "type": "string/boolean", "sample": "up / true", "classification": "NOVEL"},
+            {"name": "Uniprot entry", "type": "string", "sample": "O08992", "classification": "IDENTIFIER"},
+            {"name": "Name (protein)", "type": "string", "sample": "SDCBP", "classification": "IDENTIFIER"},
+            {"name": "Category / ProjectID / Pubmed", "type": "string/int", "sample": "old vs young / PXD012307 / 30814501", "classification": "NOVEL"},
+            {"name": "Id (metabolite, PubChem CID)", "type": "integer", "sample": "119 (gamma-Aminobutyric acid)", "classification": "IDENTIFIER"},
+            {"name": "Molecular Formula / Molecular weight", "type": "string/float", "sample": "C4H9NO2 / 103.12", "classification": "REDUNDANT"},
+            {"name": "plsda_vip / is_AgeRelatedMetabolite", "type": "float/boolean", "sample": "1.046 / false", "classification": "NOVEL"},
+            {"name": "Gene (lifespan regulators)", "type": "string", "sample": "Aaas", "classification": "IDENTIFIER"},
+            {"name": "R_value / p_value / Category", "type": "float/string", "sample": "0.362 / 1.45e-17 / Pos-MLS", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "Dataset ID + species + gene/protein/metabolite identifier (composite)",
+            "type": "custom",
+            "sample": "AMO-BT-001 | Caenorhabditis elegans | col-122"
+        },
+        "identifiers": [
+            {"type": "gene_symbol", "field": "symbol / mutation_gene / Gene", "sample": "col-122"},
+            {"type": "UniProt", "field": "Uniprot entry", "sample": "O08992"},
+            {"type": "PubChem CID", "field": "Id", "sample": "119"},
+            {"type": "PubMed", "field": "Pubmed", "sample": "30814501"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC",
+        "observed_site": "CC BY-NC (per PMC full text; not independently re-confirmed on the JS-rendered site)",
+        "match": true,
+        "restrictions": ["non-commercial reuse only"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Genomic%20instability/Differential%20expression.xlsx",
+            "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Loss%20of%20proteostasis/Differential%20protein.xlsx",
+            "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Dysregulated%20metabolism%20in%20aging/Differential%20metabolite.xlsx",
+            "https://raw.githubusercontent.com/vikkihuangkexin/AgeAnnoMO/master/Lifespan%20regulators/Lifespan%20regulators.xlsx"
+        ],
+        "primary_key_field": "species + gene/protein/metabolite identifier (composite; no single global ID column)",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["aging_related_DEG", "logFC/FDR by age group", "Up/Down direction", "species_specific_gene", "Category (aging hallmark subtype)", "R_value/p_value lifespan correlation", "is_AgeRelatedMetabolite", "Protein/Metabolite interaction edges"],
+        "redundant_fields": ["Molecular Formula", "Molecular weight"]
+    },
+    "paper_vs_reality": [
+        {"claim": "90,972 aging-related genes annotated (paper, NAR 2024)", "observed": "GitHub v1.0 README reports 7,530 genes", "match": false},
+        {"claim": "841 metabolites (paper)", "observed": "GitHub v1.0 README reports 878 metabolites", "match": false},
+        {"claim": "13 mitochondrial genes (paper)", "observed": "GitHub v1.0 README reports 18 mitochondrial genes", "match": false},
+        {"claim": "422 microbiotas (paper)", "observed": "GitHub v1.0 README reports 393 microbiotas", "match": false},
+        {"claim": "License CC BY-NC (paper Data Availability)", "observed": "PMC full text confirms CC BY-NC", "match": true},
+        {"claim": "Downloadable via GitHub project and Zenodo (paper Data Availability)", "observed": "Confirmed: XLSX files fetched directly from GitHub raw URLs, Zenodo archive DOI 10.5281/zenodo.8394076 present", "match": true},
+        {"claim": "Data browsable via canonical web app relab.xidian.edu.cn", "observed": "Site is a JS-rendered SPA; download tab content not confirmed via direct fetch", "match": false}
+    ],
+    "risks": [
+        "GitHub repo entity counts are lower than the published paper's counts, suggesting the repo is a stale v1.0 (Sept 2023) snapshot relative to the Jan 2024 NAR publication -- re-check for an updated release before final ingestion",
+        "No single global primary key; each omics category uses different composite keys (Dataset ID + species + symbol/UniProt/PubChem ID), so the plugin will need per-category ID normalization logic",
+        "Gene identifiers are raw symbols per species (e.g., C. elegans gene names), not Entrez/Ensembl/WormBase IDs -- will require species-aware symbol-to-ID mapping to link into MyGene.info-compatible records",
+        "CC BY-NC license limits reuse to non-commercial contexts; flag for any commercial BioThings API consumers"
+    ]
+}

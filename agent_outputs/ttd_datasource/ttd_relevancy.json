@@ -1,0 +1,64 @@
+{
+    "name": "ttd",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Core BioThings entity types: drugs (InChIKey/PubChem CID → MyChem), therapeutic targets (UniProt → MyGene), diseases (ICD-11 → MyDisease). The database provides drug-target, drug-disease, and target-disease associations — exactly the kind of multi-entity relationship data BioThings pending.api is designed to serve. A BioThings TTD plugin is already deployed at https://biothings.transltr.io/ttd, confirming relevance."
+        },
+        "novelty": {
+            "score": 3,
+            "justification": "Existing BioThings TTD plugin (v8.1.01, June 2023, 876,046 records) already covers core drug-target data. TTD 2026 (v10.1.01 in bulk files) brings: (1) expanded counts — 40,398 drugs (+6K from 2022), 3,798 targets (+700 from 2022); (2) ICD-11 disease annotations in drug-disease and target-disease files (novel standard vs. the 2023 plugin); (3) three entirely new data types described in the 2026 paper — target perturbation profiles (CMap/LINCS, 10,506 profiles), FDA label clinical data (44,649 labels), and cytotoxic/antimicrobial activity landscapes — but these are NOT yet present in the bulk download files. Score 3: version update with meaningful expansion + novel data types pending bulk access."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "All 6 download files freely accessible at https://ttd.idrblab.cn/files/download/ with no authentication required. License: CC BY-NC 4.0 (confirmed from NAR publication and consistent across all TTD versions). NC restriction does not block BioThings ingestion — BioThings has already deployed TTD under this license. No paywall or click-through gate."
+        }
+    },
+    "evidence": {
+        "scope": "3,798 therapeutic targets (protein/gene, with UniProt, function, target type: Successful/Clinical/Preclinical/Literature) and 40,398 drugs (InChIKey, SMILES, InChI, trade name, clinical status, therapeutic class) with drug-target, drug-disease (ICD-11), and target-disease (ICD-11) associations. Also includes biomarker-disease data and cross-reference identifiers (PubChem CID, ChEBI, CAS, ATC).",
+        "overlap": "Core drug-target data already in BioThings TTD v8.1.01. Drug identifiers (InChIKey, PubChem CID, ChEBI) overlap with MyChem.info sources. The drug-target association layer is the primary novel contribution for pending.api. ICD-11 disease codes are a new identifier standard not present in the 2023 plugin.",
+        "entity_types": ["chemical", "gene", "disease"],
+        "identifiers_found": ["InChIKey", "PubChem CID", "UniProt", "ChEBI", "CAS", "ATC", "ICD-11"],
+        "record_count": 40398
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only; commercial reuse requires OUP permission"]
+    },
+    "urls": {
+        "homepage": "https://db.idrblab.net/ttd/",
+        "download": [
+            "https://ttd.idrblab.cn/files/download/P1-01-TTD_target_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-02-TTD_drug_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-03-TTD_crossmatching.txt",
+            "https://ttd.idrblab.cn/files/download/P1-04-Drug_synonyms.txt",
+            "https://ttd.idrblab.cn/files/download/P1-05-Drug_disease.txt",
+            "https://ttd.idrblab.cn/files/download/P1-06-Target_disease.txt",
+            "https://ttd.idrblab.cn/files/download/P1-08-Biomarker_disease.txt"
+        ],
+        "api": null,
+        "paper_doi": "10.1093/nar/gkaf1154",
+        "pmid": "41243978",
+        "pmc": "PMC12807707"
+    },
+    "api_info": {
+        "exists": false
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Existing BioThings TTD plugin (v8.1.01) already deployed — this is a version update, not a new datasource",
+        "CC BY-NC license limits commercial use",
+        "Download files still on v10.1.01 (2024); the 2026-specific new data types (perturbation profiles, FDA labels, cytotoxicity) are not yet in bulk download",
+        "TTD uses a non-standard key-value row format (not CSV) — parser must aggregate rows by entity ID",
+        "New domain (ttd.idrblab.cn) differs from old plugin's db.idrblab.net — URLs need updating"
+    ],
+    "next_actions": [
+        "Proceed to plugin generation — update the existing BioThings TTD plugin to v10.1.01 with new download URLs",
+        "Use ttd.idrblab.cn as the canonical download domain (confirmed working with direct file access)",
+        "Monitor for future bulk download files covering perturbation profiles and FDA labels"
+    ],
+    "evaluated_at": "2026-05-28"
+}

@@ -1,0 +1,28 @@
+{
+    "version": "1.0",
+    "requires": [],
+    "__metadata__": {
+        "name": "SORC — Spatial Omics Resource in Cancer",
+        "description": "Cell-type-annotated, spatially resolved transcriptomic and matched single-cell RNA-seq metadata across 82 datasets / 269 tissue slices spanning 17 cancer types, with pointers to spatially variable gene (SVG) calls, cell-type deconvolution proportions, immune-tumor co-occurrence, GSVA functional enrichment, and ligand-receptor cell-cell communication result files.",
+        "license": "CC BY-NC 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "http://bio-bigdata.hrbmu.edu.cn/SORC",
+        "publication": {
+            "doi": "10.1093/nar/gkad820",
+            "pmid": "37811897",
+            "pmc": "PMC10768140"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "https://bio-bigdata.hrbmu.edu.cn/SORC/0_files/innerpath/download_dataset.txt",
+            "https://bio-bigdata.hrbmu.edu.cn/SORC/0_files/innerpath/download_slice.txt"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error"
+    }
+}

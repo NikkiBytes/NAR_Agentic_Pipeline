@@ -1,0 +1,117 @@
+{
+    "name": "ravar",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "http://www.ravar.bio/api/download/static/gene_fulltable.txt",
+            "filename": "gene_fulltable.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 132.5,
+            "rows": 76186
+        },
+        {
+            "url": "http://www.ravar.bio/api/download/static/snp_fulltable.txt",
+            "filename": "snp_fulltable.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 26.6,
+            "rows": 18861
+        },
+        {
+            "url": "http://www.ravar.bio/api/download/static/trait_allinfo.txt",
+            "filename": "trait_allinfo.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 1.5,
+            "rows": 2005,
+            "note": "Lookup table; all columns (Trait Ontology id, Trait Label, EFO description, EFO synonym, EFO Tree) are already denormalized into each row of gene_fulltable.txt and snp_fulltable.txt. Not ingested by the parser -- would only duplicate data already present in the two main association tables."
+        },
+        {
+            "url": "http://www.ravar.bio/api/download/static/publication_allinfo.txt",
+            "filename": "publication_allinfo.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.13,
+            "rows": 245,
+            "note": "Lookup table; all columns (PMID, Title, Authors, Citation, First Author, Journal/Book, Publication Year, Create Date, PMCID, NIHMS ID, DOI) are already denormalized into each row of gene_fulltable.txt and snp_fulltable.txt. Not ingested by the parser for the same reason as trait_allinfo.txt."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "Gene Symbol", "type": "string", "sample": "A1BG", "classification": "IDENTIFIER"},
+            {"name": "Ensembl ID", "type": "string", "sample": "ENSG00000121410", "classification": "IDENTIFIER"},
+            {"name": "Gene Type", "type": "string", "sample": "protein_coding", "classification": "NOVEL"},
+            {"name": "CHR", "type": "string", "sample": "19", "classification": "REDUNDANT"},
+            {"name": "Location", "type": "string", "sample": "chr19:58345178-58353492", "classification": "REDUNDANT"},
+            {"name": "Gene full name", "type": "string", "sample": "alpha-1-B glycoprotein", "classification": "REDUNDANT"},
+            {"name": "Gene synonym", "type": "string (semicolon-list)", "sample": "ACF;ACF64;ACF65;APOBEC1CF;ASP", "classification": "REDUNDANT"},
+            {"name": "Gene summary", "type": "string", "sample": "The protein encoded by this gene is...", "classification": "REDUNDANT"},
+            {"name": "RID", "type": "string", "sample": "R00001", "classification": "NOVEL"},
+            {"name": "Reported Trait", "type": "string", "sample": "Abnormal findings on diagnostic imaging of other parts of digestive tract", "classification": "NOVEL"},
+            {"name": "Trait Label", "type": "string", "sample": "abnormal result of diagnostic imaging", "classification": "IDENTIFIER"},
+            {"name": "Trait Ontology id", "type": "string", "sample": "EFO:0009827", "classification": "IDENTIFIER"},
+            {"name": "P-value", "type": "string (scientific notation)", "sample": "5.91E-05", "classification": "NOVEL"},
+            {"name": "Method/Software", "type": "string", "sample": "collapsing analyse", "classification": "NOVEL"},
+            {"name": "RSID", "type": "string", "sample": "rs143997339", "classification": "IDENTIFIER"},
+            {"name": "POS", "type": "string (numeric)", "sample": "48424410", "classification": "REDUNDANT"},
+            {"name": "Genotype", "type": "string", "sample": "C/A", "classification": "NOVEL"},
+            {"name": "MAF", "type": "string (numeric)", "sample": "0.0077255", "classification": "REDUNDANT"},
+            {"name": "Mapped Gene", "type": "string", "sample": "FBN1", "classification": "IDENTIFIER"},
+            {"name": "Beta", "type": "string (numeric)", "sample": "1.93221", "classification": "NOVEL"},
+            {"name": "95%CI", "type": "string", "sample": "[0.99-1.24] unit increase", "classification": "NOVEL"},
+            {"name": "Nearby Genes(+-100K)", "type": "string (semicolon-list)", "sample": "DUT;FBN1", "classification": "NOVEL"},
+            {"name": "PMID", "type": "string (numeric)", "sample": "34375979", "classification": "IDENTIFIER"},
+            {"name": "PMCID", "type": "string", "sample": "PMC8458098", "classification": "IDENTIFIER"},
+            {"name": "DOI", "type": "string", "sample": "10.1038/s41586-021-03855-y", "classification": "IDENTIFIER"}
+        ],
+        "primary_key": {
+            "field": "Ensembl ID (gene_fulltable.txt) / RSID (snp_fulltable.txt)",
+            "type": "custom (Ensembl Gene ID for gene-level docs, dbSNP rsID for variant-level docs)",
+            "sample": "ENSG00000121410 / rs143997339"
+        },
+        "identifiers": [
+            {"type": "Ensembl Gene ID", "field": "Ensembl ID", "sample": "ENSG00000121410"},
+            {"type": "gene_symbol", "field": "Gene Symbol", "sample": "A1BG"},
+            {"type": "dbSNP rsID", "field": "RSID", "sample": "rs143997339"},
+            {"type": "EFO/HPO ontology ID", "field": "Trait Ontology id / Trait Ontology ID", "sample": "EFO:0009827"},
+            {"type": "PMID", "field": "PMID", "sample": "34375979"},
+            {"type": "PMCID", "field": "PMCID", "sample": "PMC8458098"},
+            {"type": "DOI", "field": "DOI", "sample": "10.1038/s41586-021-03855-y"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "CC BY 4.0 (stated directly in Data Availability section fetched from PMC; no separate license page/footer found on the JS-rendered site itself, but no conflicting terms found either)",
+        "match": true,
+        "restrictions": []
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "http://www.ravar.bio/api/download/static/gene_fulltable.txt",
+            "http://www.ravar.bio/api/download/static/snp_fulltable.txt"
+        ],
+        "primary_key_field": "Ensembl ID (gene docs) / RSID (variant docs)",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["RID", "Reported Trait", "P-value", "Method/Software", "Genotype", "Beta", "95%CI", "Nearby Genes(+-100K)"],
+        "redundant_fields": ["CHR", "Location", "Gene full name", "Gene synonym", "Gene summary", "POS", "MAF"]
+    },
+    "paper_vs_reality": [
+        {"claim": "95,047 total rare variant associations", "observed": "76,186 (gene_fulltable.txt) + 18,861 (snp_fulltable.txt) = 95,047", "match": true},
+        {"claim": "76,186 gene-level associations", "observed": "76,186 data rows in gene_fulltable.txt", "match": true},
+        {"claim": "18,861 variant-level associations", "observed": "18,861 data rows in snp_fulltable.txt", "match": true},
+        {"claim": "7,947 unique genes", "observed": "12,850 unique gene symbols/Ensembl IDs in gene_fulltable.txt", "match": false},
+        {"claim": "6,471 distinct variants", "observed": "6,470 unique RSIDs in snp_fulltable.txt", "match": true},
+        {"claim": "245 publications manually curated", "observed": "245 rows in publication_allinfo.txt", "match": true},
+        {"claim": "Data Availability describes 'Excel files' on the Download page", "observed": "Files actually served as plain tab-separated .txt via a REST endpoint (www.ravar.bio/api/download/static/), not .xlsx", "match": false},
+        {"claim": "API-listed file size for gene_fulltable.txt: '33.1M'", "observed": "Actual downloaded file: ~132.5 MB", "match": false}
+    ],
+    "risks": [
+        "Homepage/download page is a JS-rendered Vue SPA; no static HTML download links exist. Direct file URLs were recovered by inspecting the compiled JS bundle (app.js) for the underlying '/api/download/list' endpoint, which returns the four static file paths used here.",
+        "Gene count mismatch: paper abstract states 7,947 unique genes but gene_fulltable.txt actually contains 12,850 unique gene symbols/Ensembl IDs (matches the paper's separately reported '12,850 genes across 9 categories' figure instead) -- the file appears to be the fuller/updated gene-category table, not strictly the 7,947-gene rare-variant-only subset. Not a blocker: gene_fulltable.txt is still the authoritative bulk download offered by the site's own download API for gene-level associations.",
+        "API-reported file size metadata for gene_fulltable.txt and snp_fulltable.txt is stale relative to actual file size -- confirmed via direct download rather than trusting the API listing.",
+        "No public version/release endpoint found (no /api/about, /api/statistics); version.py falls back to the Last-Modified header observed on the site's static homepage assets."
+    ]
+}

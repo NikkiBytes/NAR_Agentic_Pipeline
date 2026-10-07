@@ -1,0 +1,64 @@
+{
+    "name": "gto",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 4,
+            "justification": "GTO is a gene-centric database linking clinical trials to genes (HGNC symbols, 614 altered genes), diseases (DOID, MONDO, MeSH IDs), therapy types, vectors, and GEO transcriptome accessions. Core entities map cleanly to BioThings: genes (HGNC) and diseases (MONDO/DOID). The clinical trial dimension (NCT IDs, phases, outcomes, adverse events) and gene therapy vector/construct metadata are novel for BioThings. Score capped at 4 (not 5) because the omics data (40+ GB expression profiles) is too large to ingest and the clinical trial records are the primary unit of value, not genes themselves."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No existing BioThings API covers gene therapy clinical trial data. MyGene.info has gene annotations but no clinical trial linkage. MyDisease.info has disease annotations but no gene-therapy treatment context. pending.api sources do not include gene therapy trial records. GTO's combination of: (1) clinical trial IDs + phase/status/outcome, (2) therapy type/vector/construct detail, (3) GEO-linked transcriptome datasets per trial, and (4) disease MONDO/DOID cross-references is entirely absent from current BioThings ecosystem. This is a fully novel data type."
+        },
+        "openness": {
+            "pass": true,
+            "score": 5,
+            "justification": "Homepage states explicitly: 'This website is open and free for all users with no login required.' All four Excel download files (clinical detail, clinical basic, omics metadata, indication/disease) download without authentication. README states 'for academic and research purposes only' with no formal license specified (no CC, no proprietary restriction stated). All download URLs return 200 OK with Content-Disposition headers confirming direct file access."
+        }
+    },
+    "evidence": {
+        "homepage_status": "200 OK",
+        "site_states_open_access": true,
+        "site_open_access_quote": "This website is open and free for all users with no login required.",
+        "readme_license_quote": "Please note that these datasets are provided for academic and research purposes only.",
+        "formal_license": null,
+        "record_counts": {
+            "clinical_trials": 6333,
+            "transcriptome_profiles": 3466,
+            "altered_genes": 614,
+            "therapy_types": 22
+        },
+        "download_files_verified": [
+            "GTO_clinic_data.xlsx",
+            "GTO_clinic_basic.xlsx",
+            "GTO_Omics_data.xlsx",
+            "GTO_indication.xlsx",
+            "README.txt"
+        ],
+        "api_available": false,
+        "api_notes": "No REST API detected; Django URL patterns expose only HTML views and file download endpoints. Data access is bulk download only."
+    },
+    "license": {
+        "type": "academic_use_only",
+        "formal_spdx": null,
+        "open_access": true,
+        "login_required": false,
+        "source": "README.txt and homepage statement",
+        "notes": "No SPDX/Creative Commons license declared. README states academic/research use only. No formal restriction on redistribution stated, but no permissive license either. Contact: panjianbo@cqmu.edu.cn"
+    },
+    "urls": {
+        "homepage": "http://www.inbirg.com/gto/",
+        "download_page": "http://www.inbirg.com/gto/download",
+        "clinical_detail_download": "http://www.inbirg.com/gto/download/clinical_data_download",
+        "clinical_basic_download": "http://www.inbirg.com/gto/download/clinical_basic_download",
+        "omics_datasets_download": "http://www.inbirg.com/gto/download/omics_data_datasets",
+        "indication_download": "http://www.inbirg.com/gto/download/indication",
+        "readme": "http://www.inbirg.com/gto/download/readme",
+        "diff_expression_zip": "http://www.inbirg.com/gto/download/gen_gtd_degs",
+        "expression_profiles_zip": "http://www.inbirg.com/gto/download/exp_download",
+        "doi": "https://doi.org/10.1093/nar/gkae1051",
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39540438/"
+    },
+    "target_api": "pending.api",
+    "evaluated_at": "2026-06-25"
+}

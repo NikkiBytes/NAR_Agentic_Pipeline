@@ -1,0 +1,63 @@
+{
+    "name": "chemprob",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Directly aligned with BioThings entity types. Contains 603 chemoproteomic probes (chemical compounds with InChIKey), 1,016 competitors (small molecules with InChIKey/SMILES), and 14,250 human protein targets (UniProt IDs). Probe-protein covalent interaction data maps directly to MyChem.info (chemicals) and links to MyGene targets. Structured tabular data, actively updated (last updated Sep 2024)."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "First atlas of chemoproteomic probes (CPPs) labelling human proteins in living cells. Unique data: 603 CPPs (133 covalent ABPP + 470 photoaffinity PAL-AfBPP), 1,016 competitors, 135,486 probe-labelled binding sites across 13 amino acid residue types in 13,938 proteins, 2,118,636 binding ratio records. This data type — probe-protein covalent labeling in living cells — is not in any BioThings API. CysDB (predecessor) only covers cysteine-binding probes; Chem(Pro)2 covers all 13 amino acid types. ChEMBL/BindingDB lack this probe-specific covalent interaction paradigm."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "Freely accessible at chemprosquare.idrblab.net without login. Download files are publicly accessible via direct URLs (text/plain, no auth required). No explicit license statement found on site, but paper states 'open to all users without any login requirement'. From idrblab (same group as TTD/PDCdb which use CC BY-NC 4.0). Assuming CC BY-NC 4.0 pending license confirmation — compatible with BioThings academic/non-commercial use."
+        }
+    },
+    "evidence": {
+        "scope": "Chemoproteomic probes (CPPs) — covalent and photoaffinity probes that label human proteins in living cells. Covers probe structures (SMILES, InChIKey), competitor compounds, probe-protein covalent interactions, binding sites (amino acid residue level), quantitative binding ratios, and cell systems used. 603 probes, 1,016 competitors, 14,250 protein targets, 2,118,636 binding ratio records.",
+        "overlap": "Minimal overlap with existing BioThings sources. ChEMBL/BindingDB cover non-covalent ligand-protein interactions but not probe-specific covalent labeling. CovalentInDB and CysDB cover a small subset (cysteine only). The full CPP atlas (all amino acids, photoaffinity probes, living cell validation) is entirely novel.",
+        "entity_types": ["chemical/probe", "chemical/competitor", "protein/target"],
+        "identifiers_found": ["InChIKey", "PubChem CID", "UniProt ID", "Entrez Gene ID (NCBI)", "HGNC ID", "Ensembl transcript", "ChEMBL ID", "TTD ID", "Cellosaurus accession"],
+        "record_count": 603
+    },
+    "license": {
+        "name": "CC BY-NC 4.0 (assumed, consistent with other idrblab databases)",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["Non-commercial use only — BioThings academic deployment compatible"]
+    },
+    "urls": {
+        "homepage": "https://chemprosquare.idrblab.net/",
+        "homepage_alt": "https://idrblab.org/chemprosquare/",
+        "download": [
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_probe.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_competitor.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_enzyme.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_gpcr.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_immunoglobulin.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_transporter.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_target_other.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/chemoproteomics_experiment.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/chemoproteomics_enzyme.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_cell.txt",
+            "https://chemprosquare.idrblab.net/sites/default/files/download/general_reference.txt"
+        ],
+        "paper_doi": "10.1093/nar/gkae943",
+        "pmid": "39436046",
+        "pmc": "PMC11701659"
+    },
+    "api_info": {
+        "exists": false
+    },
+    "target_api": "MyChem.info",
+    "risks": [
+        "License not explicitly stated on site — assumed CC BY-NC 4.0 based on other idrblab databases; should confirm",
+        "chemoproteomics_enzyme.txt is 924 MB — requires streaming parser",
+        "chemoproteomics_other.txt is 852 MB — also large",
+        "Primary entity (probe) identified by internal ID (LDPC####) not InChIKey — InChIKey present in general_probe.txt; competitor by LDCM####"
+    ],
+    "next_actions": ["Proceed to plugin generation"],
+    "evaluated_at": "2026-06-25"
+}

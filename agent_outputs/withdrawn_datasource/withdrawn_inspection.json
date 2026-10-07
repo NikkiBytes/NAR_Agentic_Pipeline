@@ -1,0 +1,94 @@
+{
+    "name": "withdrawn",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://bioinformatics.charite.de/withdrawn_3/downloads/withdrawns.csv",
+            "filename": "withdrawns.csv",
+            "format": "CSV",
+            "access": "public",
+            "size_mb": 1.58
+        },
+        {
+            "url": "https://bioinformatics.charite.de/withdrawn_3/downloads/w200_checklist.csv",
+            "filename": "w200_checklist.csv",
+            "format": "CSV",
+            "access": "public",
+            "size_mb": 0.01
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "id", "type": "integer", "sample": "2", "classification": "REDUNDANT"},
+            {"name": "withdrawnID", "type": "string", "sample": "w1", "classification": "IDENTIFIER"},
+            {"name": "drugname", "type": "string", "sample": "Hexachlorophene", "classification": "REDUNDANT"},
+            {"name": "atc", "type": "string", "sample": "D08AE01", "classification": "IDENTIFIER"},
+            {"name": "cid", "type": "integer", "sample": "3598", "classification": "IDENTIFIER"},
+            {"name": "chemblid", "type": "string", "sample": "CHEMBL496", "classification": "IDENTIFIER"},
+            {"name": "inchi", "type": "string", "sample": "InChI=1S/C13H6Cl6O2/...", "classification": "REDUNDANT"},
+            {"name": "inchikey", "type": "string", "sample": "ACGUYXCXAPNIKK-UHFFFAOYSA-N", "classification": "IDENTIFIER"},
+            {"name": "smiles", "type": "string", "sample": "Oc1c(Cl)cc(Cl)c(Cl)c1Cc1c(O)c(Cl)cc(Cl)c1Cl", "classification": "REDUNDANT"},
+            {"name": "ld50", "type": "float", "sample": "100", "classification": "NOVEL"},
+            {"name": "toxclass", "type": "integer", "sample": "3", "classification": "NOVEL"},
+            {"name": "firstwithdrawn", "type": "integer", "sample": "1972", "classification": "NOVEL"},
+            {"name": "lastwithdrawn", "type": "integer", "sample": "1988", "classification": "NOVEL"},
+            {"name": "firstapproval", "type": "integer", "sample": "1949", "classification": "NOVEL"},
+            {"name": "firstdeath", "type": "string", "sample": "N/A", "classification": "NOVEL"},
+            {"name": "toxtype", "type": "string", "sample": "neurological", "classification": "NOVEL"},
+            {"name": "reference", "type": "string", "sample": "https://www.ncbi.nlm.nih.gov/pubmed/1117313", "classification": "NOVEL"},
+            {"name": "hba", "type": "integer", "sample": "2", "classification": "REDUNDANT"},
+            {"name": "hbd", "type": "integer", "sample": "2", "classification": "REDUNDANT"},
+            {"name": "nrbonds", "type": "integer", "sample": "2", "classification": "REDUNDANT"},
+            {"name": "formula", "type": "string", "sample": "C13H6Cl6O2", "classification": "REDUNDANT"},
+            {"name": "molwt", "type": "float", "sample": "406.904", "classification": "REDUNDANT"},
+            {"name": "tpsa", "type": "float", "sample": "40.5", "classification": "REDUNDANT"},
+            {"name": "dataset", "type": "string", "sample": "Safety Withdrawal", "classification": "NOVEL"},
+            {"name": "ctdid", "type": "string", "sample": "D006582", "classification": "IDENTIFIER"},
+            {"name": "withdrawalCountries", "type": "string (semicolon-delimited list)", "sample": "EU;JPN;PER;RUS;TUR", "classification": "NOVEL"},
+            {"name": "DrugbankID", "type": "string", "sample": "DB00756", "classification": "IDENTIFIER"},
+            {"name": "maccsfp", "type": "string (bit string, excluded from parser output)", "sample": "0000...", "classification": "REDUNDANT"},
+            {"name": "fp24", "type": "string (fingerprint, excluded from parser output)", "sample": "...", "classification": "REDUNDANT"},
+            {"name": "molfile", "type": "string (MDL molfile block, excluded from parser output)", "sample": "OpenBabel...", "classification": "REDUNDANT"},
+            {"name": "inchikey_jchem", "type": "string (excluded, JChem-recomputed duplicate of inchikey)", "sample": "ACGUYXCXAPNIKK-UHFFFAOYSA-N", "classification": "REDUNDANT"}
+        ],
+        "primary_key": {
+            "field": "inchikey",
+            "type": "InChIKey",
+            "sample": "ACGUYXCXAPNIKK-UHFFFAOYSA-N"
+        },
+        "identifiers": [
+            {"type": "InChIKey", "field": "inchikey", "sample": "ACGUYXCXAPNIKK-UHFFFAOYSA-N"},
+            {"type": "PubChem CID", "field": "cid", "sample": "3598"},
+            {"type": "ChEMBL ID", "field": "chemblid", "sample": "CHEMBL496"},
+            {"type": "DrugBank ID", "field": "DrugbankID", "sample": "DB00756"},
+            {"type": "ATC code", "field": "atc", "sample": "D08AE01"},
+            {"type": "CTD chemical ID", "field": "ctdid", "sample": "D006582"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC (NAR article license)",
+        "observed_site": "Not stated on homepage, FAQ, or contact pages",
+        "match": false,
+        "restrictions": ["Site itself does not publish a dataset-specific license; assumed to follow the article's CC BY-NC 4.0"]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://bioinformatics.charite.de/withdrawn_3/downloads/withdrawns.csv"],
+        "primary_key_field": "inchikey",
+        "target_api": "mychem.info",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["ld50", "toxclass", "toxtype", "firstwithdrawn", "lastwithdrawn", "firstapproval", "firstdeath", "reference", "dataset", "withdrawalCountries"],
+        "redundant_fields": ["drugname", "inchi", "smiles", "formula", "molwt", "tpsa", "hba", "hbd", "nrbonds", "maccsfp", "fp24", "molfile", "inchikey_jchem", "id"]
+    },
+    "paper_vs_reality": [
+        {"claim": "Bulk CSV download offered via FAQ", "observed": "Confirmed: withdrawns.csv at /withdrawn_3/downloads/ (200 OK, text/csv, 1.58MB)", "match": true},
+        {"claim": "No total drug count stated in paper text", "observed": "Live site CSV has 647 records (a prior FAQ summary mentioned 626; site has grown since publication)", "match": "partial - MISMATCH (growth since Jan 2024 publication)"},
+        {"claim": "Integrates FAERS pharmacovigilance data, ChEMBL 29 mechanism-of-action predictions, KEGG pathway enrichment, ATC classification", "observed": "CSV bulk file contains ATC, withdrawal countries/dates, tox class/type, LD50, CTD ID; MoA/pathway-enrichment results are presented only via the web UI's per-drug analysis pages, not in the bulk CSV", "match": "partial - MoA and pathway data are UI-only, not in bulk download"},
+        {"claim": "No API mentioned", "observed": "Confirmed: no REST/GraphQL API found on homepage or subpages", "match": true}
+    ],
+    "risks": [
+        "Mechanism-of-action predictions and KEGG pathway-enrichment results (mentioned in the paper as key features) are only available through the web UI's per-drug analysis tool, not in the bulk CSV -- out of scope for the bulk-download ingestion path used here.",
+        "11 of 647 rows have no usable InChIKey (empty or whitespace-only) and are skipped (no MyChem-mergeable identifier); parser yields 636 documents.",
+        "License for the dataset itself is not explicitly published on the site; risk noted and carried into README.md."
+    ]
+}

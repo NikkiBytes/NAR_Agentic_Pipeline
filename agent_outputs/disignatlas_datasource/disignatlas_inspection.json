@@ -1,0 +1,92 @@
+{
+    "name": "disignatlas",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "http://www.inbirg.com/disignatlas/download/dis_info_datasets",
+            "filename": "Disease_information_Datasets.csv",
+            "format": "CSV",
+            "access": "public",
+            "size_mb": 2.95
+        },
+        {
+            "url": "http://www.inbirg.com/disignatlas/download/dis_info_degs",
+            "filename": "Disease_information_DEGs.gmt",
+            "format": "GMT (tab-delimited)",
+            "access": "public",
+            "size_mb": 35.6
+        },
+        {
+            "url": "http://www.inbirg.com/disignatlas/download/readme",
+            "filename": "README.txt",
+            "format": "TXT",
+            "access": "public",
+            "size_mb": 0.004
+        },
+        {
+            "url": "http://www.inbirg.com/disignatlas/download/diff_results_download",
+            "filename": "diff_results_all.zip",
+            "format": "ZIP",
+            "access": "public",
+            "size_mb": 10342,
+            "note": "Per-dataset full differential expression results (fold-change/p-value per gene per dataset); NOT ingested -- too large for bulk parsing at this stage, excluded from data_url."
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "dsaid", "type": "string", "sample": "DSA00001", "classification": "IDENTIFIER"},
+            {"name": "accession", "type": "string", "sample": "GSE224398", "classification": "IDENTIFIER"},
+            {"name": "platform", "type": "string", "sample": "GPL21103", "classification": "NOVEL"},
+            {"name": "deg_count", "type": "integer", "sample": "1000", "classification": "NOVEL"},
+            {"name": "disease", "type": "string", "sample": "Alzheimer's Disease", "classification": "NOVEL"},
+            {"name": "diseaseid", "type": "string", "sample": "C0002395", "classification": "IDENTIFIER"},
+            {"name": "tissue", "type": "string", "sample": "Hippocampus", "classification": "NOVEL"},
+            {"name": "data_source", "type": "string", "sample": "GEO", "classification": "REDUNDANT"},
+            {"name": "library_strategy", "type": "string", "sample": "scRNA-Seq", "classification": "NOVEL"},
+            {"name": "organism", "type": "string", "sample": "Mus musculus", "classification": "REDUNDANT"},
+            {"name": "control_case_sample_count", "type": "string (pipe-delimited pair)", "sample": "1|1", "classification": "NOVEL"},
+            {"name": "definition", "type": "string", "sample": "DO:An Alzheimer's disease that has_material_basis_in mutation...", "classification": "REDUNDANT"},
+            {"name": "degs (from GMT, gene columns 3+)", "type": "list of integer (Entrez Gene ID)", "sample": "5307, 109729169, ...", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "dsaid",
+            "type": "custom",
+            "sample": "DSA00001"
+        },
+        "identifiers": [
+            {"type": "DisGeNET/UMLS CUI", "field": "diseaseid", "sample": "C0002395"},
+            {"type": "GEO/ArrayExpress/TCGA accession", "field": "accession", "sample": "GSE224398"},
+            {"type": "NCBI Gene ID (Entrez)", "field": "degs gene columns (GMT)", "sample": "5307"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "No explicit license badge on-page; footer states 'Copyright @ Intelligent Bioinformatics Research Group' only -- paper's CC BY 4.0 statement is the authoritative source",
+        "match": true,
+        "restrictions": []
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "http://www.inbirg.com/disignatlas/download/dis_info_datasets",
+            "http://www.inbirg.com/disignatlas/download/dis_info_degs"
+        ],
+        "primary_key_field": "dsaid",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["disease", "diseaseid", "tissue", "library_strategy", "control_case_sample_count", "deg_count", "degs (top DEG Entrez gene IDs)"],
+        "redundant_fields": ["data_source", "organism", "definition (disease-ontology free text, already covered by MyDisease.info ontology aggregation)"]
+    },
+    "paper_vs_reality": [
+        {"claim": "10,306 comparative datasets (incl. 328 scRNA-Seq/snRNA-Seq)", "observed": "10,306 rows in Disease_information_Datasets.csv (10,307 lines incl. header)", "match": true},
+        {"claim": "1,836 distinct disease types", "observed": "not independently recounted (would require distinct-value count on 'disease' column); left as paper claim, not verified field-by-field", "match": null},
+        {"claim": "Freely available, no login requirement", "observed": "confirmed -- all 3 ingested files downloaded via plain curl, no auth, HTTP 200, correct Content-Disposition filenames", "match": true},
+        {"claim": "CC BY 4.0 license", "observed": "not re-stated on-site but not contradicted; paper is authoritative", "match": true}
+    ],
+    "risks": [
+        "Site serves only over HTTP (port 443 connection refused) -- data_url must use http:// not https://",
+        "GMT DEG file covers 8,466/10,306 datasets; ~1,840 datasets will have no `degs` field populated",
+        "deg_count and GMT gene-list length are both a fixed 1000 across every sampled row -- likely a top-N cutoff applied by the source, not the literal total DEG count; documented as such rather than treated as an exact count",
+        "10.1 GB full per-dataset differential-analysis ZIP excluded from ingestion scope (fold-change/p-value per gene, per dataset) -- flagged as a candidate for a future, separate large-scale ingestion"
+    ]
+}

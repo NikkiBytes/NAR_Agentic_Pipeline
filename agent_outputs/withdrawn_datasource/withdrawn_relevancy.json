@@ -1,0 +1,51 @@
+{
+    "name": "withdrawn",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Covers drugs/compounds (core MyChem.info entity) with structured pharmacovigilance annotations: withdrawal reason/toxicity class, withdrawal country list, first/last withdrawn year, first approval year, LD50 estimate, ATC classification, mechanism-of-action predictions (ChEMBL-derived), and FAERS-based adverse event context. Directly aligned with BioThings drug/chemical sphere."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "MyChem.info already ingests SIDER (side effects) and AEOLUS (aggregated FAERS adverse-event counts), so raw adverse-event overlap exists. However, Withdrawn 2.0 contributes curated, drug-withdrawal-specific structured fields not present in any existing BioThings source: toxicity class (hepatic/cardiovascular/hematological/neurological/etc, ProTox-II-derived), predicted LD50, explicit withdrawal country list (ISO3 codes), first/last-withdrawn year, first-approval year, dataset/provenance flag (Safety Withdrawal / EMA / DrugBank Withdrawn / eDrug3D discontinued), and CTD cross-reference ID. No existing BioThings source models 'why and where a drug was withdrawn' as a first-class structured record."
+        },
+        "openness": {
+            "pass": true,
+            "score": 4,
+            "justification": "Bulk CSV (`withdrawns.csv`, ~1.65MB, 647 rows) is directly downloadable with no login, API key, or paywall, confirmed via a live HTTP GET (200 OK, content-type: text/csv). No explicit license/terms-of-use statement was found anywhere on the datasource site (homepage, FAQ, contact page) -- this is a minor openness/attribution risk, not a hard blocker, since the data is unrestricted free download for a public academic resource. The underlying NAR article itself is published under CC BY-NC 4.0."
+        }
+    },
+    "evidence": {
+        "scope": "Curated registry of drugs withdrawn or discontinued in at least one country, integrating pharmacovigilance data (FDA FAERS through June 2023), ChEMBL 29-derived mechanism-of-action/target predictions, KEGG disease-pathway enrichment, and ATC classification, to support adverse-drug-reaction analysis and drug-repositioning research.",
+        "overlap": "Overlaps at the compound-identity level with PubChem/ChEMBL/DrugBank/UniChem (already in MyChem.info) and at the adverse-event level with SIDER and AEOLUS (also already in MyChem.info). Withdrawal-specific curation (reason/class, country, dates, LD50) is not duplicated elsewhere in BioThings.",
+        "entity_types": ["drug", "chemical", "adverse_event"],
+        "identifiers_found": ["InChIKey", "PubChem CID", "ChEMBL ID", "DrugBank ID", "ATC code", "CTD chemical ID"],
+        "record_count": 647
+    },
+    "license": {
+        "name": "Not explicitly stated on datasource site (assumed CC BY-NC 4.0, matching the parent NAR article's license)",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["No license/terms-of-use page found on bioinformatics.charite.de/withdrawn_3; assumption carried forward from the NAR publication's stated license, flag for manual confirmation"]
+    },
+    "urls": {
+        "homepage": "https://bioinformatics.charite.de/withdrawn_3/index.php",
+        "download": ["https://bioinformatics.charite.de/withdrawn_3/downloads/withdrawns.csv"],
+        "paper_doi": "10.1093/nar/gkad1017",
+        "pmid": "37971295",
+        "pmc": "PMC10767915"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "No public REST/GraphQL API documented; homepage, FAQ, and contact pages contain no API references. Access is via the web search UI or the bulk CSV download in the FAQ."
+    },
+    "target_api": "mychem.info",
+    "risks": [
+        "No explicit license/terms-of-use statement on the datasource site itself -- assumed CC BY-NC 4.0 from the parent NAR article; should be confirmed with the maintainers before production redistribution.",
+        "Site record count (647, live) differs from the paper's abstract framing as an 'update' without a stated total -- treated as a MISMATCH/growth, not an error (paper published Jan 2024; site has grown since).",
+        "11 of 647 rows (withdrawnID values DB00052, DB00055, DB00095, DB00111, DB06692, DB11597, DB01038, DB01079, w93, w214, w258) have no usable InChIKey (empty or whitespace-only) and cannot be merged into MyChem.info by structure; these are skipped by the parser, yielding 636 documents.",
+        "molfile column contains large embedded 2D-structure blocks (OpenBabel-generated, all-zero coordinates) with no real value beyond what SMILES/InChI already provide -- excluded from parsed output."
+    ],
+    "next_actions": ["Proceed to plugin generation"],
+    "evaluated_at": "2026-08-13"
+}

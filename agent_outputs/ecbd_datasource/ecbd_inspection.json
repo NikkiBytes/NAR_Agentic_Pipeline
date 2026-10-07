@@ -1,0 +1,172 @@
+{
+    "name": "ecbd",
+    "status": "VERIFIED",
+    "inspection_date": "2026-05-14",
+    "download_files": [
+        {
+            "url": "https://ecbd.eu/static/core/compounds/bioactives.csv",
+            "filename": "bioactives.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 0.87,
+            "row_count": 2464,
+            "relationship": "INDEPENDENT",
+            "notes": "ECBL Bioactives sub-library — custom bioactive compounds with emphasis on wide target coverage"
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/fragments.csv",
+            "filename": "fragments.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 0.25,
+            "row_count": 1056,
+            "relationship": "INDEPENDENT",
+            "notes": "EFSL (European Fragment Screening Library) — fragments selected for biophysical-based hit-finding"
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/nuisance_set.csv",
+            "filename": "nuisance_set.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 0.05,
+            "row_count": 88,
+            "relationship": "INDEPENDENT",
+            "notes": "ECBL Nuisance — quasi-control compounds representing assay interference classes"
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/academic.csv",
+            "filename": "academic.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 1.1,
+            "row_count": 6688,
+            "relationship": "INDEPENDENT",
+            "notes": "EACL (European Academic Compound Library) — compounds submitted by academic institutions. Paper reported 5,280; current count 6,688 indicates library growth since Aug 2024."
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/diverse_library.csv",
+            "filename": "diverse_library.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 30.8,
+            "row_count": 98560,
+            "relationship": "INDEPENDENT",
+            "notes": "ECBL Diversity — large diversity library of commercially sourced small molecules (98,560 compounds)"
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/ecbd_all.csv",
+            "filename": "ecbd_all.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 19.5,
+            "row_count": 108768,
+            "relationship": "SUPERSET",
+            "notes": "REJECTED — superset with 54 fewer rows than the 5 independent files combined (108,768 vs 108,822 unique InChIKeys). No sub-library tag possible. Use independent files instead."
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/representative_diverse_set.csv",
+            "filename": "representative_diverse_set.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 0.4,
+            "row_count": 2464,
+            "relationship": "SUBSET",
+            "notes": "REJECTED — subset of diverse_library; all records present in diverse_library.csv"
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/pilot_library.csv",
+            "filename": "pilot_library.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 0.8,
+            "row_count": 5016,
+            "relationship": "COMPOSITE",
+            "notes": "REJECTED — combination of representative_diverse_set + bioactives + nuisance; all records already in the 5 independent files"
+        },
+        {
+            "url": "https://ecbd.eu/static/core/compounds/mini_fragments.csv",
+            "filename": "mini_fragments.csv",
+            "format": "CSV (header row, 16 columns)",
+            "access": "public",
+            "size_mb": 0.02,
+            "row_count": 88,
+            "relationship": "SUBSET",
+            "notes": "REJECTED — subset of fragments.csv; all 88 records present in fragments.csv"
+        }
+    ],
+    "schema": {
+        "source": "All 5 independent CSV files share identical 16-column schema",
+        "fields": [
+            {"col": 0, "name": "eos", "type": "string", "sample": "EOS100001", "classification": "IDENTIFIER", "notes": "EU-OPENSCREEN persistent compound ID — unique to ECBD"},
+            {"col": 1, "name": "smiles", "type": "string", "sample": "CC[C@]1(O)...", "classification": "NOVEL"},
+            {"col": 2, "name": "inchi", "type": "string", "sample": "InChI=1S/...", "classification": "NOVEL"},
+            {"col": 3, "name": "inchikey", "type": "string", "sample": "AQTQHPDCURKLKT-PNYVAJAMSA-N", "classification": "IDENTIFIER", "notes": "_id field for MyChem.info"},
+            {"col": 4, "name": "formula", "type": "string", "sample": "C46H58N4O14S", "classification": "NOVEL"},
+            {"col": 5, "name": "mw", "type": "float", "sample": "923.051", "classification": "NOVEL", "notes": "Molecular weight"},
+            {"col": 6, "name": "hba", "type": "int", "sample": "18", "classification": "NOVEL", "notes": "Hydrogen bond acceptors"},
+            {"col": 7, "name": "hbd", "type": "int", "sample": "5", "classification": "NOVEL", "notes": "Hydrogen bond donors"},
+            {"col": 8, "name": "tpsa", "type": "float", "sample": "245.77", "classification": "NOVEL", "notes": "Topological polar surface area"},
+            {"col": 9, "name": "rb", "type": "int", "sample": "8", "classification": "NOVEL", "notes": "Rotatable bonds"},
+            {"col": 10, "name": "fp3", "type": "float", "sample": "0.565", "classification": "NOVEL", "notes": "FP3 fingerprint similarity value — not in other BioThings sources"},
+            {"col": 11, "name": "logp", "type": "float", "sample": "2.865", "classification": "NOVEL"},
+            {"col": 12, "name": "violates_ro5", "type": "int", "sample": "1", "values": [0, 1], "classification": "NOVEL", "notes": "Lipinski Rule-of-5 violation flag (0=compliant, 1=violates)"},
+            {"col": 13, "name": "pubchem", "type": "string", "sample": "CID5388992", "classification": "REDUNDANT", "notes": "PubChem CID cross-reference; already in MyChem.info"},
+            {"col": 14, "name": "chembl", "type": "string", "sample": "CHEMBL710", "classification": "REDUNDANT", "notes": "ChEMBL ID cross-reference; already in MyChem.info"},
+            {"col": 15, "name": "zinc", "type": "string", "sample": "ZINC000003782599", "classification": "REDUNDANT", "notes": "ZINC ID cross-reference; already in MyChem.info"}
+        ],
+        "primary_key": {
+            "field": "inchikey",
+            "col": 3,
+            "type": "InChIKey",
+            "sample": "AQTQHPDCURKLKT-PNYVAJAMSA-N"
+        },
+        "identifiers": [
+            {"type": "InChIKey", "field": "inchikey", "sample": "AQTQHPDCURKLKT-PNYVAJAMSA-N"},
+            {"type": "EOS ID", "field": "eos", "sample": "EOS100001"},
+            {"type": "PubChem CID", "field": "pubchem", "sample": "CID5388992"},
+            {"type": "ChEMBL ID", "field": "chembl", "sample": "CHEMBL710"},
+            {"type": "ZINC ID", "field": "zinc", "sample": "ZINC000003782599"}
+        ]
+    },
+    "cross_file_duplicates": {
+        "count": 34,
+        "description": "34 InChIKeys appear in more than one sub-library file; parser uses seen_ids deduplication keeping first occurrence",
+        "on_duplicates_manifest": "error",
+        "dedup_strategy": "seen_ids set in parser"
+    },
+    "license": {
+        "stated_paper": "CC BY 4.0",
+        "observed_site": "CC BY 4.0",
+        "match": true,
+        "restrictions": ["Attribution required — acknowledge EU-OPENSCREEN and ECBD"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://ecbd.eu/static/core/compounds/bioactives.csv",
+            "https://ecbd.eu/static/core/compounds/fragments.csv",
+            "https://ecbd.eu/static/core/compounds/nuisance_set.csv",
+            "https://ecbd.eu/static/core/compounds/academic.csv",
+            "https://ecbd.eu/static/core/compounds/diverse_library.csv"
+        ],
+        "file_order": ["bioactives.csv", "fragments.csv", "nuisance_set.csv", "academic.csv", "diverse_library.csv"],
+        "primary_key_field": "inchikey",
+        "target_api": "MyChem.info",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["eos", "smiles", "inchi", "formula", "mw", "hba", "hbd", "tpsa", "rb", "fp3", "logp", "violates_ro5", "sub_library"],
+        "redundant_fields": ["pubchem", "chembl", "zinc"],
+        "total_unique_docs": 108822,
+        "ssl_workaround_required": true
+    },
+    "paper_vs_reality": [
+        {"claim": "107,414 total compounds (paper, Aug 2024)", "observed": "108,822 unique InChIKeys across 5 files (May 2026)", "match": "close — library has grown since paper submission"},
+        {"claim": "5,280 academic compounds (EACL)", "observed": "6,688 in academic.csv", "match": false, "notes": "EACL has grown by 1,408 compounds since Aug 2024"},
+        {"claim": "CC BY 4.0 license", "observed": "CC BY 4.0", "match": true},
+        {"claim": "Direct CSV downloads available", "observed": "5 sub-library CSVs confirmed HTTP 200, no auth", "match": true}
+    ],
+    "risks": [
+        "ecbd.eu uses self-signed TLS certificate — biothings-cli dump fails SSL; must pre-download via curl --insecure",
+        "34 cross-file duplicate InChIKeys require seen_ids deduplication in parser",
+        "diverse_library.csv is 30.8 MB — largest file; parser must handle streaming",
+        "pubchem/chembl/zinc fields may be empty for some compounds (academic set has fewer cross-references)"
+    ]
+}

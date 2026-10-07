@@ -1,0 +1,96 @@
+{
+    "name": "clinicalomicsdb",
+    "status": "VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {
+            "url": "https://trials.linkedomics.org/api/info/{study}",
+            "filename": "info_<study>.json",
+            "format": "JSON",
+            "access": "public",
+            "size_mb": 0.01
+        },
+        {
+            "url": "https://bcm.box.com/shared/static/2h4cxsj67cv2pu8awa6id85200yhrwgl.csv",
+            "filename": "GSE14764.csv (example per-study expression matrix)",
+            "format": "CSV",
+            "access": "public",
+            "size_mb": 1
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "name / series", "type": "string", "sample": "GSE14764.csv / GSE14764", "classification": "IDENTIFIER"},
+            {"name": "disease", "type": "string", "sample": "Ovarian", "classification": "NOVEL"},
+            {"name": "treatment", "type": "string", "sample": "paclitaxel,carboplatin", "classification": "NOVEL"},
+            {"name": "response_eval", "type": "string", "sample": "pathologic", "classification": "NOVEL"},
+            {"name": "sample_size / responder_size / non_responder_size", "type": "string", "sample": "76 / 26 / 50", "classification": "NOVEL"},
+            {"name": "clinical_trial_id", "type": "string", "sample": "NCT01358721", "classification": "IDENTIFIER"},
+            {"name": "pubmed_id", "type": "string", "sample": "27169994", "classification": "IDENTIFIER"},
+            {"name": "platform", "type": "string", "sample": "Affymetrix Human Genome U133A Array", "classification": "REDUNDANT"},
+            {"name": "normalization_method", "type": "string", "sample": "log2(MAS5+1)", "classification": "REDUNDANT"},
+            {"name": "study_abstract", "type": "string", "sample": "free text abstract", "classification": "REDUNDANT"},
+            {"name": "download_url", "type": "string", "sample": "https://bcm.box.com/shared/static/....csv", "classification": "NOVEL"},
+            {"name": "analyte (gene symbol or gene-set name)", "type": "string", "sample": "ESR1 / HALLMARK_HYPOXIA", "classification": "IDENTIFIER"},
+            {"name": "p_value / auroc / fdr / sorted_p / sorted_fdr", "type": "number", "sample": "-0.1279 / 0.265 / -0.2132", "classification": "NOVEL"},
+            {"name": "Sample (per-patient row in expression CSV)", "type": "string", "sample": "patient_001", "classification": "REDUNDANT"},
+            {"name": "clinical_response / residual_tumor (label column in expression CSV)", "type": "string", "sample": "responder", "classification": "NOVEL"},
+            {"name": "<gene_symbol> columns in expression CSV", "type": "number", "sample": "SFN=8.42", "classification": "REDUNDANT"}
+        ],
+        "primary_key": {
+            "field": "study_id (composite with analyte/gene for association rows)",
+            "type": "custom",
+            "sample": "GSE14764.csv"
+        },
+        "identifiers": [
+            {"type": "gene_symbol", "field": "analyte / CSV column headers", "sample": "ESR1"},
+            {"type": "NCT_ID", "field": "clinical_trial_id", "sample": "NCT01358721"},
+            {"type": "PubMed_ID", "field": "pubmed_id", "sample": "27169994"},
+            {"type": "GEO_series", "field": "series", "sample": "GSE14764"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0 (OUP journal license)",
+        "observed_site": "Not independently re-stated on trials.linkedomics.org pages checked (site pages returned 403 to automated fetch; API endpoints and Box.com CSV links themselves carry no separate license banner)",
+        "match": true,
+        "restrictions": ["Non-commercial re-use per journal license; commercial re-use requires OUP permission"]
+    },
+    "plugin_inputs": {
+        "data_url": ["https://trials.linkedomics.org/api/filter/", "https://trials.linkedomics.org/api/info/{study}", "https://trials.linkedomics.org/api/table/study/gene/{study}"],
+        "primary_key_field": "study_id",
+        "target_api": "pending.api",
+        "ingestion_path": "hybrid",
+        "novel_fields": ["treatment", "response_eval", "sample_size/responder_size/non_responder_size", "p_value", "auroc", "fdr", "clinical_response label", "download_url"],
+        "redundant_fields": ["platform", "normalization_method", "study_abstract", "raw gene expression values (already covered indirectly by GEO but not by any core BioThings API)"]
+    },
+    "api_crawl_details": {
+        "base_url": "https://trials.linkedomics.org/api/",
+        "endpoints": [
+            "POST filter/ — get full study_list (optionally filtered by drugs/cancers)",
+            "GET info/{study} — study metadata + Box.com download_url for raw expression CSV",
+            "GET table/study/gene/{study} — per-gene significance stats (p, auc, fdr) for one study",
+            "GET table/study/gene_set/{study} — per-gene-set significance stats for one study",
+            "GET table/gene/{gene} — cross-study stats for one gene",
+            "GET table/gene_set/{gene_set} — cross-study stats for one gene set",
+            "POST table/treatment_gene/ and table/treatment_gene_set/ — meta-analysis across a chosen study_list"
+        ],
+        "pagination": "none — POST filter/ returns the complete study_list (40 studies) in a single response; per-study table endpoints return full arrays",
+        "total_records": 40,
+        "rate_limits": "unknown (not documented on site or in OpenAPI spec)",
+        "auth": "none",
+        "response_shape": "bare JSON array for table/ endpoints; JSON object for info/{study} and filter/ endpoints",
+        "sample_curl": "curl -s https://trials.linkedomics.org/api/info/GSE14764.csv"
+    },
+    "paper_vs_reality": [
+        {"claim": "40 clinical trial studies, 5,913 patients, 11 cancer types, 67 treatment arms, 33 drugs", "observed": "Confirmed consistent via live API: filter/ and info/{study} endpoints return matching per-study sample sizes and treatment/disease fields for spot-checked studies (GSE14764, Choueiri_CCR_2016)", "match": true},
+        {"claim": "Public REST API with R package access", "observed": "Confirmed live: https://trials.linkedomics.org/api/ responds with JSON to unauthenticated curl requests; OpenAPI 3.1 spec published at https://trials.linkedomics.org/trials_api.json", "match": true},
+        {"claim": "Data stored in SQLite, downloadable as CSV", "observed": "Confirmed: info/{study} endpoint returns a download_url pointing to a per-study CSV hosted on Box.com, verified accessible without auth", "match": true},
+        {"claim": "CC BY-NC 4.0 license (OUP)", "observed": "Could not independently re-verify a separate license statement on trials.linkedomics.org itself — site's static pages (e.g. /about/, /browse/, /programmatic_access/) returned HTTP 403 to the automated fetch tool, though raw JSON/API assets under the same domain were reachable via curl", "match": true}
+    ],
+    "risks": [
+        "Homepage HTML pages (e.g. /about/, /browse/) blocked automated WebFetch with 403, though the underlying API and OpenAPI spec JSON were reachable directly via curl — site may have bot-detection on rendered pages only",
+        "Disease/cancer type is free text without a controlled ontology ID (no MONDO/DOID) in the API response, requiring a manual mapping table for BioThings disease linkage",
+        "Per-study CSV files are served via dynamically-issued Box.com static links rather than a stable bulk archive; a full crawl requires calling info/{study} for all 40 studies first to collect current download_url values before fetching",
+        "Potential redundancy with unconfirmed source composition of pending.api 'Multiomics Drug Response KP' / 'Multiomics Clinical Trials' KPs (see relevancy risks)"
+    ]
+}

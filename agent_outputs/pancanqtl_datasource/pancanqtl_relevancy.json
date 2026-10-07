@@ -1,0 +1,57 @@
+{
+    "name": "pancanqtl",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "Core BioThings variant/gene/disease/drug entity coverage: eQTL SNP-gene expression associations (RS IDs mapped to genes), SNP-GWAS trait/disease linkage-disequilibrium associations (with PubMed ID provenance), SNP-drug response associations, and SNP-immune cell infiltration associations across 33 TCGA cancer types. Fully structured/tabular (TSV/gzipped text), uses standard identifiers (dbSNP RS IDs, gene symbols, PubMed IDs), and represents genotype-phenotype relationships central to MyVariant.info's scope."
+        },
+        "novelty": {
+            "score": 5,
+            "justification": "No cancer-type-specific eQTL, eQTL-GWAS linkage, eQTL-drug-response, or eQTL-immune-infiltration association data found in any existing BioThings API source (checked existing-biothings-plugins.json's myvariant_info source list: ClinVar, dbSNP, gnomAD, dbNSFP, CADD — none provide expression QTL associations). This is a distinct relation type (variant-to-expression-to-phenotype linkage per cancer type) not redundant with any variant annotation source currently ingested."
+        },
+        "openness": {
+            "pass": true,
+            "score": 3,
+            "justification": "All four data modules (Fine-mapping, eQTL-GWAS, Drug-eQTL, Immune-eQTL) are served as direct per-cancer-type .gz static files from hanlaboratory.com/static/PancanQTLv2/Download/ with no login, no API key, and no click-through gate (verified via HTTP HEAD: content-type application/x-gzip, HTTP 200). License is CC BY-NC 4.0 (non-commercial) per the paper's ali:license_ref, generally compatible with BioThings' academic/non-profit hosting (Su Lab, Scripps Research) per the evaluation checklist's CC-BY-NC guidance (PASS 3/5)."
+        }
+    },
+    "evidence": {
+        "scope": "Cancer-type-specific eQTL (expression quantitative trait loci) resource across 33 TCGA cancer types: (1) fine-mapped causal eQTL credible sets (SuSiE, 25 cancer types with n>100), (2) eQTL linkage associations with GWAS Catalog risk loci, (3) eQTL associations with drug response (from DrVAEN and cancerRxTissue), (4) eQTL associations with immune cell infiltration (from ImmuneCellsGSVA, ImmuCellAI, TIMER, CIBERSORT).",
+        "overlap": "No overlap with existing BioThings sources; existing MyVariant.info sources (ClinVar, dbSNP, gnomAD, dbNSFP, CADD) provide variant annotation/pathogenicity/frequency data but no gene-expression or phenotype-association eQTL data.",
+        "entity_types": ["variant", "gene", "disease", "drug"],
+        "identifiers_found": ["dbSNP RS ID", "gene symbol", "PubMed ID", "TCGA cancer type code"],
+        "record_count": 949940182
+    },
+    "license": {
+        "name": "CC BY-NC 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "restrictions": ["non-commercial use only"]
+    },
+    "urls": {
+        "homepage": "https://hanlaboratory.com/PancanQTLv2/",
+        "download": [
+            "https://hanlaboratory.com/PancanQTLv2/download.html",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/Fine-mapping/",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/eQTL-GWAS/",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/Drug-eQTL/",
+            "https://hanlaboratory.com/static/PancanQTLv2/Download/Immune-eQTL/"
+        ],
+        "paper_doi": "10.1093/nar/gkad916",
+        "pmid": "37870463",
+        "pmc": "PMC10767806"
+    },
+    "api_info": {
+        "exists": false,
+        "record_coverage": "No public REST/GraphQL API found on hanlaboratory.com/PancanQTLv2/ beyond the query-and-download web UI; all data accessed via static per-cancer-type bulk download files."
+    },
+    "target_api": "myvariant.info",
+    "risks": [
+        "CC BY-NC 4.0 restricts commercial redistribution; generally acceptable for BioThings/Scripps non-profit hosting but flag for downstream commercial API consumers",
+        "eQTL-GWAS module files are large per-cancer-type (BRCA alone is 121 MB gzipped) — full ingestion across 33 cancer types will be a large document volume (paper reports 84,592,135 total GWAS linkage associations)",
+        "Site is a Flask/SQLite app on a lab-hosted domain (hanlaboratory.com), not a dedicated database domain — lower long-term stability guarantee than institutionally-hosted resources",
+        "No fine-mapping files exist for 8 of 33 cancer types (ACC, CHOL, DLBC, KICH, MESO, READ, UCS, UVM — sample size <=100, excluded from fine-mapping per paper's methods)"
+    ],
+    "next_actions": ["Proceed to plugin generation"],
+    "evaluated_at": "2026-08-13"
+}

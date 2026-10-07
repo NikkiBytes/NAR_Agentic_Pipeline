@@ -1,0 +1,26 @@
+{
+    "version": "1.0",
+    "requires": ["requests"],
+    "__metadata__": {
+        "name": "TarBase v9.0",
+        "description": "Experimentally-supported and computationally-predicted microRNA-to-gene target interactions, aggregated at the unique miRNA-gene-pair level with supporting-evidence counts and a microT-CDS-2023 prediction score, across 24 species.",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "url": "https://dianalab.e-ce.uth.gr/tarbasev9",
+        "publication": {
+            "doi": "10.1093/nar/gkad1071",
+            "pmid": "37986224",
+            "pmc": "PMC10767993"
+        }
+    },
+    "dumper": {
+        "data_url": "https://dianalab.e-ce.uth.gr/tarbasev9/api/get_all_interactions/",
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

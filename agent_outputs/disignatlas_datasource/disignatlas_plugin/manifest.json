@@ -1,0 +1,28 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "DiSignAtlas",
+        "description": "An atlas of human and mouse disease signatures curated from 10,306 reprocessed bulk and single-cell/single-nucleus transcriptomic comparisons (GEO, ArrayExpress, TCGA), each annotated with disease name/ontology definition, tissue, organism, and its top differentially expressed genes.",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "url": "http://www.inbirg.com/disignatlas/",
+        "publication": {
+            "doi": "10.1093/nar/gkad961",
+            "pmid": "37930831",
+            "pmc": "PMC10767933"
+        }
+    },
+    "dumper": {
+        "data_url": [
+            "http://www.inbirg.com/disignatlas/download/dis_info_datasets",
+            "http://www.inbirg.com/disignatlas/download/dis_info_degs"
+        ],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

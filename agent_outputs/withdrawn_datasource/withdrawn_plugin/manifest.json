@@ -1,0 +1,26 @@
+{
+    "version": "1.0",
+    "requires": ["pandas"],
+    "__metadata__": {
+        "name": "Withdrawn 2.0",
+        "description": "Curated registry of drugs withdrawn or discontinued in at least one country, with pharmacovigilance data (FDA FAERS), toxicity classification, LD50 estimates, ATC classification, and withdrawal country/date history.",
+        "license": "CC BY-NC 4.0 (assumed; not explicitly published by the datasource, carried over from the NAR article's stated license)",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "https://bioinformatics.charite.de/withdrawn_3/index.php",
+        "publication": {
+            "doi": "10.1093/nar/gkad1017",
+            "pmid": "37971295",
+            "pmc": "PMC10767915"
+        }
+    },
+    "dumper": {
+        "data_url": ["https://bioinformatics.charite.de/withdrawn_3/downloads/withdrawns.csv"],
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

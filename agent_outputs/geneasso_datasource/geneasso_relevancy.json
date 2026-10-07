@@ -1,0 +1,81 @@
+{
+  "name": "geneasso",
+  "verdict": "RECOMMEND_INGEST",
+  "scores": {
+    "relevance": {
+      "score": 5,
+      "justification": "GENEasso is a gene-disease association database directly in the BioThings sphere. Primary entities are genes (Ensembl IDs, HGNC symbols) and diseases (EFO/MONDO/MeSH ontology terms), with GWAS-derived statistical associations as the relationship payload. Maps to core BioThings entity types: gene (MyGene.info), disease (MyDisease.info), and gene-disease associations (pending.api). The data is annotation-dense: per-association P-values, Z-scores, Beta, method, tissue, population, and genomic coordinates."
+    },
+    "novelty": {
+      "score": 5,
+      "justification": "No existing BioThings API provides GWAS-derived gene-based disease associations with multi-method consensus scoring. MyGene.info lacks gene-disease associations entirely. MyDisease.info includes DisGeNET and CTD but these are curated literature/variant-level databases, not GWAS gene-based. DisGeNET has gene-disease relationships but not computed from GWAS summary statistics using 7 quantitative methods (MAGMA, DEPICT, PASCAL, CWAS, RWAS, LDAK-GBAT, SMR variants). The ancestry stratification (AFR/AMR/EAS/EUR/SAS from 1KGP super-populations) and cross-method consensus scoring are unique. GENEasso's 716,122 associations across 8,226 GWAS datasets is a scale not represented in any pending.api source."
+    },
+    "openness": {
+      "pass": true,
+      "score": 5,
+      "justification": "All data freely downloadable without login or registration. Per-method bulk download files (TSV) accessible via https://www.geneasso.net/api/download/static/{METHOD}.download.txt — all return HTTP 200 with Content-Type: application/octet-stream, no authentication headers required. License text on site states: 'GENEasso is available free of charge for all users, including both academic and commercial users.' Paper states: 'full transparency and unrestricted access to data.' PMC open access (PMCID: PMC12807607). Oxford University Press NAR database issue publication."
+    }
+  },
+  "evidence": {
+    "homepage": "https://www.geneasso.net/",
+    "ssl_note": "SSL certificate expired at time of evaluation; site accessible via HTTP fallback/curl -k",
+    "data_confirmed": true,
+    "login_required": false,
+    "api_available": true,
+    "api_base": "https://www.geneasso.net/api/",
+    "bulk_download_confirmed": true,
+    "record_count": 716122,
+    "gwas_datasets": 8226,
+    "methods_count": 7,
+    "methods": ["MAGMA", "DEPICT", "PASCAL", "CWAS", "RWAS", "LDAK-GBAT", "SMR (CAGE, Geuvadis, GTEx-top1tissue, GTEx-top2tissue, GTEx-top3tissue, PsychENCODE)"],
+    "populations": ["EUR", "EAS", "AFR", "SAS", "AMR"],
+    "identifiers": {
+      "gene": "Ensembl ENSG ID + HGNC symbol",
+      "disease": "EFO code + MONDO code + MeSH"
+    },
+    "sample_record": {
+      "daid": "GA00002",
+      "reportedTrait": "G20 Parkinson's Disease",
+      "efoCode": "EFO:0600011",
+      "geneSymbol": "SNCA",
+      "ensg": "ENSG00000145335",
+      "method": "CWAS",
+      "pvalue": "4.06e-06"
+    }
+  },
+  "license": {
+    "type": "free_for_all_users",
+    "academic_use": true,
+    "commercial_use": true,
+    "bulk_download": true,
+    "login_required": false,
+    "statement": "GENEasso is available free of charge for all users, including both academic and commercial users.",
+    "paper_license": "Oxford University Press open access, NAR database issue 2026 (doi: 10.1093/nar/gkaf1097)",
+    "pmc_open_access": true,
+    "pmcid": "PMC12807607"
+  },
+  "urls": {
+    "homepage": "https://www.geneasso.net/",
+    "paper_doi": "https://doi.org/10.1093/nar/gkaf1097",
+    "pubmed": "https://pubmed.ncbi.nlm.nih.gov/41166152/",
+    "downloads_page": "https://www.geneasso.net/#/downloads",
+    "download_list_api": "https://www.geneasso.net/api/download/list",
+    "bulk_download_files": {
+      "MAGMA": "https://www.geneasso.net/api/download/static/MAGMA.download.txt",
+      "DEPICT": "https://www.geneasso.net/api/download/static/DEPICT.download.txt",
+      "PASCAL": "https://www.geneasso.net/api/download/static/PASCAL.download.txt",
+      "LDAK_GBAT": "https://www.geneasso.net/api/download/static/LDAK-GBAT.download.txt",
+      "RWAS": "https://www.geneasso.net/api/download/static/RWAS.download.txt",
+      "SMR_CAGE": "https://www.geneasso.net/api/download/static/SMR_CAGE.download.txt",
+      "SMR_Geuvadis": "https://www.geneasso.net/api/download/static/SMR_Geuvadis.download.txt",
+      "SMR_GTEx_top1tissue": "https://www.geneasso.net/api/download/static/SMR_GTEx-top1tissue.download.txt",
+      "SMR_GTEx_top2tissue": "https://www.geneasso.net/api/download/static/SMR_GTEx-top2tissue.download.txt",
+      "SMR_GTEx_top3tissue": "https://www.geneasso.net/api/download/static/SMR_GTEx-top3tissue.download.txt",
+      "SMR_PsychENCODE": "https://www.geneasso.net/api/download/static/SMR_PsychENCODE.download.txt",
+      "Scripts": "https://www.geneasso.net/api/download/static/Script.download.txt"
+    },
+    "per_study_files": "https://www.geneasso.net/api/download/search (2585 individual GWAS study .txt.gz files via /download/jlucaochen-1315664645/{daid}.txt.gz)"
+  },
+  "target_api": "pending.api",
+  "evaluated_at": "2026-06-25"
+}

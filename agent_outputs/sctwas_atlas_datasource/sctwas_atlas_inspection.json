@@ -1,0 +1,177 @@
+{
+    "name": "sctwas_atlas",
+    "status": "PARTIALLY_VERIFIED",
+    "inspection_date": "2026-06-25",
+    "download_files": [
+        {
+            "url": "https://ngdc.cncb.ac.cn/sctwas/static/file/Allstudies_sig_eQTL.txt",
+            "filename": "Allstudies_sig_eQTL.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 127,
+            "description": "All significant single-cell eQTLs across all cell types used in the database. ~1.3M rows estimated (127MB / ~100 bytes per row). This is the INPUT data to scTWAS, not the scTWAS output associations."
+        },
+        {
+            "url": "https://ngdc.cncb.ac.cn/sctwas/static/file/Detail_trait_summary.txt",
+            "filename": "Detail_trait_summary.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.01,
+            "description": "34 trait records with EFO/MeSH/MONDO ontology mappings (Reported Trait, Ontology Label, MeSH ID, EFO ID, MeSH Type, Synonyms, Description)"
+        },
+        {
+            "url": "https://ngdc.cncb.ac.cn/sctwas/static/file/Detail_celltype_summary.txt",
+            "filename": "Detail_celltype_summary.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 0.01,
+            "description": "30 cell type records with Cell Ontology IDs (Reported Name, Ontology Name, Cell Ontology ID, Synonym, Link, Description)"
+        },
+        {
+            "url": "https://ngdc.cncb.ac.cn/sctwas/static/file/Download_AllGeneAnnotation.txt",
+            "filename": "Download_AllGeneAnnotation.txt",
+            "format": "TSV",
+            "access": "public",
+            "size_mb": 8,
+            "description": "16,470+ gene annotations with Ensembl IDs, gene symbols, NCBI Gene ID, location, type, description (Ensembl ID, Gene Symbol, Synonyms, OtherID, MapLocation, Chromosome, GeneStart, GeneEnd, GeneType, Description)"
+        }
+    ],
+    "schema": {
+        "primary_file": "Allstudies_sig_eQTL.txt",
+        "fields": [
+            {
+                "name": "SNP ID",
+                "type": "string",
+                "sample": "rs1131017",
+                "classification": "IDENTIFIER",
+                "notes": "rsID — maps to MyVariant.info"
+            },
+            {
+                "name": "SNP Location",
+                "type": "string",
+                "sample": "12:56042145",
+                "classification": "NOVEL"
+            },
+            {
+                "name": "Reference Allele",
+                "type": "string",
+                "sample": "A",
+                "classification": "NOVEL"
+            },
+            {
+                "name": "Alternative Allele",
+                "type": "string",
+                "sample": "C",
+                "classification": "NOVEL"
+            },
+            {
+                "name": "Gene Symbol",
+                "type": "string",
+                "sample": "RPS26",
+                "classification": "IDENTIFIER",
+                "notes": "gene symbol — maps to MyGene.info"
+            },
+            {
+                "name": "Ensembl ID",
+                "type": "string",
+                "sample": "ENSG00000197728",
+                "classification": "IDENTIFIER",
+                "notes": "Ensembl Gene ID — primary gene key for pending.api"
+            },
+            {
+                "name": "eQTL.beta",
+                "type": "float",
+                "sample": "-1.04",
+                "classification": "NOVEL"
+            },
+            {
+                "name": "eQTL.pval",
+                "type": "float",
+                "sample": "8.41e-08",
+                "classification": "NOVEL"
+            },
+            {
+                "name": "eQTL.zscore",
+                "type": "float",
+                "sample": "-5.36",
+                "classification": "NOVEL"
+            },
+            {
+                "name": "Cell Type",
+                "type": "string",
+                "sample": "Megakaryocyte",
+                "classification": "NOVEL",
+                "notes": "Cell type name — matches Cell Ontology terms"
+            },
+            {
+                "name": "Cell Condition",
+                "type": "string",
+                "sample": "Normal",
+                "classification": "NOVEL",
+                "notes": "Values: Normal, Stimulated, Disease"
+            },
+            {
+                "name": "eQTL Dataset",
+                "type": "string",
+                "sample": "Kang et al. 2017 Nat Biotechnol",
+                "classification": "NOVEL",
+                "notes": "Source publication citation"
+            }
+        ],
+        "primary_key": {
+            "field": "composite: Ensembl ID + Cell Type + Cell Condition + SNP ID",
+            "type": "composite",
+            "sample": "ENSG00000197728-Megakaryocyte-Normal-rs1131017",
+            "notes": "One eQTL row = one SNP-gene-celltype-condition association. Composite key needed as same gene can have multiple eQTL associations across cell types."
+        },
+        "identifiers": [
+            {"type": "rsID", "field": "SNP ID", "sample": "rs1131017"},
+            {"type": "Ensembl Gene ID", "field": "Ensembl ID", "sample": "ENSG00000197728"},
+            {"type": "Gene Symbol", "field": "Gene Symbol", "sample": "RPS26"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0",
+        "observed_site": "Not explicitly stated on site",
+        "match": true,
+        "restrictions": ["Non-commercial use only", "Attribution required"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://ngdc.cncb.ac.cn/sctwas/static/file/Allstudies_sig_eQTL.txt"
+        ],
+        "primary_key_field": "composite: Ensembl ID + Cell Type + Cell Condition + SNP ID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["eQTL.beta", "eQTL.pval", "eQTL.zscore", "Cell Type", "Cell Condition", "eQTL Dataset"],
+        "redundant_fields": ["Gene Symbol (in MyGene.info)", "SNP ID (in MyVariant.info)"]
+    },
+    "critical_gap": {
+        "description": "The 2,765,211 scTWAS ASSOCIATIONS (the primary value of this database) are NOT bulk-downloadable. They are stored in MySQL and accessible only via the web interface. The ingested file (Allstudies_sig_eQTL.txt) contains only the INPUT sc-eQTL data (~1.3M SNP-gene-celltype associations), not the TWAS output associations linking traits to genes in specific cell types.",
+        "recommendation": "Ingest sc-eQTL file as useful approximation; contact authors for TWAS associations bulk export for full value realization."
+    },
+    "paper_vs_reality": [
+        {
+            "claim": "2,765,211 scTWAS associations",
+            "observed": "Not downloadable as bulk file — web interface only",
+            "match": false,
+            "severity": "CRITICAL"
+        },
+        {
+            "claim": "eQTL data available for download by cell type",
+            "observed": "Confirmed — 21 per-cell-type files plus combined all-studies file",
+            "match": true
+        },
+        {
+            "claim": "CC-BY-NC 4.0 license",
+            "observed": "Stated in paper; site does not display license explicitly",
+            "match": true
+        }
+    ],
+    "risks": [
+        "Core TWAS associations not bulk-downloadable — plugin ingests eQTL input data only",
+        "CC-BY-NC 4.0 restricts commercial API consumer use",
+        "File is 127MB — streaming TSV reader required; avoid loading fully into memory",
+        "CNCB server (Chinese institution) — international access may be slow or intermittent"
+    ]
+}

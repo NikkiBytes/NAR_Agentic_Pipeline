@@ -1,0 +1,25 @@
+{
+    "version": "1.0",
+    "__metadata__": {
+        "name": "circRNADisease v2.0",
+        "description": "A manually curated resource of experimentally-supported circRNA-disease associations, linking circRNA identity, MONDO-mapped disease terms, expression direction, detection method, and a per-record confidence score to the supporting literature.",
+        "license": "CC BY-NC",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "url": "https://cgga.org.cn/circRNADisease/",
+        "publication": {
+            "doi": "10.1093/nar/gkad949",
+            "pmid": "37897359",
+            "pmc": "PMC10767896"
+        }
+    },
+    "dumper": {
+        "data_url": "https://cgga.org.cn/circRNADisease/download/circRNADisease_V3_circrna_details.txt",
+        "uncompress": false,
+        "release": "version:get_release"
+    },
+    "uploader": {
+        "parser": "parser:load_data",
+        "on_duplicates": "error",
+        "mapping": "mapping:get_customized_mapping"
+    }
+}

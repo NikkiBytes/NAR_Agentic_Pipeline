@@ -1,0 +1,229 @@
+{
+  "name": "geneasso",
+  "status": "VERIFIED",
+  "inspection_date": "2026-06-25",
+  "download_files": [
+    {
+      "method": "MAGMA",
+      "url": "https://www.geneasso.net/api/download/static/MAGMA.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "217.6M",
+      "http_status": 200,
+      "auth_required": false,
+      "content_type": "application/octet-stream",
+      "fields": ["DAGENA", "Reported Trait", "EFO Code", "EFO Ontology Trait", "EFO Trait Description", "EFO Trait Synonym", "EFO Trait Tree", "Gene Symbol", "Gene Fullname", "Gene Biotype", "ENSG", "Gene Synonym", "Gene Summary", "Chromosome", "Start Pos", "End Pos", "N(eQTL)", "Z-score", "P-value", "Method"]
+    },
+    {
+      "method": "LDAK-GBAT",
+      "url": "https://www.geneasso.net/api/download/static/LDAK-GBAT.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "252.7M",
+      "http_status": 200,
+      "auth_required": false,
+      "fields": ["DAGENA", "Reported Trait", "EFO Code", "EFO Ontology Trait", "EFO Trait Description", "EFO Trait Synonym", "EFO Trait Tree", "Gene Symbol", "Gene Fullname", "Gene Biotype", "ENSG", "Gene Synonym", "Gene Summary", "Chromosome", "Start Pos", "End Pos", "h2", "P-value", "Method"]
+    },
+    {
+      "method": "PASCAL",
+      "url": "https://www.geneasso.net/api/download/static/PASCAL.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "327.4M",
+      "http_status": 200,
+      "auth_required": false
+    },
+    {
+      "method": "DEPICT",
+      "url": "https://www.geneasso.net/api/download/static/DEPICT.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "31.3M",
+      "http_status": 200,
+      "auth_required": false
+    },
+    {
+      "method": "RWAS",
+      "url": "https://www.geneasso.net/api/download/static/RWAS.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "44.6M",
+      "http_status": 200,
+      "auth_required": false,
+      "fields_additional": ["PEAK", "MODEL", "R2", "Z-score"]
+    },
+    {
+      "method": "SMR_CAGE",
+      "url": "https://www.geneasso.net/api/download/static/SMR_CAGE.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "47M",
+      "http_status": 200,
+      "auth_required": false,
+      "fields_additional": ["Top1-Tissue", "Top_eQTL", "Beta"]
+    },
+    {
+      "method": "SMR_Geuvadis",
+      "url": "https://www.geneasso.net/api/download/static/SMR_Geuvadis.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "12.2M",
+      "http_status": 200,
+      "auth_required": false
+    },
+    {
+      "method": "SMR_GTEx-top1tissue",
+      "url": "https://www.geneasso.net/api/download/static/SMR_GTEx-top1tissue.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "22.3M",
+      "http_status": 200,
+      "auth_required": false,
+      "fields_additional": ["Top1-Tissue", "Top_eQTL", "N(eQTL)", "Beta"]
+    },
+    {
+      "method": "SMR_GTEx-top2tissue",
+      "url": "https://www.geneasso.net/api/download/static/SMR_GTEx-top2tissue.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "23.2M",
+      "http_status": 200,
+      "auth_required": false
+    },
+    {
+      "method": "SMR_GTEx-top3tissue",
+      "url": "https://www.geneasso.net/api/download/static/SMR_GTEx-top3tissue.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "22.9M",
+      "http_status": 200,
+      "auth_required": false
+    },
+    {
+      "method": "SMR_PsychENCODE",
+      "url": "https://www.geneasso.net/api/download/static/SMR_PsychENCODE.download.txt",
+      "format": "TSV (tab-separated)",
+      "size_reported": "13.1M",
+      "http_status": 200,
+      "auth_required": false
+    },
+    {
+      "method": "Scripts",
+      "url": "https://www.geneasso.net/api/download/static/Script.download.txt",
+      "format": "TXT",
+      "size_reported": "187.5M",
+      "http_status": 200,
+      "auth_required": false,
+      "note": "Analysis scripts, not association data"
+    }
+  ],
+  "schema": {
+    "core_fields": {
+      "DAGENA": "GENEasso study ID (e.g., GA00002) — internal GWAS study identifier",
+      "Reported Trait": "Original reported trait from GWAS (e.g., 'G20 Parkinson's Disease')",
+      "EFO Code": "EFO or MONDO ontology code (e.g., EFO:0600011, MONDO:0001672)",
+      "EFO Ontology Trait": "Standardized EFO/MONDO trait name",
+      "EFO Trait Description": "Full description of the ontology term",
+      "EFO Trait Synonym": "Semicolon-separated synonyms",
+      "EFO Trait Tree": "Pipe-separated ontology hierarchy path",
+      "Gene Symbol": "HGNC gene symbol",
+      "Gene Fullname": "Full gene name",
+      "Gene Biotype": "Gene type (protein_coding, lncRNA, etc.)",
+      "ENSG": "Ensembl gene ID (e.g., ENSG00000145335)",
+      "Gene Synonym": "Semicolon-separated gene aliases",
+      "Gene Summary": "RefSeq gene description",
+      "Chromosome": "Chromosome number",
+      "Start Pos": "Gene start position (GRCh38)",
+      "End Pos": "Gene end position (GRCh38)",
+      "P-value": "Association P-value",
+      "Method": "Gene-based method used (MAGMA, DEPICT, PASCAL, CWAS, RWAS, LDAK-GBAT, SMR_*)"
+    },
+    "method_specific_fields": {
+      "MAGMA_LDAK": "N(eQTL), Z-score",
+      "LDAK_GBAT": "h2 (heritability estimate)",
+      "SMR": "Top1-Tissue, Top_eQTL, N(eQTL), Beta",
+      "RWAS": "PEAK, MODEL, R2, Z-score"
+    },
+    "api_record_fields": {
+      "id": "Internal numeric ID",
+      "daid": "GWAS study ID (GA prefix)",
+      "reportedTrait": "Original trait string",
+      "efoCode": "EFO/MONDO code",
+      "efoOntologyTrait": "Ontology trait name",
+      "geneSymbol": "HGNC symbol",
+      "geneFullname": "Full gene name",
+      "geneBiotype": "Gene type",
+      "ensg": "Ensembl gene ID",
+      "chr": "Chromosome",
+      "start": "Start position",
+      "end": "End position",
+      "method": "Method name",
+      "pvalue": "P-value string",
+      "addtionalInfo": "Method-specific additional stats (Peak, N(eQTL), Model, R2, Z-score)",
+      "location": "chr:start-end formatted string",
+      "population": "Available in study metadata — EUR/EAS/AFR/SAS/AMR (from per-GWAS API)"
+    },
+    "population_note": "Population/ancestry is stored at the GWAS study (DAGENA) level, not per-association row in bulk files. 95.34% EUR; five 1KGP super-populations supported."
+  },
+  "license": {
+    "type": "free_for_all_users",
+    "academic_use": true,
+    "commercial_use": true,
+    "statement": "GENEasso is available free of charge for all users, including both academic and commercial users.",
+    "source": "Site document section, also confirmed in PubMed abstract: 'freely available as an open-access resource'"
+  },
+  "api_endpoints": {
+    "base_url": "https://www.geneasso.net/api/",
+    "gene_page": "https://www.geneasso.net/api/gene/page?keyword=&pageNum=1&pageSize=10",
+    "trait_search": "https://www.geneasso.net/api/trait/search?keyword=&pageNum=1&pageSize=10",
+    "gene_associations": "https://www.geneasso.net/api/gene/{id}/association/page",
+    "trait_genes": "https://www.geneasso.net/api/trait/{id}/gene/page",
+    "trait_gene_export": "https://www.geneasso.net/api/trait/{id}/gene/export",
+    "download_list": "https://www.geneasso.net/api/download/list",
+    "publication_page": "https://www.geneasso.net/api/publication/page",
+    "per_study_download": "https://www.geneasso.net/download/jlucaochen-1315664645/{daid}.txt.gz"
+  },
+  "plugin_inputs": {
+    "data_url": [
+      "https://www.geneasso.net/api/download/static/MAGMA.download.txt",
+      "https://www.geneasso.net/api/download/static/DEPICT.download.txt",
+      "https://www.geneasso.net/api/download/static/PASCAL.download.txt",
+      "https://www.geneasso.net/api/download/static/LDAK-GBAT.download.txt",
+      "https://www.geneasso.net/api/download/static/RWAS.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_CAGE.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_Geuvadis.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_GTEx-top1tissue.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_GTEx-top2tissue.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_GTEx-top3tissue.download.txt",
+      "https://www.geneasso.net/api/download/static/SMR_PsychENCODE.download.txt"
+    ],
+    "primary_key_field": "composite: ENSG + DAGENA + Method (e.g., ENSG00000145335_GA00002_MAGMA)",
+    "target_api": "pending.api",
+    "ingestion_path": "bulk_download",
+    "parser_note": "Multi-file ingest: each method file has slightly different stat columns. Parser should merge on common fields (ENSG, DAGENA, EFO Code) and collect method results as array. Population field requires augmenting from per-GWAS study API or enriching from the 2585 per-study .txt.gz files.",
+    "novel_fields": [
+      "DAGENA (GENEasso study ID)",
+      "EFO Code (EFO/MONDO ontology term)",
+      "EFO Ontology Trait",
+      "EFO Trait Tree (ontology hierarchy)",
+      "Method (MAGMA/DEPICT/PASCAL/CWAS/RWAS/LDAK-GBAT/SMR_*)",
+      "Z-score (method-specific gene association statistic)",
+      "h2 (heritability per gene, LDAK-GBAT specific)",
+      "Top1-Tissue (tissue with strongest eQTL effect, SMR specific)",
+      "Top_eQTL (lead eQTL SNP, SMR specific)",
+      "PEAK (RWAS regulatory peak ID)",
+      "MODEL (RWAS model type)",
+      "R2 (RWAS R-squared)",
+      "N(eQTL) (number of eQTLs used)",
+      "Beta (effect size, SMR/RWAS)",
+      "Population (EUR/EAS/AFR/SAS/AMR — at study level)",
+      "Gene Biotype (protein_coding, lncRNA, etc.)",
+      "Gene Summary (RefSeq gene description)"
+    ],
+    "redundant_fields": [
+      "Gene Symbol (HGNC — in MyGene.info)",
+      "Gene Fullname (in MyGene.info)",
+      "ENSG (Ensembl ID — in MyGene.info)",
+      "Gene Synonym (aliases — in MyGene.info)",
+      "Chromosome, Start Pos, End Pos (genomic coords — in MyGene.info)",
+      "Reported Trait (raw text — partially in MyDisease.info)",
+      "EFO Trait Description, EFO Trait Synonym (in EFO/MyDisease.info)"
+    ],
+    "identifier_fields": [
+      "ENSG (primary gene identifier for cross-linking to MyGene.info)",
+      "Gene Symbol (secondary gene identifier)",
+      "EFO Code (primary disease identifier for cross-linking to MyDisease.info)",
+      "DAGENA (internal GENEasso study ID)"
+    ]
+  }
+}

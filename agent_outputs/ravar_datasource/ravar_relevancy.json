@@ -1,0 +1,60 @@
+{
+    "name": "ravar",
+    "verdict": "RECOMMEND_INGEST",
+    "scores": {
+        "relevance": {
+            "score": 5,
+            "justification": "RAVAR is a curated repository of rare variant-trait/disease associations, covering core BioThings entity types (gene, variant) and their relations to phenotypes/traits. Records are structured tabular data (gene symbol, Ensembl ID, RSID, chromosome position, MAF, beta, p-value) with standard identifiers (Ensembl gene IDs, dbSNP rs-numbers, EFO/HPO ontology IDs for traits), directly aligned with MyGene.info / MyVariant.info entity models."
+        },
+        "novelty": {
+            "score": 4,
+            "justification": "RAVAR curates literature-derived statistical evidence (p-value, effect size/beta, 95% CI, testing method) linking rare variants and genes to traits/diseases from 245 manually reviewed publications (exome/GWAS rare-variant studies). This is distinct from what MyVariant.info already aggregates (ClinVar pathogenicity calls, gnomAD/ExAC population frequencies, dbNSFP functional predictors) -- RAVAR instead supplies curated rare-variant association evidence (gene-level burden/collapsing-test results and variant-level single-SNP association statistics) mapped to EFO/HPO trait ontology, which is not represented in existing BioThings sources. Some overlap exists with MyDisease.info's DisGeNET gene-disease associations, but RAVAR is rare-variant-specific with full statistical provenance (p-value, method/software, PMID) rather than DisGeNET's broader curated/text-mined gene-disease scores."
+        },
+        "openness": {
+            "pass": true,
+            "score": 5,
+            "justification": "Site states 'RAVAR ... is openly accessible without the requirement for user login' and is licensed CC BY 4.0 (Creative Commons Attribution). Four bulk TSV files (publication_allinfo.txt, trait_allinfo.txt, gene_fulltable.txt, snp_fulltable.txt) are directly downloadable via a stable REST endpoint under www.ravar.bio/api/download/static/ with no authentication, API key, or click-through agreement required. Confirmed by direct curl download of all four files."
+        }
+    },
+    "evidence": {
+        "scope": "Curated rare variant-trait/disease associations at gene level (burden/collapsing test results) and variant level (single-SNP association statistics) from exome and rare-variant GWAS studies, mapped to standardized EFO/HPO trait ontology terms.",
+        "overlap": "Partial overlap with MyDisease.info (DisGeNET gene-disease associations) and MyVariant.info (variant annotations), but RAVAR's rare-variant-specific curated statistical association evidence (p-value, beta, MAF, testing method, source publication) is not represented in either.",
+        "entity_types": ["gene", "variant", "trait/disease", "publication"],
+        "identifiers_found": ["Ensembl Gene ID", "dbSNP rsID", "EFO ontology ID", "HPO ontology ID", "PMID", "DOI"],
+        "record_count": 95047
+    },
+    "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "restrictions": []
+    },
+    "urls": {
+        "homepage": "http://www.ravar.bio",
+        "download": [
+            "http://www.ravar.bio/api/download/static/publication_allinfo.txt",
+            "http://www.ravar.bio/api/download/static/trait_allinfo.txt",
+            "http://www.ravar.bio/api/download/static/gene_fulltable.txt",
+            "http://www.ravar.bio/api/download/static/snp_fulltable.txt"
+        ],
+        "api": "http://www.ravar.bio/api/",
+        "paper_doi": "10.1093/nar/gkad876",
+        "pmid": "37831073",
+        "pmc": "PMC10767942"
+    },
+    "api_info": {
+        "exists": true,
+        "base_url": "http://www.ravar.bio/api/",
+        "auth_required": false,
+        "rate_limits": "unknown",
+        "pagination": "offset/limit (search/browse endpoints)",
+        "record_coverage": "full (query/detail access; bulk data covered instead via static download files)"
+    },
+    "target_api": "pending.api",
+    "risks": [
+        "Site is a JS-rendered SPA (Vue app) -- the download page itself returns no useful static HTML; direct file URLs were recovered by inspecting the compiled JS bundle for the underlying REST API base path (/api/download/list).",
+        "The API's own file-size metadata for gene_fulltable.txt (listed as '33.1M') is stale relative to the actual downloaded file (~130MB observed), indicating the database has grown substantially since that metadata was last refreshed -- record counts in this report are recomputed from the actual downloaded files, not the paper's or API's stated sizes.",
+        "Paper's Data Availability section describes 'Excel files' on the Download page, but the actual API-served files are tab-separated .txt files -- a MISMATCH noted for the inspection report (format is more ingestion-friendly than described, not a blocker)."
+    ],
+    "next_actions": ["Proceed to plugin generation using the four bulk TSV files"],
+    "evaluated_at": "2026-08-13"
+}

@@ -1,0 +1,79 @@
+{
+    "name": "ttd",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-01-TTD_target_download.txt",
+            "filename": "P1-01-TTD_target_download.txt",
+            "format": "TXT (custom 3-column key-value, entity-ID-prefixed)",
+            "access": "public",
+            "size_mb": 8.3
+        },
+        {
+            "url": "https://ttd.idrblab.cn/files/download/P1-06-Target_disease.txt",
+            "filename": "P1-06-Target_disease.txt",
+            "format": "TXT (custom key-value, entity-ID-prefixed, multi-value INDICATI rows)",
+            "access": "public",
+            "size_mb": 0.9
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "TARGETID", "type": "string", "sample": "T47101", "classification": "IDENTIFIER"},
+            {"name": "FORMERID", "type": "string", "sample": "TTDC00024", "classification": "REDUNDANT"},
+            {"name": "UNIPROID", "type": "string", "sample": "FGFR1_HUMAN", "classification": "IDENTIFIER"},
+            {"name": "TARGNAME", "type": "string", "sample": "Fibroblast growth factor receptor 1 (FGFR1)", "classification": "NOVEL"},
+            {"name": "GENENAME", "type": "string", "sample": "FGFR1", "classification": "REDUNDANT"},
+            {"name": "TARGTYPE", "type": "string", "sample": "Successful", "classification": "NOVEL"},
+            {"name": "SYNONYMS", "type": "string (semicolon-separated list)", "sample": "c-fgr; bFGF-R-1; ...", "classification": "REDUNDANT"},
+            {"name": "FUNCTION", "type": "string (free text)", "sample": "Required for normal mesoderm patterning...", "classification": "REDUNDANT"},
+            {"name": "PDBSTRUC", "type": "string (semicolon-separated list)", "sample": "6MZW; 6MZQ; 6C1O", "classification": "NOVEL"},
+            {"name": "BIOCLASS", "type": "string", "sample": "Kinase", "classification": "NOVEL"},
+            {"name": "ECNUMBER", "type": "string", "sample": "EC 2.7.10.1", "classification": "REDUNDANT"},
+            {"name": "SEQUENCE", "type": "string", "sample": "MWSWKCLLFWAVLVTATLCTARPS...", "classification": "REDUNDANT"},
+            {"name": "DRUGINFO", "type": "list of [drug_id, drug_name, highest_status]", "sample": "D0O6UY, Pemigatinib, Approved", "classification": "NOVEL"},
+            {"name": "INDICATI (from P1-06)", "type": "list of [clinical_status, disease_name, icd11_code]", "sample": "Phase 3, Acute diabete complication, [ICD-11: 5A2Y]", "classification": "NOVEL"}
+        ],
+        "primary_key": {
+            "field": "TARGETID",
+            "type": "custom (TTD internal target ID)",
+            "sample": "T47101"
+        },
+        "identifiers": [
+            {"type": "UniProt", "field": "UNIPROID", "sample": "FGFR1_HUMAN"},
+            {"type": "gene_symbol", "field": "GENENAME", "sample": "FGFR1"},
+            {"type": "TTD Drug ID", "field": "DRUGINFO[0]", "sample": "D0O6UY"},
+            {"type": "ICD-11", "field": "INDICATI[2]", "sample": "5A2Y"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0 (paper is an Open Access article under CC Attribution-NonCommercial License)",
+        "observed_site": "Not independently re-stated on the JS-rendered homepage (SPA shell only); relying on the paper's stated license, which is standard for NAR Database Issue open-access articles",
+        "match": true,
+        "restrictions": ["Non-commercial use"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://ttd.idrblab.cn/files/download/P1-01-TTD_target_download.txt",
+            "https://ttd.idrblab.cn/files/download/P1-06-Target_disease.txt"
+        ],
+        "primary_key_field": "TARGETID",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["targtype", "bioclass", "pdbstruc", "drugs (associated drug list)", "indications (ICD-11 disease list)"],
+        "redundant_fields": ["formerid", "genename", "synonyms", "function", "ecnumber", "sequence"]
+    },
+    "paper_vs_reality": [
+        {"claim": "3,730 total targets (2024 paper snapshot)", "observed": "4,298 targets in live v10.1.01 (2024.01.10/2024.03.30) download files", "match": false},
+        {"claim": "39,862 total drugs (2024 paper snapshot)", "observed": "42,939 drugs in live P1-02 file (used by the sibling drug-centric ttd plugin, not re-verified in depth here since this evaluation focuses on the target file)", "match": false},
+        {"claim": "121 ICD-11 disease classes", "observed": "P1-06 contains free-text disease names with bracketed [ICD-11: <code>] annotations per indication row, consistent with ICD-11-based classification", "match": true},
+        {"claim": "Freely accessible without login (Data Availability statement)", "observed": "Confirmed -- both files download via plain curl with no auth, cookies, or redirect wall", "match": true},
+        {"claim": "TTD hosted at https://idrblab.org/ttd/", "observed": "idrblab.org/ttd/ redirects to https://ttd.idrblab.cn/ (a Vue.js SPA); real download links resolve to https://ttd.idrblab.cn/files/download/<file> discovered via the SPA's bundled JS (Download-*.js chunk), not from a static HTML download page", "match": false}
+    ],
+    "risks": [
+        "Homepage/download page is a JS-rendered SPA (Vue.js) -- no static HTML links; direct file URLs had to be extracted from the compiled JS bundle (assets/Download-*.js) rather than from page HTML. Confirmed real via curl content-type and content inspection (plain text with TTD header block), not guessed.",
+        "Live data (v10.1.01, dated 2024.01.10 header / 2024.03.30 for P1-06) is newer than the paper's reported snapshot -- record counts differ from the published paper (see paper_vs_reality). This is expected drift for a continuously updated database and not a data-quality concern.",
+        "Same 'ttd' output slug already used by a prior, unrelated plugin generation (drug-centric, DOI 10.1093/nar/gkaf1154) recorded in built-plugins-index.md at the same path -- see relevancy.json risks for details."
+    ]
+}

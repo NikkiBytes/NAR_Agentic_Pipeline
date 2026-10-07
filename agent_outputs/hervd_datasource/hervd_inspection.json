@@ -1,0 +1,115 @@
+{
+    "name": "hervd",
+    "status": "VERIFIED",
+    "inspection_date": "2026-08-13",
+    "download_files": [
+        {
+            "url": "https://download.cncb.ac.cn/hervd/HERV-Terms%20Information.txt",
+            "filename": "HERV-Terms Information.txt",
+            "format": "TXT (tab-delimited)",
+            "access": "public",
+            "size_mb": 1.65
+        },
+        {
+            "url": "https://download.cncb.ac.cn/hervd/HERV-Elements%20Information.txt",
+            "filename": "HERV-Elements Information.txt",
+            "format": "TXT (tab-delimited)",
+            "access": "public",
+            "size_mb": 0.07
+        },
+        {
+            "url": "https://download.cncb.ac.cn/hervd/Disease%20Information.txt",
+            "filename": "Disease Information.txt",
+            "format": "TXT (tab-delimited)",
+            "access": "public",
+            "size_mb": 0.03
+        },
+        {
+            "url": "https://download.cncb.ac.cn/hervd/Publication%20Information.txt",
+            "filename": "Publication Information.txt",
+            "format": "TXT (tab-delimited)",
+            "access": "public",
+            "size_mb": 0.05
+        },
+        {
+            "url": "https://ngdc.cncb.ac.cn/hervd/herv_term",
+            "filename": "herv_term.json",
+            "format": "JSON (POST endpoint, single-call full-table response, no pagination)",
+            "access": "public",
+            "size_mb": 6.0
+        },
+        {
+            "url": "https://ngdc.cncb.ac.cn/hervd/herv_element",
+            "filename": "herv_element.json",
+            "format": "JSON (POST endpoint, single-call full-table response, no pagination)",
+            "access": "public",
+            "size_mb": 0.21
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "HervID", "type": "string", "sample": "chr10_ERV1_00043", "classification": "IDENTIFIER"},
+            {"name": "HervName", "type": "string", "sample": "HERVH-int", "classification": "NOVEL"},
+            {"name": "Position", "type": "string", "sample": "chr10:100383553-100385005", "classification": "NOVEL"},
+            {"name": "Type", "type": "string", "sample": "ERV1", "classification": "NOVEL"},
+            {"name": "Groups", "type": "string", "sample": "HERVHF", "classification": "NOVEL"},
+            {"name": "Region", "type": "string", "sample": "Intronic", "classification": "NOVEL"},
+            {"name": "Associated_disease", "type": "string (comma-separated)", "sample": "Bladder Urothelial Carcinoma,Breast Cancer,...", "classification": "NOVEL"},
+            {"name": "Disease Name", "type": "string", "sample": "Acute Myeloid Leukemia", "classification": "IDENTIFIER"},
+            {"name": "EFO/DOID/NCI/OMIM/MESH", "type": "string (ontology IDs)", "sample": "DOID:9119", "classification": "IDENTIFIER"},
+            {"name": "Study_ID / PMID / DOI", "type": "string", "sample": "PMID 33087347 / DOI 10.1126/sciadv.abc3020", "classification": "IDENTIFIER"}
+        ],
+        "primary_key": {
+            "field": "HervID / HERVID",
+            "type": "custom (HervD Atlas internal HERV locus ID)",
+            "sample": "chr10_ERV1_00043"
+        },
+        "identifiers": [
+            {"type": "DOID", "field": "Disease Information.txt: DOID", "sample": "DOID:9119"},
+            {"type": "MESH", "field": "Disease Information.txt: MESH", "sample": "MESH:D018268"},
+            {"type": "EFO", "field": "Disease Information.txt: EFO", "sample": "EFO:0000220"},
+            {"type": "OMIM", "field": "Disease Information.txt: OMIM", "sample": "OMIM:601626"},
+            {"type": "PMID", "field": "Publication Information.txt: PMID", "sample": "36469256"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC (OUP/NAR standard article license, per PMC)",
+        "observed_site": "CC BY 3.0 China Mainland (NGDC/BIG Data Center shared footer template)",
+        "match": false,
+        "restrictions": []
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://download.cncb.ac.cn/hervd/HERV-Terms%20Information.txt",
+            "https://download.cncb.ac.cn/hervd/HERV-Elements%20Information.txt",
+            "https://download.cncb.ac.cn/hervd/Disease%20Information.txt"
+        ],
+        "primary_key_field": "HervID",
+        "target_api": "pending.api",
+        "ingestion_path": "hybrid",
+        "novel_fields": ["position", "type", "group", "region_type", "associated_diseases", "disease_category", "disease_xrefs"],
+        "redundant_fields": []
+    },
+    "api_crawl_details": {
+        "base_url": "https://ngdc.cncb.ac.cn/hervd/",
+        "endpoints": ["herv_term (POST, no params, returns all 21,049 HERV-Term rows)", "herv_element (POST, no params, returns all 741 HERV-Element rows)"],
+        "pagination": "none — full table returned in a single POST call",
+        "total_records": 21790,
+        "rate_limits": "not documented; not observed to be enforced for 2 single-shot calls",
+        "auth": "none",
+        "response_shape": "bare JSON array of row objects (not wrapped in a results key)",
+        "sample_curl": "curl -s -A 'Mozilla/5.0' -X POST https://ngdc.cncb.ac.cn/hervd/herv_term"
+    },
+    "paper_vs_reality": [
+        {"claim": "60,726 curated HERV-disease associations", "observed": "58,731 disease-links recoverable via aggregated herv_term/herv_element endpoints (56,987 + 1,744); the 60,726 figure includes the full per-evidence-record association table which is only exposed via a per-HERV-ID POST endpoint (~21,790 calls), not crawled in this pass", "match": false},
+        {"claim": "21,790 total HERVs (21,049 HERV-Terms + 741 HERV-Elements)", "observed": "21,049 HERV-Terms + 741 HERV-Elements = 21,790", "match": true},
+        {"claim": "149 mapped ontological diseases", "observed": "149 rows in Disease Information.txt", "match": true},
+        {"claim": "254 publications", "observed": "254 rows in Publication Information.txt", "match": true},
+        {"claim": "CC BY-NC license (per PMC article text)", "observed": "Site footer states CC BY 3.0 China Mainland for the data/database itself, no NC restriction", "match": false}
+    ],
+    "risks": [
+        "Only entity-level aggregated disease association lists (no per-association PMID/evidence) are captured via the single-call bulk endpoints; the full 60,726-record evidence table requires a large per-ID API crawl not performed here.",
+        "Direct-file URLs on download.cncb.ac.cn contain literal spaces requiring percent-encoding.",
+        "License discrepancy between the NAR article's CC BY-NC text license and the site's CC BY 3.0 CN data license — using the site's stated data license (CC BY 3.0 CN) for the manifest since we are ingesting the database content, not the article text."
+    ]
+}

@@ -1,0 +1,182 @@
+{
+    "name": "DRMref",
+    "status": "VERIFIED",
+    "inspection_date": "2026-07-09",
+    "download_files": [
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/gene_summary.txt",
+            "filename": "gene_summary.txt",
+            "format": "TSV",
+            "description": "Differentially expressed genes (DEGs) between resistant and sensitive groups, per cell type/dataset/drug/cancer combination",
+            "access": "public",
+            "size_mb": 39.7
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/Existed_drug_mechanism_gene_file.csv",
+            "filename": "Existed_drug_mechanism_gene_file.csv",
+            "format": "CSV",
+            "description": "Gene-to-resistance-mechanism classification (6 established mechanism categories)",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/CCI_summary.txt",
+            "filename": "CCI_summary.txt",
+            "format": "TXT",
+            "description": "Cell-cell interaction findings related to resistance",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/CCI_GeneInDEG_df.txt",
+            "filename": "CCI_GeneInDEG_df.txt",
+            "format": "TXT",
+            "description": "DEGs involved in significant ligand-receptor pairs",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/enrichment_existed6Mecha_summary.txt",
+            "filename": "enrichment_existed6Mecha_summary.txt",
+            "format": "TXT",
+            "description": "Enrichment results for the six established resistance mechanisms",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/existed6Mecha_GeneInDEG_df.txt",
+            "filename": "existed6Mecha_GeneInDEG_df.txt",
+            "format": "TXT",
+            "description": "Genes enriched in the six known mechanisms",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/enrichment_pathway_summary.txt",
+            "filename": "enrichment_pathway_summary.txt",
+            "format": "TXT",
+            "description": "Enrichment results for Hallmark, KEGG, and GO_BP pathways",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/miRNA_summary.txt",
+            "filename": "miRNA_summary.txt",
+            "format": "TXT",
+            "description": "MicroRNAs predicted to regulate drug-resistance-related genes",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/tf_summary.txt",
+            "filename": "tf_summary.txt",
+            "format": "TXT",
+            "description": "Motifs and transcription factors regulating drug-resistance-related genes",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/DEGisTF_df.txt",
+            "filename": "DEGisTF_df.txt",
+            "format": "TXT",
+            "description": "DEGs that themselves act as transcription factors",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/DEGisDrugTarget_df.txt",
+            "filename": "DEGisDrugTarget_df.txt",
+            "format": "TXT",
+            "description": "DEGs that themselves act as known drug targets",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/RawDataID_pubmed_of_datasets_included_in_DRMref.txt",
+            "filename": "RawDataID_pubmed_of_datasets_included_in_DRMref.txt",
+            "format": "TXT",
+            "description": "Raw dataset accessions (GEO/SRA) and PubMed citations for the 30 source studies",
+            "access": "public"
+        },
+        {
+            "url": "https://ccsm.uth.edu/DRMref/table_summary/sample_and_preprocessing_information.zip",
+            "filename": "sample_and_preprocessing_information.zip",
+            "format": "ZIP",
+            "description": "Per-dataset sample metadata and scRNA-seq preprocessing documentation",
+            "access": "public"
+        }
+    ],
+    "schema": {
+        "fields": [
+            {"name": "p_val", "type": "float", "sample": "7.23013518335309e-287", "classification": "NOVEL"},
+            {"name": "avg_log2FC", "type": "float", "sample": "1.57450241510378", "classification": "NOVEL"},
+            {"name": "pct.1", "type": "float", "sample": "0.977", "classification": "NOVEL"},
+            {"name": "pct.2", "type": "float", "sample": "0.696", "classification": "NOVEL"},
+            {"name": "p_val_adj", "type": "float", "sample": "5.57949532099358e-283", "classification": "NOVEL"},
+            {"name": "Gene_symbol", "type": "string", "sample": "FTL", "classification": "IDENTIFIER"},
+            {"name": "Cell_type", "type": "string", "sample": "Malignant cells", "classification": "NOVEL"},
+            {"name": "dataset_subgroup", "type": "string", "sample": "GSE104987", "classification": "REDUNDANT"},
+            {"name": "ensembl_gene_id", "type": "string", "sample": "ENSG00000087086", "classification": "IDENTIFIER"},
+            {"name": "entrezgene_id", "type": "string", "sample": "2512", "classification": "IDENTIFIER"},
+            {"name": "entrezgene_description", "type": "string", "sample": "ferritin light chain", "classification": "REDUNDANT"},
+            {"name": "external_synonym", "type": "string", "sample": "MGC71996|NBIA3", "classification": "REDUNDANT"},
+            {"name": "gene_biotype", "type": "string", "sample": "protein_coding", "classification": "REDUNDANT"},
+            {"name": "uniprotswissprot", "type": "string", "sample": "P02792", "classification": "IDENTIFIER"},
+            {"name": "Dataset", "type": "string", "sample": "GSE104987", "classification": "REDUNDANT"},
+            {"name": "Original_Dataset", "type": "string", "sample": "GSE104987", "classification": "REDUNDANT"},
+            {"name": "Cancer_type_level1", "type": "string", "sample": "Breast cancer", "classification": "NOVEL"},
+            {"name": "Cancer_type_level2", "type": "string", "sample": "ER+ breast cancer", "classification": "NOVEL"},
+            {"name": "Drug_type", "type": "string", "sample": "Targeted therapy", "classification": "NOVEL"},
+            {"name": "Timepoint", "type": "string", "sample": "NA", "classification": "NOVEL"},
+            {"name": "Regimen", "type": "string", "sample": "KDM5-C70", "classification": "NOVEL"},
+            {"name": "Organism", "type": "string", "sample": "Homo sapiens", "classification": "REDUNDANT"},
+            {"name": "Source", "type": "string", "sample": "MCF7 cell line", "classification": "NOVEL"},
+            {"name": "Tissue", "type": "string", "sample": "Cell line", "classification": "REDUNDANT"},
+            {"name": "Sample_size", "type": "string", "sample": "resistant 1, sensitive 1", "classification": "NOVEL"},
+            {"name": "Sample_size_all", "type": "integer", "sample": "2", "classification": "NOVEL"},
+            {"name": "Cell_number_all", "type": "integer", "sample": "2669", "classification": "NOVEL"},
+            {"name": "Date", "type": "string", "sample": "Public on Oct 03, 2018", "classification": "REDUNDANT"},
+            {"name": "PMID", "type": "string", "sample": "30472020", "classification": "IDENTIFIER"},
+            {"name": "Description", "type": "string", "sample": "This dataset has 1 cell line with a sensitive pre-treatment sample and a resistant post-treatment sample.", "classification": "NOVEL"},
+            {"name": "RawData_ID", "type": "string", "sample": "PRJNA414337", "classification": "IDENTIFIER"},
+            {"name": "Extract_protocol", "type": "string", "sample": "inDrop v3", "classification": "NOVEL"},
+            {"name": "Data_processing", "type": "string", "sample": "indrops pipeline", "classification": "NOVEL"},
+            {"name": "Cancer_type_level1_forDB", "type": "string", "sample": "Breast_cancer", "classification": "REDUNDANT"},
+            {"name": "Drug_type_forDB", "type": "string", "sample": "Targeted_therapy", "classification": "REDUNDANT"},
+            {"name": "primary_key", "type": "integer", "sample": "1", "classification": "IDENTIFIER"}
+        ],
+        "primary_key": {
+            "field": "primary_key (row index) combined with Gene_symbol + Dataset + Cell_type + Cancer_type_level2 + Drug_type",
+            "type": "custom (composite association record; supporting gene identifiers include ensembl_gene_id, entrezgene_id, uniprotswissprot)",
+            "sample": "1"
+        },
+        "identifiers": [
+            {"type": "Ensembl Gene ID", "field": "ensembl_gene_id", "sample": "ENSG00000087086"},
+            {"type": "NCBI Entrez Gene ID", "field": "entrezgene_id", "sample": "2512"},
+            {"type": "UniProt", "field": "uniprotswissprot", "sample": "P02792"},
+            {"type": "Gene symbol", "field": "Gene_symbol", "sample": "FTL"},
+            {"type": "PubMed ID", "field": "PMID", "sample": "30472020"},
+            {"type": "GEO/SRA accession", "field": "RawData_ID / Dataset", "sample": "PRJNA414337 / GSE104987"}
+        ]
+    },
+    "license": {
+        "stated_paper": "CC BY-NC 4.0 (Oxford NAR open-access license)",
+        "observed_site": "No separate license badge found on site; footer states 'Copyright 2022-Present - The University of Texas Health Science Center at Houston' with no additional restriction text",
+        "match": true,
+        "restrictions": ["Non-commercial reuse only per publisher terms"]
+    },
+    "plugin_inputs": {
+        "data_url": [
+            "https://ccsm.uth.edu/DRMref/table_summary/gene_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/Existed_drug_mechanism_gene_file.csv",
+            "https://ccsm.uth.edu/DRMref/table_summary/miRNA_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/tf_summary.txt",
+            "https://ccsm.uth.edu/DRMref/table_summary/enrichment_pathway_summary.txt"
+        ],
+        "primary_key_field": "primary_key",
+        "target_api": "pending.api",
+        "ingestion_path": "bulk_download",
+        "novel_fields": ["Cell_type", "Cancer_type_level1", "Cancer_type_level2", "Drug_type", "Regimen", "Timepoint", "Sample_size", "Description", "avg_log2FC", "p_val", "p_val_adj", "pct.1", "pct.2", "Extract_protocol", "Data_processing"],
+        "redundant_fields": ["entrezgene_description", "external_synonym", "gene_biotype", "Organism", "Tissue", "Date", "Cancer_type_level1_forDB", "Drug_type_forDB", "Dataset", "Original_Dataset", "dataset_subgroup"]
+    },
+    "paper_vs_reality": [
+        {"claim": "42 single-cell datasets from 30 studies, 382 samples, 13 major cancer types, 26 subtypes, 35 treatment regimens, 42 drugs (per WebSearch summary of paper abstract)", "observed": "Homepage states '42 scRNA datasets from 30 studies' and '666 samples' (differs from the 382-samples figure surfaced in search snippets) and '13 major/26 minor cancer types'", "match": false},
+        {"claim": "Web-based API not mentioned in paper", "observed": "No API found on live site; only static flat-file downloads under /table_summary/", "match": true},
+        {"claim": "Data hosted directly on DRMref site per Data Availability statement", "observed": "Confirmed — gene_summary.txt (41,638,514 bytes) fetched directly via curl with HTTP 200, no auth", "match": true}
+    ],
+    "risks": [
+        "Minor discrepancy in reported sample counts between paper abstract snippets (382 samples) and the live homepage text (666 samples) — likely a site update since publication; does not affect access or schema.",
+        "gene_summary.txt is large (~40MB) with per-row Seurat-style differential expression stats (p_val, avg_log2FC, pct.1/2) rather than a single canonical schema; downstream plugin will need to treat rows as association records (gene x dataset x cell type x drug) rather than gene-level documents.",
+        "CC BY-NC license: compatible with BioThings' academic non-profit status per project's own evaluation checklist, but flag if any downstream commercial Translator consumer redistributes this data."
+    ]
+}
